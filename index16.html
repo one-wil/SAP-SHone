@@ -25,6 +25,7 @@ body{margin:0;font-family:Arial,Tahoma,"Microsoft YaHei","Noto Sans CJK SC",sans
 .card h2{color:var(--green);font-size:17px;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
 .field label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
+.automatic-field{background:#f0f8f2;border:1px solid #d7eadc;border-radius:10px;padding:9px}.automatic-field input{background:#eaf5ed;border-color:#d4e8d9;color:#286347;font-weight:700}.automatic-field small,.field-hint{display:block;margin-top:5px;font-size:10px;color:#62816e}
 input,select{width:100%;padding:12px;border:1px solid #cbdcd2;border-radius:9px;background:white;color:var(--text);font-size:14px;outline:none}
 input:focus,select:focus{border-color:var(--green2);box-shadow:0 0 0 3px #0b76571a}
 .hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.7}
@@ -192,33 +193,29 @@ footer strong{color:var(--green)}
   <div class="hint">Case non cochée : cycle standard 28/28. Case cochée : cycle alternatif 29/27. Le cycle choisi s’applique aux huit groupes.</div>
  </div>
  <div class="grid" style="margin-top:15px">
-  <div class="field"><label>Groupe de référence</label><select id="referenceGroup">
+  <div class="field"><label>Groupe de référence / Ma rotation</label><select id="referenceGroup">
    <option value="1">R1</option><option value="2">R2</option><option value="3" selected>R3</option><option value="4">R4</option>
    <option value="5">R5</option><option value="6">R6</option><option value="7">R7</option><option value="8">R8</option>
   </select></div>
-  <div class="field"><label>Date de début de la première semaine de travail</label><input type="date" id="referenceDate"><div class="hint">Date de référence du groupe sélectionné uniquement.</div></div>
-  <div class="field"><label>Jour de relève (automatique)</label><input type="text" id="referenceDayDisplay" value="—" readonly></div>
+  <div class="field"><label>Date de début de la première semaine de travail</label><input type="date" id="referenceDate"></div>
+  <div class="field automatic-field"><label>Jour de relève · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date</small></div>
   <div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div>
+  <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
+   <option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3" selected>3 semaines</option><option value="4">4 semaines</option>
+   <option value="5">5 semaines</option><option value="6">6 semaines</option><option value="7">7 semaines</option><option value="8">8 semaines</option>
+  </select><small id="workDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+  <div class="field"><label>Nombre de semaines de repos</label><select id="restWeeks"></select><small id="restDurationHint" class="field-hint">Selon le cycle choisi</small></div>
  </div>
- <div class="actions no-print"><button class="primary" onclick="calculateGroups()">Calculer la situation des groupes</button><button class="secondary" onclick="setCheckToday()">Date du jour</button></div>
+ <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
  <div id="referenceMessage"></div>
 </section>
 <section class="card">
  <h2>4. Planification du travail et des périodes de repos</h2>
  <div class="grid">
-  <div class="field"><label>Nom ou matricule de l’agent</label><input id="employeeName" type="text" placeholder="Nom ou matricule"></div>
-  <div class="field"><label>Groupe d’origine de l’agent</label><select id="employeeGroup">
-   <option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option>
-   <option value="5">R5</option><option value="6">R6</option><option value="7">R7</option><option value="8">R8</option>
-  </select></div>
-  <div class="field"><label>Date de début de travail de l’agent</label><input type="date" id="employeeStart"></div>
-  <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
-   <option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3" selected>3 semaines</option><option value="4">4 semaines</option>
-   <option value="5">5 semaines</option><option value="6">6 semaines</option><option value="7">7 semaines</option><option value="8">8 semaines</option>
-  </select><div class="hint" id="workDurationHint">Cycle 29/27 : nombre de semaines sélectionné × 7 + 1 jour. Exemple : 5 semaines correspondent à 36 jours (29 + 7).</div></div>
-  <div class="field"><label>Durée de repos</label><select id="restWeeks"></select><div class="hint" id="restDurationHint"></div></div>
+  <div class="field"><label>Nom ou matricule de l’agent (facultatif)</label><input id="employeeName" type="text" placeholder="Nom ou matricule"></div>
+  <div class="field automatic-field"><label>Groupe de départ</label><input id="employeeGroupDisplay" type="text" value="Selon le groupe de référence" readonly><small>Repris automatiquement du groupe choisi en haut</small></div>
+  <div class="field automatic-field"><label>Date de début du travail</label><input id="employeeStartDisplay" type="text" value="Selon la date de référence" readonly><small>Reprise automatiquement de la date choisie en haut</small></div>
  </div>
- <div class="actions no-print"><button class="primary" onclick="calculateEmployee()">Générer le plan de l’agent</button><button class="secondary" onclick="clearEmployeeResult()">Effacer le résultat</button></div>
  <div id="employeeResult"></div>
 </section>
 <section class="card" id="codingSummaryCard">
@@ -257,6 +254,15 @@ function applyCycleSelection(){
  else{description.textContent="Cycle appliqué aux huit groupes : 28 jours de travail + 28 jours de repos";description.classList.remove("active");}
  localStorage.setItem("rotation_cycle2927",enabled?"1":"0");
  updateRestOptions();
+ updateDurationHints();
+}
+function updateDurationHints(){
+ const w=Number(document.getElementById("workWeeks").value||3);
+ const r=Number(document.getElementById("restWeeks").value||21)/7;
+ const workDays=WORK_DAYS===29?w*7+1:w*7;
+ const restDays=WORK_DAYS===29?r*7-1:r*7;
+ document.getElementById("workDurationHint").textContent=`${workDays} jours calculés automatiquement`;
+ document.getElementById("restDurationHint").textContent=`${restDays} jours calculés automatiquement`;
 }
 function updateRestOptions(){
  const select=document.getElementById("restWeeks");
@@ -265,11 +271,11 @@ function updateRestOptions(){
  if(document.getElementById("cycle2927").checked){
   select.innerHTML=Array.from({length:8},(_,i)=>`<option value="${(i+1)*7}">${i+1} semaine — ${(i+1)*7-1} jours</option>`).join("");
   select.value=previous && Number(previous)>=7 && Number(previous)<=56 && Number(previous)%7===0 ? previous : "21";
-  hint.textContent="Cycle 29/27 : la durée affichée tient compte d’un jour en moins. Exemple : 1 semaine = 6 jours, 3 semaines = 20 jours, 5 semaines = 34 jours. Les phases standard de 6, 13, 20 ou 27 jours sont privilégiées ; la dernière phase peut être raccourcie si nécessaire."
+  hint.textContent="Durée calculée automatiquement selon le cycle 29/27."
  }else{
   select.innerHTML='<option value="7">1 semaine</option><option value="14">2 semaines</option><option value="21">3 semaines</option><option value="28">4 semaines</option><option value="35">5 semaines</option><option value="42">6 semaines</option><option value="49">7 semaines</option><option value="56">8 semaines</option>';
   select.value=["7","14","21","28","35","42","49","56"].includes(previous)?previous:"21";
-  hint.textContent="Cycle 28/28 : veuillez sélectionner le nombre de semaines de repos.";
+  hint.textContent="Durée calculée automatiquement selon le cycle 28/28.";
  }
 }
 
@@ -304,6 +310,15 @@ function validateReference(){
  const selectedDay=referenceDate.getUTCDay();
  return{referenceGroup,referenceDate,selectedDay};
 }
+function calculateAll(){
+ const v=validateReference(),message=document.getElementById("referenceMessage");
+ if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+ document.getElementById("employeeGroupDisplay").value="R"+v.referenceGroup;
+ document.getElementById("employeeStartDisplay").value=formatDate(v.referenceDate);
+ calculateGroups();
+ if(!currentGroups)return;
+ calculateEmployee();
+}
 function calculateGroups(){
  applyCycleSelection();const v=validateReference(),message=document.getElementById("referenceMessage");
  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
@@ -316,7 +331,7 @@ function renderGroups(date){
  if(!currentGroups)return;
  currentCheckDate=new Date(date.getTime());
  const rows=currentGroups.map(g=>{const s=getGroupStatus(g.number,date),cls=s.status==="work"?"work":"rest";return`<tr><td><strong>R${g.number}</strong></td><td><span class="status ${cls}">${s.status==="work"?"Travail":"Repos"}</span></td><td>${s.status==="work"?"Semaine "+s.week+" (travail)":"Semaine "+s.week+" (repos)"}</td><td>${s.daysRemaining} jours</td><td>${formatDate(s.nextChange)}</td></tr>`;}).join("");
- const myGroup=Number(document.getElementById("employeeGroup").value||1);
+ const myGroup=Number(document.getElementById("referenceGroup").value||1);
  const mine=getGroupStatus(myGroup,date);
  const wheelNodes=currentGroups.map(g=>{
   const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
@@ -461,8 +476,8 @@ function calculateEmployee(){
  applyCycleSelection();const v=validateReference(),output=document.getElementById("employeeResult");
  if(v.error){output.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
  if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
- const name=document.getElementById("employeeName").value.trim(),startGroup=Number(document.getElementById("employeeGroup").value);
- const startDate=parseDate(document.getElementById("employeeStart").value),workWeeks=Number(document.getElementById("workWeeks").value);
+ const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup;
+ const startDate=v.referenceDate,workWeeks=Number(document.getElementById("workWeeks").value);
  const selectedRestWeeks=Number(document.getElementById("restWeeks").value)/7,is2927=WORK_DAYS===29;
  if(!startDate){output.innerHTML='<div class="notice error">Veuillez saisir la date de début de travail de l’agent.</div>';return;}
  if(startDate.getUTCDay()!==v.selectedDay){output.innerHTML=`<div class="notice error">La date de début de l’agent ne correspond pas au jour de relève sélectionné (${DAY_NAMES[v.selectedDay]}).</div>`;return;}
@@ -646,16 +661,22 @@ document.getElementById("cycle2927").addEventListener("change",()=>{
  document.getElementById("referenceMessage").innerHTML='<div class="notice info">Le cycle a été modifié. Cliquez sur « Calculer la situation des groupes » pour appliquer le nouveau cycle aux huit groupes.</div>';
 });
 document.getElementById("checkDate").addEventListener("change",()=>{if(!currentGroups)return;const date=parseDate(document.getElementById("checkDate").value);if(date)renderGroups(date);});
+document.getElementById("workWeeks").addEventListener("change",updateDurationHints);
+document.getElementById("restWeeks").addEventListener("change",updateDurationHints);
 document.getElementById("referenceDate").addEventListener("change",()=>{
  const date=parseDate(document.getElementById("referenceDate").value);
  document.getElementById("referenceDayDisplay").value=date?DAY_NAMES[date.getUTCDay()] : "—";
+ document.getElementById("employeeStartDisplay").value=date?formatDate(date):"Selon la date de référence";
 });
-document.getElementById("employeeGroup").addEventListener("change",()=>{
- if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
+document.getElementById("referenceGroup").addEventListener("change",()=>{
+ document.getElementById("employeeGroupDisplay").value="R"+document.getElementById("referenceGroup").value;
 });
 restoreSettings();
+updateDurationHints();
+if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
 const restoredReferenceDate=parseDate(document.getElementById("referenceDate").value);
-if(restoredReferenceDate)document.getElementById("referenceDayDisplay").value=DAY_NAMES[restoredReferenceDate.getUTCDay()];
+if(restoredReferenceDate){document.getElementById("referenceDayDisplay").value=DAY_NAMES[restoredReferenceDate.getUTCDay()];document.getElementById("employeeStartDisplay").value=formatDate(restoredReferenceDate);}
+document.getElementById("employeeGroupDisplay").value="R"+document.getElementById("referenceGroup").value;
 </script>
 </body>
 </html>
