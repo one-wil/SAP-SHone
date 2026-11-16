@@ -66,6 +66,8 @@ th{background:#eaf3ed;color:var(--green)}tr:nth-child(even) td{background:#fafcf
 
 /* Tableau circulaire professionnel des huit rotations */
 .rotation-dashboard{margin-top:18px;padding:16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,#fbfdfb,#f1f7f3)}
+.rotation-wheel-wrap{width:min(100%,430px);margin:8px auto 18px;display:grid;place-items:center}.rotation-wheel{display:block;width:100%;height:auto;max-width:430px;overflow:visible}.wheel-node.is-mine{filter:drop-shadow(0 2px 4px #f5822060)}
+
 .rotation-dashboard-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .rotation-dashboard-head strong{color:var(--green);font-size:14px}
 .rotation-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
@@ -307,22 +309,28 @@ function renderGroups(date){
  if(!currentGroups)return;
  currentCheckDate=new Date(date.getTime());
  const rows=currentGroups.map(g=>{const s=getGroupStatus(g.number,date),cls=s.status==="work"?"work":"rest";return`<tr><td><strong>R${g.number}</strong></td><td><span class="status ${cls}">${s.status==="work"?"Travail":"Repos"}</span></td><td>${s.status==="work"?"Semaine "+s.week+" (travail)":"Semaine "+s.week+" (repos)"}</td><td>${s.daysRemaining} jours</td><td>${formatDate(s.nextChange)}</td></tr>`;}).join("");
- const rotationCards=currentGroups.map(g=>{
-  const st=getGroupStatus(g.number,date),isWork=st.status==="work",phasePercent=(st.phase/CYCLE_DAYS)*100;
-  const phaseLabel=isWork?"Travail":"Repos",share=(WORK_DAYS/CYCLE_DAYS*100).toFixed(2)+"%";
-  const phaseProgress=(st.status==="work"?st.phase/WORK_DAYS:(st.phase-WORK_DAYS)/REST_DAYS)*100;
-  return `<article class="rotation-card ${isWork?"is-working":"is-resting"}">
-   <div class="rotation-donut" style="--work-share:${share};--phase-angle:${(st.phase/CYCLE_DAYS*360).toFixed(2)}deg" role="img" aria-label="R${g.number}: ${phaseLabel}, ${st.daysRemaining} jours restants">
-    <div class="rotation-center"><b>R${g.number}</b><small>${phasePercent.toFixed(1)}% du cycle</small></div>
-   </div>
-   <span class="rotation-status ${st.status}">${isWork?"EN TRAVAIL":"EN REPOS"}</span>
-   <div class="rotation-meta"><div><small>Phase</small><b>${st.week}e semaine</b></div><div><small>Jours restants</small><b>${st.daysRemaining} j</b></div></div>
-   <div class="rotation-scale" title="Progression de la phase"><span style="width:${Math.max(0,Math.min(100,phaseProgress)).toFixed(1)}%"></span></div>
-   <div class="rotation-next">Relève prévue<br><strong>${formatDate(st.nextChange)}</strong></div>
-  </article>`;
- }).join("");
  const myGroup=Number(document.getElementById("employeeGroup").value||1);
  const mine=getGroupStatus(myGroup,date);
+ const wheelNodes=currentGroups.map(g=>{
+  const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
+  const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=180+143*Math.cos(angle),cy=180+143*Math.sin(angle);
+  const fill=isWork?"#07845b":"#d6aa45",stroke=isMine?"#f58220":"#ffffff",radius=isMine?31:25;
+  return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}">
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+5}" fill="none" stroke="${isMine?"#f58220":"#dce8e1"}" stroke-width="${isMine?4:1}"/>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
+   <text x="${cx.toFixed(1)}" y="${(cy+5).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?17:15}" font-weight="900">R${g.number}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="#365448" font-size="10" font-weight="700">${isWork?"TRAVAIL":"REPOS"}</text>
+  </g>`;
+ }).join("");
+ const wheelMarkup=`<div class="rotation-wheel-wrap"><svg class="rotation-wheel" viewBox="0 0 360 360" role="img" aria-label="Position des huit rotations. Ma rotation R${myGroup} est entourée en orange.">
+  <circle cx="180" cy="180" r="143" fill="none" stroke="#dce8e1" stroke-width="2" stroke-dasharray="4 5"/>
+  <circle cx="180" cy="180" r="105" fill="#f5faf6" stroke="#dce8e1" stroke-width="2"/>
+  ${wheelNodes}
+  <circle cx="180" cy="180" r="78" fill="#fff" stroke="#e0ebe4" stroke-width="1.5"/>
+  <text x="180" y="158" text-anchor="middle" fill="#687b73" font-size="11" font-weight="700">MA ROTATION</text>
+  <text x="180" y="190" text-anchor="middle" fill="#075b43" font-size="29" font-weight="900">R${myGroup}</text>
+  <text x="180" y="211" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="12" font-weight="900">${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</text>
+ </svg></div>`;
  const comparisonRows=currentGroups.filter(g=>g.number!==myGroup).map(g=>{
   const other=getGroupStatus(g.number,date);
   let delta=mod(other.phase-mine.phase,CYCLE_DAYS);
@@ -333,7 +341,7 @@ function renderGroups(date){
  }).join("");
  const sameStatusCount=currentGroups.filter(g=>g.number!==myGroup&&getGroupStatus(g.number,date).status===mine.status).length;
  const otherStatusCount=7-sameStatusCount;
- document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="table-wrap"><table><thead><tr><th>Groupe</th><th>Statut</th><th>Phase</th><th>Jours restants</th><th>Prochaine relève</th></tr></thead><tbody>${rows}</tbody></table></div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div><div class="rotation-grid">${rotationCards}</div><div class="rotation-compare"><div class="compare-heading"><div><strong>Comparaison de ma rotation avec les autres</strong></div><label>Ma rotation<select id="myRotationCompare" onchange="setMyRotationCompare(this.value)">${Array.from({length:8},(_,i)=>`<option value="${i+1}" ${i+1===myGroup?"selected":""}>R${i+1}</option>`).join("")}</select></label></div><div class="my-rotation-summary"><div class="my-rotation-badge">MA ROTATION · R${myGroup}</div><div><strong>${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</strong><span>${mine.week}e semaine · ${mine.daysRemaining} jours restants · relève le ${formatDate(mine.nextChange)}</span></div><div class="compare-count"><b>${sameStatusCount}/7</b><small>autres groupes<br>dans le même statut</small></div></div><div class="table-wrap"><table class="compare-table"><thead><tr><th>Autre rotation</th><th>Statut actuel</th><th>Phase</th><th>Jours restants</th><th>Écart de cycle avec R${myGroup}</th><th>Comparaison</th></tr></thead><tbody>${comparisonRows}</tbody></table></div></div></div>`;
+ document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="table-wrap"><table><thead><tr><th>Groupe</th><th>Statut</th><th>Phase</th><th>Jours restants</th><th>Prochaine relève</th></tr></thead><tbody>${rows}</tbody></table></div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div>${wheelMarkup}<div class="rotation-compare"><div class="compare-heading"><div><strong>Comparaison de ma rotation avec les autres</strong></div><label>Ma rotation<select id="myRotationCompare" onchange="setMyRotationCompare(this.value)">${Array.from({length:8},(_,i)=>`<option value="${i+1}" ${i+1===myGroup?"selected":""}>R${i+1}</option>`).join("")}</select></label></div><div class="my-rotation-summary"><div class="my-rotation-badge">MA ROTATION · R${myGroup}</div><div><strong>${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</strong><span>${mine.week}e semaine · ${mine.daysRemaining} jours restants · relève le ${formatDate(mine.nextChange)}</span></div><div class="compare-count"><b>${sameStatusCount}/7</b><small>autres groupes<br>dans le même statut</small></div></div><div class="table-wrap"><table class="compare-table"><thead><tr><th>Autre rotation</th><th>Statut actuel</th><th>Phase</th><th>Jours restants</th><th>Écart de cycle avec R${myGroup}</th><th>Comparaison</th></tr></thead><tbody>${comparisonRows}</tbody></table></div></div></div>`;
 }
 function setMyRotationCompare(value){
  const group=Number(value);if(group<1||group>8||!currentGroups||!currentCheckDate)return;
