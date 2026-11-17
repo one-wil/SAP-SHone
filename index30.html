@@ -207,8 +207,8 @@ footer strong{color:var(--green)}
   <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
    <option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3" selected>3 semaines</option><option value="4">4 semaines</option>
    <option value="5">5 semaines</option><option value="6">6 semaines</option><option value="7">7 semaines</option><option value="8">8 semaines</option>
-  </select><small id="workDurationHint" class="field-hint">Selon le cycle choisi</small></div>
-  <div class="field"><label>Nombre de semaines de repos</label><select id="restWeeks"></select><small id="restDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+  </select><label class="cycle-choice" style="margin-top:8px"><input type="radio" name="replacementType" id="replacementTEnabled" value="T">Activer le remplacement T</label><small id="workDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+  <div class="field"><label>Nombre de semaines de repos</label><select id="restWeeks"></select><label class="cycle-choice" style="margin-top:8px"><input type="radio" name="replacementType" id="replacementREnabled" value="R">Activer le remplacement R</label><small id="restDurationHint" class="field-hint">Selon le cycle choisi</small></div>
  </div>
  <div class="cycle-option" style="margin-top:14px">
   <label class="cycle-choice"><input type="checkbox" id="continueProgram">Continuer — ajouter un deuxième programme complémentaire</label>
@@ -217,11 +217,10 @@ footer strong{color:var(--green)}
    <div class="field"><label>Programme 2 — Nombre de semaines de repos</label><select id="restWeeks2"></select></div>
   </div>
  </div>
- <div class="cycle-option" style="margin-top:14px">
-  <label class="cycle-choice"><input type="checkbox" id="replacementEnabled">Activer les remplacements T / R</label>
-  <div id="replacementFields" class="grid" style="display:none;margin-top:13px">
-   <div class="field"><label>Remplacement T — Semaines de travail supplémentaires</label><select id="replacementTWeeks"><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
-   <div class="field"><label>Remplacement R — Semaines de repos supplémentaires</label><select id="replacementRWeeks"><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
+ <div class="cycle-option" id="replacementFields" style="display:none;margin-top:14px">
+  <div class="grid">
+   <div class="field"><label>Remplacement T — Semaines de travail supplémentaires</label><select id="replacementTWeeks"><option value="0" selected>0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin de la période de travail initiale.</small></div>
+   <div class="field"><label>Remplacement R — Semaines de repos supplémentaires</label><select id="replacementRWeeks"><option value="0" selected>0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin de la période de repos initiale.</small></div>
   </div>
  </div>
  <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
@@ -508,14 +507,19 @@ function calculateEmployee(){
  };
  const ps=[make(startDate,startGroup,ww,rw)];
  if(ps[0].error){out.innerHTML=`<div class="notice error">${escapeHTML(ps[0].error)}</div>`;lastEmployeePlan=null;return;}
- const replacementEnabled=document.getElementById("replacementEnabled").checked;
- if(replacementEnabled&&(ww!==4||rw!==4)){out.innerHTML='<div class="notice error">Les remplacements T / R sont disponibles lorsque le programme de référence est réglé sur 4 semaines de travail et 4 semaines de repos.</div>';lastEmployeePlan=null;return;}
+ const replacementTEnabled=document.getElementById("replacementTEnabled").checked;
+ const replacementREnabled=document.getElementById("replacementREnabled").checked;
+ const replacementEnabled=replacementTEnabled||replacementREnabled;
+ if(replacementTEnabled&&ww!==4){out.innerHTML='<div class="notice error">Pour activer le remplacement T, le nombre de semaines de travail doit être réglé sur 4.</div>';lastEmployeePlan=null;return;}
+ if(replacementREnabled&&rw!==4){out.innerHTML='<div class="notice error">Pour activer le remplacement R, le nombre de semaines de repos doit être réglé sur 4.</div>';lastEmployeePlan=null;return;}
  const replacementSegments=[];
- if(replacementEnabled){
-  const tWeeks=Number(document.getElementById("replacementTWeeks").value),rWeeks=Number(document.getElementById("replacementRWeeks").value);
-  const tStart=addDays(ps[0].work.endDate,1),rStart=addDays(ps[0].rest.endDate,1);
-  replacementSegments.push({code:"T",start:inputDate(tStart),end:inputDate(addDays(tStart,tWeeks*7-1)),weeks:tWeeks});
-  replacementSegments.push({code:"R",start:inputDate(rStart),end:inputDate(addDays(rStart,rWeeks*7-1)),weeks:rWeeks});
+ if(replacementTEnabled){
+  const tWeeks=Number(document.getElementById("replacementTWeeks").value);
+  if(tWeeks>0){const tStart=addDays(ps[0].work.endDate,1);replacementSegments.push({code:"T",start:inputDate(tStart),end:inputDate(addDays(tStart,tWeeks*7-1)),weeks:tWeeks});}
+ }
+ if(replacementREnabled){
+  const rWeeks=Number(document.getElementById("replacementRWeeks").value);
+  if(rWeeks>0){const rStart=addDays(ps[0].rest.endDate,1);replacementSegments.push({code:"R",start:inputDate(rStart),end:inputDate(addDays(rStart,rWeeks*7-1)),weeks:rWeeks});}
  }
  if(cont){
   const p=ps[0],start2=addDays(p.rest.endDate,1),prev=p.rest.segments.at(-1).group,next=findWorkingGroup(start2,prev);
@@ -683,10 +687,14 @@ function restoreSettings(){
 }
 
 /* Événements */
-const replacementToggle=document.getElementById("replacementEnabled");
 const replacementFields=document.getElementById("replacementFields");
-replacementToggle.addEventListener("change",()=>{replacementFields.style.display=replacementToggle.checked?"grid":"none";});
-replacementFields.style.display=replacementToggle.checked?"grid":"none";
+const replacementRadios=[document.getElementById("replacementTEnabled"),document.getElementById("replacementREnabled")];
+function updateReplacementFields(){
+ const active=replacementRadios.some(r=>r.checked);
+ replacementFields.style.display=active?"block":"none";
+}
+replacementRadios.forEach(r=>r.addEventListener("change",updateReplacementFields));
+updateReplacementFields();
 const continueToggle=document.getElementById("continueProgram");
 const continueFields=document.getElementById("continueFields");
 continueToggle.addEventListener("change",()=>{
