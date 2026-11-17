@@ -662,6 +662,13 @@ function restoreSettings(){
 }
 
 /* Événements */
+const continueToggle=document.getElementById("continueProgram");
+const continueFields=document.getElementById("continueFields");
+continueToggle.addEventListener("change",()=>{
+ continueFields.style.display=continueToggle.checked?"grid":"none";
+ if(continueToggle.checked)updateSecondRestOptions();
+});
+continueFields.style.display=continueToggle.checked?"grid":"none";
 document.getElementById("cycle2927").addEventListener("change",()=>{
  document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.remove("is-visible"));
  applyCycleSelection();currentGroups=null;lastEmployeePlan=null;
