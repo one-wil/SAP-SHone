@@ -217,6 +217,13 @@ footer strong{color:var(--green)}
    <div class="field"><label>Programme 2 — Nombre de semaines de repos</label><select id="restWeeks2"></select></div>
   </div>
  </div>
+ <div class="cycle-option" style="margin-top:14px">
+  <label class="cycle-choice"><input type="checkbox" id="replacementEnabled">Activer les remplacements T / R</label>
+  <div id="replacementFields" class="grid" style="display:none;margin-top:13px">
+   <div class="field"><label>Remplacement T — Semaines de travail supplémentaires</label><select id="replacementTWeeks"><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
+   <div class="field"><label>Remplacement R — Semaines de repos supplémentaires</label><select id="replacementRWeeks"><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
+  </div>
+ </div>
  <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
  <div id="referenceMessage"></div>
 </section>
@@ -474,13 +481,15 @@ function segmentHTML(s,i,label){
 /* Tableau des codifications */
 function buildCodingRows(plan){
  const segments=[...plan.workSegments.map(s=>({...s,type:"Travail"})),...plan.restSegments.map(s=>({...s,type:"Repos"}))].sort((a,b)=>a.start.localeCompare(b.start));
- if(!segments.length)return[];
- return segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1};});
+ const base=segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};});
+ const extra=(plan.replacementSegments||[]).map((s,i)=>({number:base.length+i+1,group:s.code,type:"Remplacement "+s.code,start:s.start,end:s.end,last:false,replacement:true}));
+ return [...base,...extra].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement));
 }
 function renderCodingSummary(plan){
  const rows=buildCodingRows(plan);if(!rows.length){document.getElementById("codingSummary").innerHTML='<div class="empty">Aucune codification de groupe à afficher.</div>';return;}
- const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>R${r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':"Terminée"}</td></tr>`).join("");
- document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification :</strong> Groupe R${rows[rows.length-1].group}<br>Valable du :${formatDate(parseDate(rows[rows.length-1].start))} au 31/12/9999。</div></div>`;
+ const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>${r.replacement?r.group:"R"+r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':(r.replacement?"Période exceptionnelle":"Terminée")}</td></tr>`).join("");
+ const lastBase=rows.filter(r=>!r.replacement).at(-1);
+ document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe / Code</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification du roulement :</strong> Groupe R${lastBase.group}<br>Valable du :${formatDate(parseDate(lastBase.start))} au 31/12/9999.</div></div>`;
 }
 
 /* Calcul du plan de l'agent */
@@ -499,6 +508,15 @@ function calculateEmployee(){
  };
  const ps=[make(startDate,startGroup,ww,rw)];
  if(ps[0].error){out.innerHTML=`<div class="notice error">${escapeHTML(ps[0].error)}</div>`;lastEmployeePlan=null;return;}
+ const replacementEnabled=document.getElementById("replacementEnabled").checked;
+ if(replacementEnabled&&(ww!==4||rw!==4)){out.innerHTML='<div class="notice error">Les remplacements T / R sont disponibles lorsque le programme de référence est réglé sur 4 semaines de travail et 4 semaines de repos.</div>';lastEmployeePlan=null;return;}
+ const replacementSegments=[];
+ if(replacementEnabled){
+  const tWeeks=Number(document.getElementById("replacementTWeeks").value),rWeeks=Number(document.getElementById("replacementRWeeks").value);
+  const tStart=addDays(ps[0].work.endDate,1),rStart=addDays(ps[0].rest.endDate,1);
+  replacementSegments.push({code:"T",start:inputDate(tStart),end:inputDate(addDays(tStart,tWeeks*7-1)),weeks:tWeeks});
+  replacementSegments.push({code:"R",start:inputDate(rStart),end:inputDate(addDays(rStart,rWeeks*7-1)),weeks:rWeeks});
+ }
  if(cont){
   const p=ps[0],start2=addDays(p.rest.endDate,1),prev=p.rest.segments.at(-1).group,next=findWorkingGroup(start2,prev);
   if(!next){out.innerHTML=`<div class="notice error">Aucun groupe disponible en travail le ${formatDate(start2)} pour le programme 2.</div>`;lastEmployeePlan=null;return;}
@@ -511,9 +529,10 @@ function calculateEmployee(){
  lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks:ww,workDays:sumW,restDays:sumR,restWeeks:rw,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,continuing:cont,
   programs:ps.map((p,i)=>({number:i+1,workDays:p.workDays,restDays:p.restDays})),
   workSegments:ws.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),restSegments:rs.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),
-  workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:""};
+  workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:"",replacementEnabled,replacementSegments};
  renderCodingSummary(lastEmployeePlan);
- out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${html}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1. Les groupes sont sélectionnés selon leur situation réelle.</div>`;
+ const replacementHTML=replacementSegments.length?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>Remplacement ${x.code}</strong> — ${x.weeks} semaine(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join("")}`:"";
+ out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1. Les groupes sont sélectionnés selon leur situation réelle.</div>`;
 }
 function clearEmployeeResult(){document.getElementById("employeeResult").innerHTML="";document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications des groupes.</div>';lastEmployeePlan=null;}
 
@@ -523,16 +542,18 @@ function openPreview(){
  const p=lastEmployeePlan,paper=document.getElementById("previewPaper");
  const rows=[
   ...p.workSegments.map((s,i)=>({phase:"Travail "+(i+1),group:s.group,state:"Travail",start:s.start,end:s.end,days:s.days})),
-  ...p.restSegments.map((s,i)=>({phase:"Repos "+(i+1),group:s.group,state:"Repos",start:s.start,end:s.end,days:s.days}))
+  ...p.restSegments.map((s,i)=>({phase:"Repos "+(i+1),group:s.group,state:"Repos",start:s.start,end:s.end,days:s.days})),
+  ...(p.replacementSegments||[]).map(s=>({phase:"Remplacement "+s.code,group:s.code,state:"Remplacement",start:s.start,end:s.end,days:daysBetween(parseDate(s.start),addDays(parseDate(s.end),1))}))
  ].sort((a,b)=>a.start.localeCompare(b.start));
 
- const codingRows=rows.map((r,i)=>{
-   const next=rows[i+1];
+ const baseRows=rows.filter(r=>r.state!=="Remplacement");
+ const codingRows=[...baseRows.map((r,i)=>{
+   const next=baseRows[i+1];
    const codingEnd=next?inputDate(addDays(parseDate(next.start),-1)):LAST_DATE;
    return {...r,number:i+1,codingEnd};
- });
+ }),...(p.replacementSegments||[]).map((r,i)=>({phase:"Remplacement "+r.code,group:r.code,state:"Remplacement",start:r.start,end:r.end,days:daysBetween(parseDate(r.start),addDays(parseDate(r.end),1)),number:baseRows.length+i+1,codingEnd:r.end}))].sort((a,b)=>a.start.localeCompare(b.start));
  const phaseRows=codingRows.map(r=>`<tr>
-  <td>${r.number}</td><td>${r.phase}</td><td><strong>R${r.group}</strong></td>
+  <td>${r.number}</td><td>${r.phase}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
   <td>${r.state}</td><td>${formatDate(parseDate(r.start))}</td>
   <td>${formatDate(parseDate(r.end))}</td><td>${r.days}</td>
   <td>${formatDate(parseDate(r.start))} → ${r.codingEnd===LAST_DATE?"31/12/9999":formatDate(parseDate(r.codingEnd))}</td>
@@ -543,7 +564,7 @@ function openPreview(){
                 (ref.referenceDate || parseDate(p.startDate));
 
 
- const last=codingRows[codingRows.length-1];
+ const last=codingRows.filter(r=>r.state!=="Remplacement").at(-1);
  paper.innerHTML=`
   <div class="print-head">
    <div class="print-brand">SONATRACH</div>
@@ -662,6 +683,10 @@ function restoreSettings(){
 }
 
 /* Événements */
+const replacementToggle=document.getElementById("replacementEnabled");
+const replacementFields=document.getElementById("replacementFields");
+replacementToggle.addEventListener("change",()=>{replacementFields.style.display=replacementToggle.checked?"grid":"none";});
+replacementFields.style.display=replacementToggle.checked?"grid":"none";
 const continueToggle=document.getElementById("continueProgram");
 const continueFields=document.getElementById("continueFields");
 continueToggle.addEventListener("change",()=>{
