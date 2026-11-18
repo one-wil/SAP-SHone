@@ -466,6 +466,8 @@ function circularDistance(group,previousGroup){
  if(!Number.isInteger(previous)||previous<1||previous>8)return group;
  return mod(group-previous,8)||8;
 }
+/* Le groupe opposé est situé à quatre positions dans le cycle R1..R8. */
+function oppositeGroup(group){return mod(Number(group)-1+4,8)+1;}
 function findNextWorkingGroupInRotation(date,previousGroup){
  const candidates=[];
  for(let group=1;group<=8;group++){
@@ -532,9 +534,10 @@ function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
   let candidates=[];
   if(first&&preferredGroup){
    const preferred=getGroupStatus(preferredGroup,date);
+   // Lorsqu'un groupe opposé est imposé (cas 0 travail), ne pas basculer
+   // silencieusement vers un autre groupe.
    if(preferred&&preferred.status==="rest")candidates=[preferred];
-  }
-  if(!candidates.length){
+  }else{
    for(let group=1;group<=8;group++){
     const status=getGroupStatus(group,date);
     if(status&&status.status==="rest")candidates.push(status);
@@ -544,14 +547,12 @@ function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
    circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
   for(const candidate of candidates){
    const duration=Math.min(remaining,candidate.daysRemaining);
-   if(duration!==candidate.daysRemaining)continue;
    const end=addDays(date,duration-1),nextDate=addDays(end,1);
-   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"rest",partial:false};
-   if(duration===remaining){
-    const nextStatus=getGroupStatus(candidate.group,nextDate);
-    if(nextStatus&&nextStatus.status==="work")return [...path,segment];
-    continue;
-   }
+   const partial=duration<candidate.daysRemaining;
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"rest",partial};
+   // يسمح بانتهاء فترة الراحة داخل مرحلة المجموعة، دون اشتراط انتظار
+   // انتقالها الكامل إلى العمل؛ وهذا ضروري للمدد الأقل من أربعة أسابيع.
+   if(duration===remaining)return [...path,segment];
    const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
    if(result)return result;
   }
@@ -607,7 +608,9 @@ function calculateEmployee(){
  const ww=Number(document.getElementById("workWeeks").value),rw=Number(document.getElementById("restWeeks").value)/7,alt=WORK_DAYS===29,cont=document.getElementById("continueProgram").checked;
  if(ww===0&&rw===0){out.innerHTML='<div class="notice error">Les durées de travail et de repos ne peuvent pas être toutes les deux égales à zéro.</div>';lastEmployeePlan=null;return;}
  const referenceStatus=getGroupStatus(startGroup,startDate);
- if((ww>0&&referenceStatus.status!=="work")||(ww===0&&referenceStatus.status!=="rest")){out.innerHTML=`<div class="notice error">${ww===0?`Le groupe R${startGroup} doit être en période de repos puisque la durée de travail est réglée sur zéro.`:`Le groupe R${startGroup} doit être en période de travail à la date de référence.`}</div>`;return;}
+ const initialRestGroup=ww===0?oppositeGroup(startGroup):null;
+ const initialRestStatus=ww===0?getGroupStatus(initialRestGroup,startDate):null;
+ if((ww>0&&referenceStatus.status!=="work")||(ww===0&&(!initialRestStatus||initialRestStatus.status!=="rest"))){out.innerHTML=`<div class="notice error">${ww===0?`Le groupe opposé R${initialRestGroup} doit être en période de repos pour inverser le groupe R${startGroup}.`:`Le groupe R${startGroup} doit être en période de travail à la date de référence.`}</div>`;return;}
  const make=(date,group,w,r)=>{
   const wd=w===0?0:(w*7+(alt?1:0)),rd=r===0?0:(r*7-(alt?1:0));
   if(rd<0||rd>56)return{error:"Durée de repos invalide."};
@@ -616,7 +619,12 @@ function calculateEmployee(){
   else{work=calculateWorkPlan(date,group,wd);if(work.error)return{error:work.error};restStart=addDays(work.endDate,1);}
   let rest;
   if(rd===0){rest={segments:[],matches:[],endDate:addDays(restStart,-1)};}
-  else{const lastWorkGroup=work.segments.length?work.segments[work.segments.length-1].group:null;rest=calculateRestPlan(restStart,rd,lastWorkGroup);if(rest.error)return{error:rest.error};}
+  else{
+   const lastWorkGroup=work.segments.length?work.segments[work.segments.length-1].group:null;
+   const preferredRestGroup=wd===0?oppositeGroup(group):lastWorkGroup;
+   rest=calculateRestPlan(restStart,rd,preferredRestGroup);
+   if(rest.error)return{error:rest.error};
+  }
   return{work,rest,workDays:wd,restDays:rd,restStart};
  };
  const ps=[make(startDate,startGroup,ww,rw)];
