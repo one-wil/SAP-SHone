@@ -502,14 +502,11 @@ function calculateWorkPlan(startDate,startGroup,requiredDays){
    circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
   for(const candidate of candidates){
    const duration=Math.min(remaining,candidate.daysRemaining);
-   if(duration!==candidate.daysRemaining)continue;
    const end=addDays(date,duration-1),nextDate=addDays(end,1);
-   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"work"};
-   if(duration===remaining){
-    const nextStatus=getGroupStatus(candidate.group,nextDate);
-    if(nextStatus&&nextStatus.status==="rest")return [...path,segment];
-    continue;
-   }
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"work",partial:duration<candidate.daysRemaining};
+   // La dernière phase peut être partielle : une durée inférieure à 4 semaines
+   // ne doit pas obligatoirement atteindre la relève complète du groupe.
+   if(duration===remaining)return [...path,segment];
    const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
    if(result)return result;
   }
@@ -534,10 +531,11 @@ function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
   let candidates=[];
   if(first&&preferredGroup){
    const preferred=getGroupStatus(preferredGroup,date);
-   // Lorsqu'un groupe opposé est imposé (cas 0 travail), ne pas basculer
-   // silencieusement vers un autre groupe.
    if(preferred&&preferred.status==="rest")candidates=[preferred];
-  }else{
+  }
+  // Si le groupe préféré n'est pas au repos à cette date, rechercher les
+  // groupes réellement au repos au lieu d'échouer avec une séquence vide.
+  if(!candidates.length){
    for(let group=1;group<=8;group++){
     const status=getGroupStatus(group,date);
     if(status&&status.status==="rest")candidates.push(status);
