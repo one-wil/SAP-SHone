@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f58220">
+<title>SH-ONE | ERP-SAP | Plan de Roulement</title>
+<style>
+:root{
+ --orange:#f58220;--green:#075b43;--green2:#0b7657;--light:#eaf5ef;
+ --gold:#d6aa45;--red:#b83232;--text:#18352b;--muted:#687b73;
+ --border:#dce8e1;--blue:#07549a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,"Microsoft YaHei","Noto Sans CJK SC",sans-serif;background:#f3f7f4;color:var(--text)}
+.brand-header{padding:17px 12px 12px;text-align:center}
+.product-box{max-width:650px;margin:9px auto 0;padding:18px 13px;border-radius:14px;background:transparent;color:#000;box-shadow:none}
+.sonatrach-name{color:#000;font-size:34px;font-weight:900;letter-spacing:2px;margin:0 0 15px}
+.product-info{background:linear-gradient(135deg,#063c70,#0873b8);color:white;border-radius:10px;padding:15px 10px}
+.product-name{font-size:25px;font-weight:900;letter-spacing:2px;margin:0}
+.product-erp{font-size:16px;font-weight:bold;letter-spacing:3px;margin-top:5px}
+.product-caption{font-size:15px;color:#e2f1ff;margin-top:10px;letter-spacing:1px;font-weight:bold}
+.container{max-width:1100px;margin:15px auto;padding:0 12px}
+.card{background:white;border:1px solid var(--border);border-radius:15px;padding:18px;margin-bottom:16px;box-shadow:0 8px 25px rgba(0,50,30,.07)}
+.card h2{color:var(--green);font-size:17px;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
+.automatic-field{background:#f0f8f2;border:1px solid #d7eadc;border-radius:10px;padding:9px}.automatic-field input{background:#eaf5ed;border-color:#d4e8d9;color:#286347;font-weight:700}.automatic-field small,.field-hint{display:block;margin-top:5px;font-size:10px;color:#62816e}
+input,select{width:100%;padding:12px;border:1px solid #cbdcd2;border-radius:9px;background:white;color:var(--text);font-size:14px;outline:none}
+input:focus,select:focus{border-color:var(--green2);box-shadow:0 0 0 3px #0b76571a}
+.hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.7}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+button{border:0;border-radius:9px;padding:12px 18px;cursor:pointer;font-weight:bold;font-size:13px}
+.primary{background:var(--green);color:white}.secondary{background:#e7f1eb;color:var(--green)}
+.gold{background:#f5e8c8;color:#70500d}.danger{background:#fae8e8;color:var(--red)}
+.blue-btn{background:var(--blue);color:white}button:hover{filter:brightness(.96)}
+.notice{padding:12px;border-radius:9px;font-size:13px;line-height:1.9;margin-top:12px}
+.notice.info{background:#edf5f0;color:#245541}.notice.error{background:#fff0f0;color:#a32929}
+.notice.success{background:#e8f6ed;color:#17613d}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px;font-size:13px}
+th,td{border:1px solid var(--border);padding:11px 9px;text-align:center;white-space:nowrap}
+th{background:#eaf3ed;color:var(--green)}tr:nth-child(even) td{background:#fafcfb}
+.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:bold}
+.status.work{background:#e1f4e8;color:#087344}.status.rest{background:#fff0d7;color:#a66a13}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:15px}
+.stat{padding:14px;border-radius:11px;background:#f0f6f2;text-align:center}
+.stat small{display:block;color:var(--muted);margin-bottom:7px}.stat strong{font-size:16px;color:var(--green)}
+.phase-orbit{display:inline-flex;vertical-align:top;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;width:190px;min-height:230px;margin:10px 9px;padding:15px 10px;background:#f5f9f6;border:1px solid #e0ebe4;border-radius:18px;text-align:center;box-sizing:border-box}
+.phase-orbit-ring{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--orbit-color) var(--phase-progress),#e5ece7 0);position:relative;box-shadow:0 8px 22px #123d2418,inset 0 0 0 1px #ffffffb8;transition:transform .22s ease,box-shadow .22s ease}
+.phase-orbit-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:linear-gradient(145deg,#fff,#f8fbf9);box-shadow:inset 0 0 0 1px #e8eee9,0 2px 8px #123d240c}
+.phase-orbit-core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;line-height:1.18}
+.phase-orbit-core small{font-size:10px;color:#718078}
+.phase-orbit-core strong{font-size:23px;color:var(--green);margin:3px 0}
+.phase-orbit-core b{font-size:22px;color:var(--orbit-color);margin-top:2px}
+.phase-work{--orbit-color:#07845b}.phase-rest{--orbit-color:#d0a43e}.phase-orbit:hover{transform:translateY(-3px);box-shadow:0 12px 25px #123d2420}.phase-orbit-details span{display:block}.phase-state{letter-spacing:.8px;font-size:11px}
+.phase-orbit-details{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#52665b;line-height:1.45}
+.phase-state{font-weight:800;color:var(--orbit-color);letter-spacing:.4px}
+@media(max-width:600px){.phase-orbit{width:100%;min-width:0;margin:0;padding:12px 5px}.phase-orbit-ring{width:112px;height:112px}.phase-orbit-core strong{font-size:20px}}
+.phase-pair{display:grid;grid-template-columns:repeat(2,minmax(0,190px));gap:12px;align-items:stretch;margin:8px 0 14px;max-width:410px}
+.replacement-orbit{--replacement-color:#2874a6;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;min-width:0;min-height:230px;padding:15px 9px;background:linear-gradient(160deg,#f2f8fc,#f8fbfd);border:1px solid #d8e7f0;border-radius:18px;text-align:center;box-shadow:0 5px 16px #164b6810}
+.replacement-orbit.r{--replacement-color:#b78322;background:linear-gradient(160deg,#fff9ec,#fffdf8);border-color:#f0e3c7}
+.replacement-orbit-ring{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--replacement-color) 50%,#e5ece7 0);position:relative;box-shadow:0 8px 22px #123d2418,inset 0 0 0 1px #ffffffb8}
+.replacement-orbit-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:linear-gradient(145deg,#fff,#f8fbf9);box-shadow:inset 0 0 0 1px #e8eee9}
+.replacement-orbit-core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.replacement-orbit-core small{font-size:10px;color:#718078}.replacement-orbit-core strong{font-size:24px;color:var(--replacement-color);margin:4px 0}.replacement-orbit-core b{font-size:21px;color:var(--replacement-color)}
+.replacement-orbit-details{display:flex;flex-direction:column;gap:4px;font-size:10px;color:#52665b;line-height:1.45}.replacement-orbit-label{font-size:11px;font-weight:900;letter-spacing:.5px;color:var(--replacement-color)}
+@media(max-width:600px){.phase-pair{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:410px}.replacement-orbit{min-height:210px;padding:12px 5px}.replacement-orbit-ring{width:112px;height:112px}.replacement-orbit-core strong{font-size:21px}}
+.segment{border-left:4px solid var(--green2);background:#f5f9f6;border-radius:8px;padding:13px;margin:10px 0;line-height:1.9;font-size:13px}
+.segment.rest-segment{border-color:var(--gold)}.empty{color:var(--muted);text-align:center;padding:20px;font-size:13px}
+.mini-title{font-size:14px;color:var(--green);font-weight:bold;margin:0 0 10px}
+.code-summary{background:#f3f8f4;border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:13px}
+
+
+/* Comparaison personnelle entre les rotations */
+.rotation-compare{margin-top:18px;padding:14px;border:1px solid #d8e6dd;border-radius:12px;background:#fff}
+.compare-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.compare-heading>div{display:flex;flex-direction:column;gap:4px}.compare-heading strong{font-size:14px;color:var(--green)}.compare-heading small{font-size:10px;color:var(--muted)}
+.compare-heading label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:bold;color:var(--green)}.compare-heading select{width:auto;min-width:76px;padding:7px 9px;font-size:12px}
+.my-rotation-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border-radius:10px;background:linear-gradient(110deg,#eaf5ef,#f8fbf9);margin-bottom:12px}
+.my-rotation-badge{padding:7px 10px;border-radius:7px;background:var(--green);color:white;font-size:11px;font-weight:900;letter-spacing:.4px}
+.my-rotation-summary>div:nth-child(2){display:flex;flex-direction:column;gap:4px;flex:1}.my-rotation-summary>div:nth-child(2) strong{font-size:12px;color:var(--green)}.my-rotation-summary>div:nth-child(2) span{font-size:11px;color:var(--muted)}
+.compare-count{display:flex;align-items:center;gap:7px;padding:5px 9px;border-radius:8px;background:#fff}.compare-count b{font-size:20px;color:var(--green)}.compare-count small{font-size:9px;line-height:1.3;color:var(--muted)}
+.compare-table{min-width:690px}.compare-match{display:inline-block;padding:4px 7px;border-radius:20px;font-size:10px;font-weight:bold}.compare-match.same{background:#e2f4e8;color:#087344}.compare-match.different{background:#fff0d7;color:#98620e}
+.compare-insight{margin-top:10px;padding:10px;border-radius:8px;background:#f4f7f5;color:#52675d;font-size:10px;line-height:1.7}
+@media(max-width:600px){.rotation-compare{padding:10px}.my-rotation-summary{gap:8px}.compare-heading{align-items:flex-start}.compare-heading label{width:100%;justify-content:space-between}}
+
+/* Tableau circulaire professionnel des huit rotations */
+.rotation-dashboard{margin-top:18px;padding:16px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,#fbfdfb,#f1f7f3)}
+.rotation-wheel-wrap{width:min(100%,430px);margin:8px auto 18px;display:grid;place-items:center}.rotation-wheel{display:block;width:100%;height:auto;max-width:430px;overflow:visible}.wheel-node.is-mine{filter:drop-shadow(0 2px 4px #f5822060)}
+
+.rotation-dashboard-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.rotation-dashboard-head strong{color:var(--green);font-size:14px}
+.rotation-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.rotation-legend span{display:inline-flex;align-items:center;gap:5px}
+.rotation-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rotation-legend .work-dot{background:#07845b}.rotation-legend .rest-dot{background:#d6aa45}
+.rotation-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.rotation-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;padding:15px 9px 12px;border:1px solid #e1ebe4;border-radius:12px;background:#fff;box-shadow:0 4px 13px rgba(0,50,30,.045);min-width:0}
+.rotation-card.is-working{border-top:3px solid #07845b}.rotation-card.is-resting{border-top:3px solid #d6aa45}
+.rotation-donut{--phase-angle:0deg;position:relative;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(from -90deg,#07845b 0 var(--work-share),#d6aa45 var(--work-share) 100%);box-shadow:inset 0 0 0 2px #ffffffa8,0 7px 18px #123d2418;transition:transform .22s ease,box-shadow .22s ease}.rotation-card:hover .rotation-donut{transform:scale(1.035);box-shadow:inset 0 0 0 2px #ffffffa8,0 10px 23px #123d2424}
+.rotation-donut:before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff;box-shadow:0 2px 8px #153b2912}
+.rotation-donut:after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#173e30;border:2px solid #fff;left:50%;top:50%;transform:rotate(var(--phase-angle)) translateY(-51px) translate(-50%,-50%);transform-origin:0 0;box-shadow:0 1px 4px #0004}
+.rotation-center{position:relative;z-index:1;text-align:center;line-height:1.25}
+.rotation-center b{display:block;color:var(--green);font-size:23px;letter-spacing:.3px}
+.rotation-center small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.rotation-status{font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px}
+.rotation-status.work{background:#e2f4e9;color:#087344}.rotation-status.rest{background:#fff1d8;color:#98620e}
+.rotation-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:100%;text-align:center}
+.rotation-meta div{padding:6px 3px;border-radius:7px;background:#f5f8f6}
+.rotation-meta small{display:block;font-size:9px;color:var(--muted);margin-bottom:3px}
+.rotation-meta b{font-size:11px;color:var(--text)}
+.rotation-next{font-size:10px;color:var(--muted);text-align:center;line-height:1.5}
+.rotation-scale{width:100%;height:5px;border-radius:9px;background:#edf1ee;overflow:hidden}
+.rotation-scale span{display:block;height:100%;border-radius:9px;background:#07845b}
+.rotation-card.is-resting .rotation-scale span{background:#d6aa45}
+.rotation-footnote{font-size:10px;color:var(--muted);line-height:1.7;margin:12px 2px 0}
+@media(max-width:760px){.rotation-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.rotation-card{padding:12px 7px}.rotation-donut{width:100px;height:100px}.rotation-donut:after{transform:rotate(var(--phase-angle)) translateY(-45px) translate(-50%,-50%)}}
+@media(min-width:761px) and (max-width:950px){.rotation-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.wheel-visual-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(230px,.82fr);align-items:center;gap:18px;max-width:820px;margin:8px auto 16px;padding:14px;border:1px solid #e1ebe5;border-radius:20px;background:linear-gradient(145deg,#fbfefc,#f3f8f5);box-shadow:0 10px 28px rgba(13,66,42,.07)}
+.wheel-visual-layout .rotation-wheel-wrap{margin:0 auto;width:min(100%,390px)}
+.replacement-indicator{position:relative;overflow:hidden;border:1px solid #d8e8df;border-radius:17px;background:#fff;box-shadow:0 7px 20px rgba(16,65,43,.07)}
+.replacement-indicator:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(#0a8a60,#d3a33b)}
+.replacement-indicator-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px 10px;border-bottom:1px solid #edf2ee}
+.replacement-indicator-title{font-size:12px;font-weight:950;color:#164d38;letter-spacing:.35px}
+.replacement-indicator-tag{padding:4px 9px;border-radius:999px;background:#e8f5ed;color:#087344;font-size:9px;font-weight:900}
+.replacement-period{display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center;padding:11px 14px;border-bottom:1px solid #f0f3f1}
+.replacement-period:last-of-type{border-bottom:0}
+.replacement-code{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;font-size:12px;font-weight:950;box-shadow:inset 0 0 0 2px #fff,0 0 0 1px #dce8e1}
+.replacement-code.t{background:#dff3e8;color:#087344}.replacement-code.r{background:#fff0d3;color:#98620e}
+.replacement-period-name{font-size:10px;font-weight:900;color:#52665c;margin-bottom:4px}
+.replacement-period-date{font-size:11px;font-weight:900;color:#193f30;font-variant-numeric:tabular-nums}
+.replacement-period-empty{font-size:10px;color:#89958e;font-weight:700}
+.replacement-indicator-foot{padding:9px 14px;background:#f8fbf9;color:#78877f;font-size:9px;line-height:1.55}
+.replacement-indicator-pending{padding:18px 15px;text-align:center;color:#75857c;font-size:11px;line-height:1.7}
+@media(max-width:650px){.wheel-visual-layout{grid-template-columns:1fr;gap:12px;padding:10px}.wheel-visual-layout .rotation-wheel-wrap{max-width:340px}.replacement-indicator{max-width:430px;width:100%;margin:0 auto}}
+.last-code td{background:#e8f6ed!important;color:#17613d;font-weight:bold}
+footer{text-align:center;padding:22px 10px;color:#63766d;font-size:11px;line-height:2}
+footer strong{color:var(--green)}
+.cycle-option{margin-top:15px;padding:14px;border:1px solid var(--border);border-radius:11px;background:#f7faf8}
+.cycle-option-title{font-size:13px;font-weight:bold;color:var(--green);margin-bottom:11px}
+.cycle-choice{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:bold;color:var(--text)}
+.cycle-choice input{width:19px;height:19px;accent-color:var(--green);cursor:pointer}
+.cycle-description{margin-top:10px;padding:10px;border-radius:8px;background:#eaf3ed;color:var(--green);font-size:13px;font-weight:bold}
+.cycle-description.active{background:#e9f1fc;color:#07549a}
+.preview-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(12,28,22,.78);padding:12px}
+.preview-overlay.open{display:flex;align-items:center;justify-content:center}
+.preview-window{width:100%;max-width:1000px;height:95vh;background:#f3f5f4;border-radius:15px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 15px 50px #0005}
+.preview-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 16px;background:#075b43;color:white}
+.preview-toolbar strong{font-size:14px}.preview-toolbar .actions{margin:0}
+.preview-content{flex:1;overflow:auto;padding:20px}
+.preview-paper{background:white;width:100%;max-width:1000px;aspect-ratio:auto;min-height:0;height:auto;margin:0 auto;padding:2.2%;box-shadow:0 2px 14px #0001;color:#18352b;overflow:visible;transform-origin:top center;}
+.preview-paper h1{text-align:center;color:var(--green);font-size:clamp(12px,2vw,22px)}
+.preview-paper h2{color:var(--green);font-size:clamp(9px,1.4vw,15px);border-bottom:1px solid #dce8e1;padding-bottom:4px}
+.preview-paper .preview-product{text-align:center;background:transparent;color:#000;padding:5px;border-radius:8px;margin-bottom:8px}
+.preview-paper .preview-product .preview-info{background:#07549a;color:white;border-radius:8px;padding:13px;margin-top:12px}
+.preview-paper table{min-width:0;width:100%;font-size:clamp(6px,.82vw,10px);table-layout:fixed;border-collapse:collapse}
+.preview-paper th,.preview-paper td{padding:clamp(2px,.45vw,5px) 2px;white-space:normal;overflow-wrap:anywhere}
+.preview-paper .segment{break-inside:avoid}
+.preview-footer{text-align:center;font-size:clamp(6px,.8vw,9px);color:#65776e;margin-top:8px;border-top:1px solid #ddd;padding-top:5px}
+@media(max-width:600px){
+ .sonatrach-name{font-size:29px}.product-name{font-size:22px}.product-caption{font-size:13px}
+ .card{padding:13px}.actions button{flex:1}.preview-overlay{padding:5px}
+ .preview-window{height:98vh}.preview-paper{padding:14px;overflow:visible}.preview-content{padding:8px;overflow:auto}.preview-toolbar{padding:10px}
+}
+@page{size:A4 landscape;margin:5mm}
+.print-head{text-align:center;margin-bottom:3mm}
+.print-brand{font-size:19px;font-weight:900;letter-spacing:2px;color:#000;line-height:1}
+.print-product{display:inline-block;background:#07549a;color:#fff;padding:1.2mm 8mm;border-radius:1mm;font-size:9pt;margin-top:1mm}
+.print-product strong{font-size:12pt}
+.print-title{font-weight:800;color:#075b43;font-size:10pt;margin-top:1.5mm}
+.print-block{margin:3mm 0}
+.print-block-title{font-size:8pt;font-weight:800;color:#075b43;border-bottom:1px solid #8da99a;padding-bottom:.6mm;margin-bottom:1mm}
+.print-data-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2mm 3mm;background:#f2f7f3;border:1px solid #cbd8d0;padding:2.5mm;font-size:7pt}
+.print-data-grid span{white-space:normal;overflow-wrap:anywhere}
+.print-table{width:100%;min-width:0!important;table-layout:fixed;border-collapse:collapse;font-size:6.5pt;line-height:1.05}
+.print-table th,.print-table td{border:1px solid #b9c9bf;padding:1.2mm .8mm;text-align:center;white-space:normal;overflow-wrap:anywhere}
+.print-table th{background:#e8f1eb;color:#174b36;font-weight:800}
+.print-table tbody tr:nth-child(even){background:#f8fbf9}
+.print-summary{font-size:6.5pt;margin-top:2mm;padding:1.8mm;background:#f2f7f3;border:1px solid #d5e1d9}
+.print-groups{font-size:6.2pt}
+.print-groups th,.print-groups td{padding:.7mm}
+.print-warning{font-size:6.5pt;color:#9c2424;margin-top:1mm}
+.print-bottom{margin-top:3mm;text-align:center;font-size:6.5pt}
+.print-footer{border-top:1px solid #cbd8d0;margin-top:2mm;padding-top:1.5mm;font-size:6pt;color:#53675d}
+@media print{
+ html,body{width:100%;height:auto;margin:0!important;padding:0!important;background:#fff!important}
+ body>*:not(#previewOverlay){display:none!important}
+ #previewOverlay{display:block!important;position:static!important;inset:auto!important;padding:0!important;margin:0!important;background:#fff!important}
+ .preview-window{display:block!important;width:100%!important;height:auto!important;max-width:none!important;overflow:visible!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
+ .preview-toolbar{display:none!important}
+ .preview-content{display:block!important;overflow:visible!important;padding:0!important;margin:0!important}
+ .preview-paper{display:block!important;width:287mm!important;max-width:287mm!important;height:200mm!important;min-height:200mm!important;max-height:200mm!important;aspect-ratio:auto!important;overflow:hidden!important;margin:0!important;padding:4mm!important;box-shadow:none!important;color:#14251e!important;font-family:Arial,Tahoma,sans-serif!important;font-size:7pt!important;line-height:1.08!important}
+ .preview-paper *{box-sizing:border-box!important;line-height:1.08!important;max-width:100%}
+ .print-head,.print-block,.print-bottom{break-inside:avoid;page-break-inside:avoid}
+ .print-table tr{break-inside:avoid;page-break-inside:avoid}
+}
+
+.post-calc-section{display:none}
+.post-calc-section.is-visible{display:block}
+
+/* Suppression des textes explicatifs */
+.hint,.notice.info,.rotation-footnote,.compare-insight,.cycle-description{display:none!important}
+
+
+</style>
+</head>
+<body>
+<header class="brand-header">
+ <div class="product-box">
+  <div class="sonatrach-name">SONATRACH</div>
+  <div class="product-info"><div class="product-name">SH-ONE</div><div class="product-erp">ERP-SAP</div><div class="product-caption">Plan de Roulement</div></div>
+ </div>
+</header>
+<div class="container">
+<section class="card">
+ <h2>1. Paramètres de référence</h2>
+ <div class="notice info">Veuillez sélectionner un groupe de référence et saisir la date de début de sa première semaine de travail. Le système calculera automatiquement la situation des huit groupes.</div>
+ <div class="field"><label>Nom ou matricule de l’agent (facultatif)</label><input id="employeeName" type="text" placeholder="Nom ou matricule"></div>
+ <div class="cycle-option">
+  <div class="cycle-option-title">Sélection du cycle de roulement</div>
+  <label class="cycle-choice"><input type="checkbox" id="cycle2927">Activer le cycle 29 jours de travail / 27 jours de repos</label>
+  <div id="cycleDescription" class="cycle-description">Cycle actuel : 28 jours de travail + 28 jours de repos</div>
+  <div class="hint">Case non cochée : cycle standard 28/28. Case cochée : cycle alternatif 29/27. Le cycle choisi s’applique aux huit groupes.</div>
+ </div>
+ <div class="grid" style="margin-top:15px">
+  <div class="field"><label>Date de situation / début de programme</label><input type="date" id="referenceDate"></div>
+  <div class="field automatic-field"><label>Groupe déterminé automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 17/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
+  <div class="field automatic-field"><label>Jour de la semaine · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date choisie</small></div>
+  <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
+   <option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4" selected>4 semaines</option>
+   <option value="5">5 semaines</option><option value="6">6 semaines</option><option value="7">7 semaines</option><option value="8">8 semaines</option>
+  </select><small id="workDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+  <div class="field"><label>Nombre de semaines de repos</label><select id="restWeeks"></select><small id="restDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+ </div>
+ <div class="cycle-option" style="margin-top:14px">
+  <label class="cycle-choice"><input type="checkbox" id="continueProgram">Continuer — ajouter un deuxième programme complémentaire</label>
+  <div id="continueFields" class="grid" style="display:none;margin-top:13px">
+   <div class="field"><label>Programme 2 — Nombre de semaines de travail</label><select id="workWeeks2"><option value="0">0 semaine(s)</option><option value="1">1 semaine(s)</option><option value="2">2 semaine(s)</option><option value="3">3 semaine(s)</option><option value="4" selected>4 semaine(s)</option><option value="5">5 semaine(s)</option><option value="6">6 semaine(s)</option><option value="7">7 semaine(s)</option><option value="8">8 semaine(s)</option></select></div>
+   <div class="field"><label>Programme 2 — Nombre de semaines de repos</label><select id="restWeeks2"></select></div>
+  </div>
+ </div>
+ <div class="cycle-option" style="margin-top:14px">
+  <label class="cycle-choice" style="display:block;margin-bottom:10px"><input type="checkbox" id="replacementMasterEnabled">Remplacements exceptionnels</label>
+  <div id="replacementOptions" class="grid" style="display:none;gap:12px">
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementTEnabled">Remplacement T — après le travail</label><label>Durée du remplacement T</label><select id="replacementTWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRStartEnabled">Replacement R : Absence Infotype 2001 — au début du premier travail</label><label>Durée de l'absence (début du travail)</label><select id="replacementRStartWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du premier jour du travail du Programme 1.</small></div>
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementREndEnabled">Replacement R : Absence Infotype 2001 — après le repos</label><label>Durée de l'absence (après repos)</label><select id="replacementREndWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
+  </div>
+ </div>
+ <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
+ <div id="referenceMessage"></div>
+</section>
+<section class="card post-calc-section">
+ <h2>4. Planification du travail et des périodes de repos</h2>
+ <div id="employeeResult"></div>
+</section>
+<section class="card post-calc-section" id="codingSummaryCard">
+ <h2>2. Récapitulatif des codifications de l’agent</h2>
+ <div class="notice info">Ce tableau présente les groupes successifs d’affectation de l’agent, avec les dates de début et de fin de chaque codification. La dernière codification reste ouverte jusqu’au 31/12/9999.</div>
+ <div id="codingSummary"><div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications.</div></div>
+</section>
+<section class="card post-calc-section"><h2>3. Tableau de situation de ma rotation par date</h2><div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div><div id="groupsResult" class="empty">Renseignez les paramètres de référence puis cliquez sur « Calculer le plan complet ».</div></section>
+<section class="card post-calc-section">
+ <h2>5. Historique des codifications enregistrées</h2>
+ <div class="hint">Lorsqu’une nouvelle codification est enregistrée, la précédente prend fin la veille de la nouvelle date de début. La dernière codification ouverte est fixée au 31/12/9999.</div>
+ <div id="recordsResult" class="empty">Aucune codification enregistrée.</div>
+ <div class="actions no-print"><button class="secondary" onclick="saveCurrentRecord()">Enregistrer le plan</button><button class="gold" onclick="exportCSV()">Exporter l’historique CSV</button><button class="gold" onclick="exportCodingSummary()">Exporter le récapitulatif CSV</button><button class="blue-btn" onclick="openPreview()">Aperçu avant impression</button><button class="secondary" onclick="printCodingSummary()">Imprimer directement</button><button class="danger" onclick="clearRecords()">Supprimer l’historique</button></div>
+ <div class="hint">Les données sont enregistrées localement sur cet appareil uniquement.</div>
+</section>
+</div>
+<footer><strong>Developer: BENAKRAB AHCENE</strong><br>Société SONATRACH<br>ERP SAP</footer>
+<div class="preview-overlay" id="previewOverlay">
+ <div class="preview-window">
+  <div class="preview-toolbar"><strong>Aperçu avant impression</strong><div class="actions"><button class="gold" onclick="printPreview()">Imprimer</button><button class="danger" onclick="closePreview()">Fermer l’aperçu ✕</button></div></div>
+  <div class="preview-content"><div class="preview-paper" id="previewPaper"></div></div>
+ </div>
+</div>
+<script>
+"use strict";
+const CYCLE_DAYS=56;
+const LAST_DATE="9999-12-31";
+let WORK_DAYS=28,REST_DAYS=28,currentGroups=null,lastEmployeePlan=null,currentCheckDate=null;
+
+/* Cycle 28/28 ou 29/27 appliqué aux huit groupes */
+function applyCycleSelection(){
+ const enabled=document.getElementById("cycle2927").checked;
+ WORK_DAYS=enabled?29:28;REST_DAYS=enabled?27:28;
+ const description=document.getElementById("cycleDescription");
+ if(enabled){description.textContent="Cycle des groupes : 29 jours de travail + 27 jours de repos. La durée du programme agent est déterminée par les semaines sélectionnées.";description.classList.add("active");}
+ else{description.textContent="Cycle appliqué aux huit groupes : 28 jours de travail + 28 jours de repos";description.classList.remove("active");}
+ localStorage.setItem("rotation_cycle2927",enabled?"1":"0");
+ updateRestOptions();
+ updateDurationHints();
+}
+function updateDurationHints(){
+ const w=Number(document.getElementById("workWeeks").value);
+ const r=Number(document.getElementById("restWeeks").value)/7;
+ const workDays=w*7,restDays=r*7;
+ document.getElementById("workDurationHint").textContent=`${workDays} jours — ${w} semaine(s) sélectionnée(s)`;
+ document.getElementById("restDurationHint").textContent=`${restDays} jours — ${r} semaine(s) sélectionnée(s)`;
+}
+function updateRestOptions(){
+ const select=document.getElementById("restWeeks");
+ const hint=document.getElementById("restDurationHint");
+ const previous=select.value;
+ if(document.getElementById("cycle2927").checked){
+  select.innerHTML='<option value="0">0 semaine</option>'+Array.from({length:8},(_,i)=>`<option value="${(i+1)*7}">${i+1} semaine — ${(i+1)*7} jours</option>`).join("");
+  select.value=previous==="0"?"0":(previous && Number(previous)>=7 && Number(previous)<=56 && Number(previous)%7===0 ? previous : "28");
+  hint.textContent="Durée calculée automatiquement selon le cycle 29/27.";
+ }else{
+  select.innerHTML='<option value="0">0 semaine</option><option value="7">1 semaine</option><option value="14">2 semaines</option><option value="21">3 semaines</option><option value="28">4 semaines</option><option value="35">5 semaines</option><option value="42">6 semaines</option><option value="49">7 semaines</option><option value="56">8 semaines</option>';
+  select.value=previous==="0"?"0":(["7","14","21","28","35","42","49","56"].includes(previous)?previous:"28");
+  hint.textContent="Durée calculée automatiquement selon le cycle 28/28.";
+ }
+ updateSecondRestOptions();
+ updateDurationHints();
+}
+function updateSecondRestOptions(){
+ const a=document.getElementById("restWeeks"),b=document.getElementById("restWeeks2");
+ if(!a||!b)return;const old=b.value;b.innerHTML=a.innerHTML;b.value=[...b.options].some(o=>o.value===old)?old:a.value;
+}
+/* Dates et outils */
+function parseDate(value){
+ if(!value)return null;const p=value.split("-").map(Number);if(p.length!==3)return null;
+ const d=new Date(Date.UTC(p[0],p[1]-1,p[2]));
+ if(d.getUTCFullYear()!==p[0]||d.getUTCMonth()!==p[1]-1||d.getUTCDate()!==p[2])return null;return d;
+}
+function formatDate(date){if(!date)return "";return String(date.getUTCDate()).padStart(2,"0")+"/"+String(date.getUTCMonth()+1).padStart(2,"0")+"/"+date.getUTCFullYear();}
+function inputDate(date){return date.getUTCFullYear()+"-"+String(date.getUTCMonth()+1).padStart(2,"0")+"-"+String(date.getUTCDate()).padStart(2,"0");}
+function addDays(date,days){const d=new Date(date.getTime());d.setUTCDate(d.getUTCDate()+days);return d;}
+function daysBetween(a,b){return Math.round((b.getTime()-a.getTime())/86400000);}
+function mod(n,m){return((n%m)+m)%m;}
+function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+const DAY_NAMES={0:"Dimanche",1:"Lundi",2:"Mardi",3:"Mercredi",4:"Jeudi",5:"Vendredi",6:"Samedi"};
+
+/* Calcul des groupes */
+function getGroupStart(referenceGroup,referenceDate,groupNumber){return addDays(referenceDate,mod(groupNumber-referenceGroup,8)*7);}
+function buildGroups(referenceGroup,referenceDate){return Array.from({length:8},(_,i)=>({number:i+1,start:getGroupStart(referenceGroup,referenceDate,i+1)}));}
+function getGroupStatus(groupNumber,date){
+ if(!currentGroups)return null;const group=currentGroups.find(g=>g.number===groupNumber);if(!group)return null;
+ const phase=mod(daysBetween(group.start,date),CYCLE_DAYS);
+ if(phase<WORK_DAYS){const remaining=WORK_DAYS-phase;return{group:groupNumber,status:"work",week:Math.floor(phase/7)+1,phase,daysRemaining:remaining,nextChange:addDays(date,remaining)};}
+ const restPhase=phase-WORK_DAYS,remaining=REST_DAYS-restPhase;
+ return{group:groupNumber,status:"rest",week:Math.floor(restPhase/7)+1,phase,daysRemaining:remaining,nextChange:addDays(date,remaining)};
+}
+/* Référence fixe : du 17/10/2026 au 23/10/2026, R4 est en travail
+   durant sa première semaine. Le groupe change chaque samedi, mais le jour
+   affiché reste exactement celui de la date choisie. */
+const ANCHOR_DATE=parseDate("2026-10-17");
+const ANCHOR_GROUP=4;
+function resolveReference(date){
+ const day=date.getUTCDay();
+ const daysSinceSaturday=mod(day-6,7);
+ const weekStart=addDays(date,-daysSinceSaturday);
+ const weekOffset=Math.floor(daysBetween(ANCHOR_DATE,weekStart)/7);
+ const group=mod((ANCHOR_GROUP-1)+weekOffset,8)+1;
+ return{group,weekStart,selectedDay:day};
+}
+function updateReferenceDisplay(){
+ const date=parseDate(document.getElementById("referenceDate").value);
+ const groupDisplay=document.getElementById("referenceGroupDisplay");
+ const dayDisplay=document.getElementById("referenceDayDisplay");
+ if(!date){document.getElementById("referenceGroup").value=String(ANCHOR_GROUP);groupDisplay.value="À déterminer";dayDisplay.value="—";return;}
+ const resolved=resolveReference(date);
+ document.getElementById("referenceGroup").value=String(resolved.group);
+ groupDisplay.value=`R${resolved.group}`;
+ dayDisplay.value=DAY_NAMES[resolved.selectedDay];
+}
+function validateReference(){
+ const referenceDate=parseDate(document.getElementById("referenceDate").value);
+ if(!referenceDate)return{error:"Veuillez saisir une date."};
+ const resolved=resolveReference(referenceDate);
+ return{referenceGroup:resolved.group,referenceDate,cycleWeekStart:resolved.weekStart,selectedDay:resolved.selectedDay};
+}
+function calculateAll(){
+ const message=document.getElementById("referenceMessage");
+ try{
+  const v=validateReference();
+  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+  // Rebuild the eight rotations from the fixed reference before calculating the agent plan.
+  calculateGroups();
+  if(!currentGroups){message.innerHTML='<div class="notice error">تعذر إنشاء جدول المجموعات. تحقق من التاريخ ثم أعد المحاولة.</div>';return;}
+  calculateEmployee();
+  // Always reveal calculation output, including validation errors.
+  // Previously, errors were written into employeeResult while its parent section
+  // remained hidden, making the Calculate button appear not to work.
+  document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.add("is-visible"));
+  if(!lastEmployeePlan){
+   const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
+   if(employeeCard) employeeCard.classList.add("is-visible");
+   const errorText=document.getElementById("employeeResult").innerText.trim();
+   if(errorText) message.innerHTML += `<div class="notice error" role="alert"><strong>Plan de l’agent non généré :</strong><br>${escapeHTML(errorText)}</div>`;
+   if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
+  } else {
+   const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
+   if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+ }catch(error){
+  console.error("SH-ONE calculation error:",error);
+  message.innerHTML=`<div class="notice error">حدث خطأ أثناء الحساب: ${escapeHTML(error&&error.message?error.message:"خطأ غير محدد")}.</div>`;
+ }
+}
+function calculateGroups(){
+ applyCycleSelection();const v=validateReference(),message=document.getElementById("referenceMessage");
+ if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+ currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
+ const checkDate=parseDate(document.getElementById("checkDate").value)||v.referenceDate;renderGroups(checkDate);
+ message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}).<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
+ localStorage.setItem("rotation_reference",JSON.stringify({referenceGroup:v.referenceGroup,referenceDate:inputDate(v.referenceDate),referenceDay:v.selectedDay,checkDate:inputDate(checkDate)}));
+}
+function renderGroups(date){
+ if(!currentGroups)return;
+ currentCheckDate=new Date(date.getTime());
+ const rows=currentGroups.map(g=>{const s=getGroupStatus(g.number,date),cls=s.status==="work"?"work":"rest";return`<tr><td><strong>R${g.number}</strong></td><td><span class="status ${cls}">${s.status==="work"?"Travail":"Repos"}</span></td><td>${s.status==="work"?"Semaine "+s.week+" (travail)":"Semaine "+s.week+" (repos)"}</td><td>${s.daysRemaining} jours</td><td>${formatDate(s.nextChange)}</td></tr>`;}).join("");
+ const myGroup=Number(document.getElementById("referenceGroup").value||1);
+ const mine=getGroupStatus(myGroup,date);
+ const wheelNodes=currentGroups.map(g=>{
+  const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
+  const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=180+143*Math.cos(angle),cy=180+143*Math.sin(angle);
+  const fill=isWork?"#07845b":"#d6aa45",stroke=isMine?"#f58220":"#ffffff",radius=isMine?31:25;
+  const dayNumber=isWork?st.phase+1:st.phase-WORK_DAYS+1;
+  const dayLabel=dayNumber===1?"1er j":`${dayNumber}e j`;
+  return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}, ${dayLabel}">
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+5}" fill="none" stroke="${isMine?"#f58220":"#dce8e1"}" stroke-width="${isMine?4:1}"/>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
+   <text x="${cx.toFixed(1)}" y="${(cy-4).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?15:13}" font-weight="900">R${g.number}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+12).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?9:8}" font-weight="800">${dayLabel}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="#365448" font-size="10" font-weight="700">${isWork?"TRAVAIL":"REPOS"}</text>
+  </g>`;
+ }).join("");
+ const wheelMarkup=`<div class="rotation-wheel-wrap"><svg class="rotation-wheel" viewBox="0 0 360 360" role="img" aria-label="Position des huit rotations. Ma rotation R${myGroup} est entourée en orange.">
+  <circle cx="180" cy="180" r="143" fill="none" stroke="#dce8e1" stroke-width="2" stroke-dasharray="4 5"/>
+  <circle cx="180" cy="180" r="105" fill="#f5faf6" stroke="#dce8e1" stroke-width="2"/>
+  ${wheelNodes}
+  <circle cx="180" cy="180" r="78" fill="#fff" stroke="#e0ebe4" stroke-width="1.5"/>
+  <text x="180" y="158" text-anchor="middle" fill="#687b73" font-size="11" font-weight="700">MA ROTATION</text>
+  <text x="180" y="190" text-anchor="middle" fill="#075b43" font-size="29" font-weight="900">R${myGroup}</text>
+  <text x="180" y="211" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="12" font-weight="900">${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</text>
+  ${(()=>{const day=mine.status==="work"?mine.phase:mine.phase-WORK_DAYS+1;const ordinal=day===1?"1er":`${day}ème`;return `<text x="180" y="232" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="11" font-weight="800">${ordinal} jr</text>`;})()}
+ </svg></div>`;
+ const comparisonRows=currentGroups.filter(g=>g.number!==myGroup).map(g=>{
+  const other=getGroupStatus(g.number,date);
+  let delta=mod(other.phase-mine.phase,CYCLE_DAYS);
+  if(delta>CYCLE_DAYS/2)delta-=CYCLE_DAYS;
+  const same=other.status===mine.status;
+  const gapText=delta===0?"Même position":(delta>0?`${delta} j après`:`${Math.abs(delta)} j avant`);
+  return `<tr><td><strong>R${g.number}</strong></td><td><span class="status ${other.status}">${other.status==="work"?"Travail":"Repos"}</span></td><td>${other.week}e semaine</td><td><strong>${other.daysRemaining} j</strong></td><td>${gapText}</td><td><span class="compare-match ${same?"same":"different"}">${same?"Même statut":"Statut différent"}</span></td></tr>`;
+ }).join("");
+ const sameStatusCount=currentGroups.filter(g=>g.number!==myGroup&&getGroupStatus(g.number,date).status===mine.status).length;
+ const otherStatusCount=7-sameStatusCount;
+ document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div><div class="wheel-visual-layout" style="grid-template-columns:1fr;max-width:430px">${wheelMarkup}</div></div>`;
+}
+function setMyRotationCompare(value){
+ const group=Number(value);if(group<1||group>8||!currentGroups||!currentCheckDate)return;
+ document.getElementById("employeeGroup").value=String(group);
+ renderGroups(currentCheckDate);
+}
+function setCheckToday(){const n=new Date(),today=new Date(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()));document.getElementById("checkDate").value=inputDate(today);if(currentGroups)renderGroups(today);}
+
+/* Choix déterministe : maximiser la durée continue disponible, puis départager
+   les égalités selon l'ordre circulaire R1 → R2 → … → R8 → R1. */
+function circularDistance(group,previousGroup){
+ const previous=Number(previousGroup);
+ if(!Number.isInteger(previous)||previous<1||previous>8)return group;
+ return mod(group-previous,8)||8;
+}
+function findNextWorkingGroupInRotation(date,previousGroup){
+ const candidates=[];
+ for(let group=1;group<=8;group++){
+  const status=getGroupStatus(group,date);
+  if(status&&status.status==="work")candidates.push(status);
+ }
+ candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+ return candidates[0]||null;
+}
+
+/* Recherche globale du travail : la dernière rotation doit entrer en repos
+   exactement au début de la période de repos de l'agent. */
+function calculateWorkPlan(startDate,startGroup,requiredDays){
+ const memo=new Set();
+ function search(date,remaining,previousGroup,path,first){
+  if(remaining===0)return path;
+  if(remaining<0||path.length>=20)return null;
+  const key=[inputDate(date),remaining,previousGroup??"-",first?"1":"0"].join("|");
+  if(memo.has(key))return null;
+  memo.add(key);
+  let candidates=[];
+  if(first){
+   const status=getGroupStatus(startGroup,date);
+   if(status&&status.status==="work")candidates=[status];
+  }else{
+   for(let group=1;group<=8;group++){
+    const status=getGroupStatus(group,date);
+    if(status&&status.status==="work")candidates.push(status);
+   }
+  }
+  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  for(const candidate of candidates){
+   const duration=Math.min(remaining,candidate.daysRemaining);
+   const end=addDays(date,duration-1),nextDate=addDays(end,1);
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"work"};
+   if(duration===remaining){
+    const canStartRest=Array.from({length:8},(_,i)=>getGroupStatus(i+1,nextDate))
+      .some(status=>status&&status.status==="rest");
+    if(canStartRest)return [...path,segment];
+    continue;
+   }
+   const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
+   if(result)return result;
+  }
+  return null;
+ }
+ const segments=search(new Date(startDate),requiredDays,null,[],true);
+ if(!segments)return{error:`Impossible de trouver une séquence de travail de ${requiredDays} jours qui se termine exactement lorsqu’une rotation entre en repos. Vérifiez la date et la durée choisies.`};
+ const endDate=segments[segments.length-1].end;
+ return{segments,endDate,nextDate:addDays(endDate,1)};
+}
+
+/* Recherche globale du repos : la dernière rotation doit entrer en travail
+   exactement à la fin de la période de repos de l'agent. */
+function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
+ const memo=new Set();
+ function search(date,remaining,previousGroup,path,first){
+  if(remaining===0)return path;
+  if(remaining<0||path.length>=20)return null;
+  const key=[inputDate(date),remaining,previousGroup??"-",first?"1":"0"].join("|");
+  if(memo.has(key))return null;
+  memo.add(key);
+  let candidates=[];
+  if(first&&preferredGroup){
+   const preferred=getGroupStatus(preferredGroup,date);
+   if(preferred&&preferred.status==="rest")candidates=[preferred];
+  }
+  if(!candidates.length){
+   for(let group=1;group<=8;group++){
+    const status=getGroupStatus(group,date);
+    if(status&&status.status==="rest")candidates.push(status);
+   }
+  }
+  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  for(const candidate of candidates){
+   const duration=Math.min(remaining,candidate.daysRemaining);
+   const end=addDays(date,duration-1),nextDate=addDays(end,1);
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"rest",partial:duration<candidate.daysRemaining};
+   if(duration===remaining){
+    const canStartWork=Array.from({length:8},(_,i)=>getGroupStatus(i+1,nextDate))
+      .some(status=>status&&status.status==="work");
+    if(canStartWork)return [...path,segment];
+    continue;
+   }
+   const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
+   if(result)return result;
+  }
+  return null;
+ }
+ const segments=search(new Date(startDate),requiredDays,preferredGroup,[],true);
+ if(!segments)return{error:`Impossible de trouver une séquence de repos de ${requiredDays} jours qui se termine exactement lorsqu’une rotation entre en travail. Vérifiez la date et la durée choisies.`,segments:[]};
+ return{segments,matches:segments.map(s=>s.group),endDate:segments[segments.length-1].end};
+}
+
+/* Affichage des phases */
+function segmentHTML(s,i,label){
+ const isRest=s.type==="rest";
+ const phaseName=label||"Phase "+(i+1);
+ const progress=Math.max(0,Math.min(100,(s.days/CYCLE_DAYS)*100));
+ return`<div class="phase-orbit ${isRest?"phase-rest": "phase-work"}" style="--phase-progress:${progress}%">
+   <div class="phase-orbit-ring"><div class="phase-orbit-core">
+    <small>${phaseName}</small><strong>R${s.group}</strong><b>${s.days}</b><small>jours</small>
+   </div></div>
+   <div class="phase-orbit-details"><span class="phase-state">${isRest?"REPOS":"TRAVAIL"}</span><span>Du ${formatDate(s.start)}</span><span>Au ${formatDate(s.end)}</span></div>
+  </div>`;
+}
+
+/* Carte circulaire du remplacement, placée à côté de sa phase correspondante */
+function replacementOrbitHTML(key, segments=[]){
+ const cfg={T:{enabled:"replacementTEnabled",weeks:"replacementTWeeks",title:"Remplacement T",label:"REMPLACEMENT TRAVAIL"},RSTART:{enabled:"replacementRStartEnabled",weeks:"replacementRStartWeeks",title:"Absence R — début travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",weeks:"replacementREndWeeks",title:"Absence R — après repos",label:"ABSENCE INFOTYPE 2001"}}[key];
+ if(!cfg||!document.getElementById(cfg.enabled)?.checked)return "";
+ const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7,cls=key==="T"?"t":"r";
+ const dates=seg?`<span>Du ${formatDate(parseDate(seg.start))}</span><span>Au ${formatDate(parseDate(seg.end))}</span>`:`<span>${weeks===0?"Aucune période (0 semaine)":"Dates après calcul"}</span>`;
+ return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
+}
+
+/* Tableau des codifications */
+function buildCodingRows(plan){
+ const segments=[...plan.workSegments.map(s=>({...s,type:"Travail"})),...plan.restSegments.map(s=>({...s,type:"Repos"}))].sort((a,b)=>a.start.localeCompare(b.start));
+ const base=segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};});
+ const extra=(plan.replacementSegments||[]).map((s,i)=>({number:base.length+i+1,group:s.code,type:"Remplacement "+s.code,start:s.start,end:s.end,last:false,replacement:true}));
+ return [...base,...extra].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement));
+}
+function renderCodingSummary(plan){
+ const rows=buildCodingRows(plan);if(!rows.length){document.getElementById("codingSummary").innerHTML='<div class="empty">Aucune codification de groupe à afficher.</div>';return;}
+ const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>${r.replacement?r.group:"R"+r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':(r.replacement?"Période exceptionnelle":"Terminée")}</td></tr>`).join("");
+ const lastBase=rows.filter(r=>!r.replacement).at(-1);
+ document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe / Code</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification du roulement :</strong> Groupe R${lastBase.group}<br>Valable du :${formatDate(parseDate(lastBase.start))} au 31/12/9999.</div></div>`;
+}
+
+/* Calcul du plan de l'agent */
+function calculateEmployee(){
+ applyCycleSelection();const v=validateReference(),out=document.getElementById("employeeResult");
+ if(v.error){out.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+ currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
+ const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup,startDate=v.referenceDate;
+ const ww=Number(document.getElementById("workWeeks").value),rw=Number(document.getElementById("restWeeks").value)/7,alt=WORK_DAYS===29,cont=document.getElementById("continueProgram").checked;
+ if(ww===0&&rw===0){out.innerHTML='<div class="notice error">Les durées de travail et de repos ne peuvent pas être toutes les deux égales à zéro.</div>';lastEmployeePlan=null;return;}
+ const referenceStatus=getGroupStatus(startGroup,startDate);
+ if((ww>0&&referenceStatus.status!=="work")||(ww===0&&referenceStatus.status!=="rest")){out.innerHTML=`<div class="notice error">${ww===0?`Le groupe R${startGroup} doit être en période de repos puisque la durée de travail est réglée sur zéro.`:`Le groupe R${startGroup} doit être en période de travail à la date de référence.`}</div>`;return;}
+ const make=(date,group,w,r)=>{
+  const wd=w*7,rd=r*7;
+  if(rd<0||rd>56)return{error:"Durée de repos invalide."};
+  let work,restStart;
+  if(wd===0){work={segments:[],endDate:addDays(date,-1),nextDate:new Date(date)};restStart=new Date(date);}
+  else{work=calculateWorkPlan(date,group,wd);if(work.error)return{error:work.error};restStart=addDays(work.endDate,1);}
+  let rest;
+  if(rd===0){rest={segments:[],matches:[],endDate:addDays(restStart,-1)};}
+  else{const lastWorkGroup=work.segments.length?work.segments[work.segments.length-1].group:null;rest=calculateRestPlan(restStart,rd,lastWorkGroup);if(rest.error)return{error:rest.error};}
+  return{work,rest,workDays:wd,restDays:rd,restStart};
+ };
+ const ps=[make(startDate,startGroup,ww,rw)];
+ if(ps[0].error){out.innerHTML=`<div class="notice error">${escapeHTML(ps[0].error)}</div>`;lastEmployeePlan=null;return;}
+ const tEnabled=document.getElementById("replacementTEnabled").checked;
+ const rStartEnabled=document.getElementById("replacementRStartEnabled").checked;
+ const rEndEnabled=document.getElementById("replacementREndEnabled").checked;
+ const replacementEnabled=tEnabled||rStartEnabled||rEndEnabled;
+ if(replacementEnabled&&(ww!==4||rw!==4)){out.innerHTML='<div class="notice error">Les remplacements sont disponibles lorsque le programme de référence est réglé sur 4 semaines de travail et 4 semaines de repos.</div>';lastEmployeePlan=null;return;}
+ const replacementSegments=[];
+ const addReplacement=(key,code,date,weeks)=>{if(weeks>0)replacementSegments.push({key,code,start:inputDate(date),end:inputDate(addDays(date,weeks*7-1)),weeks});};
+ if(tEnabled)addReplacement("T","T",addDays(ps[0].work.endDate,1),Number(document.getElementById("replacementTWeeks").value));
+ if(rStartEnabled)addReplacement("RSTART","R",startDate,Number(document.getElementById("replacementRStartWeeks").value));
+ if(rEndEnabled)addReplacement("REND","R",addDays(ps[0].rest.endDate,1),Number(document.getElementById("replacementREndWeeks").value));
+ if(cont){
+  const p=ps[0],start2=addDays(p.rest.endDate,1),prev=(p.rest.segments.at(-1)||p.work.segments.at(-1)||{group:startGroup}).group;
+  const w2=Number(document.getElementById("workWeeks2").value),r2=Number(document.getElementById("restWeeks2").value)/7;
+  const candidates=Array.from({length:8},(_,i)=>getGroupStatus(i+1,start2)).filter(s=>s&&s.status==="work")
+   // Priorité à la rotation qui dispose du plus grand nombre de jours de travail
+   // dès le premier jour de Programme 2. Le parcours circulaire ne départage
+   // que les rotations ayant la même durée restante.
+   .sort((a,b)=>b.daysRemaining-a.daysRemaining||circularDistance(a.group,prev)-circularDistance(b.group,prev));
+  // Évaluer toutes les rotations possibles : ne pas retenir la première solution
+  // si elle commence par une phase d'un seul jour alors qu'une meilleure séquence existe.
+  const validPlans=[];
+  for(const candidate of candidates){
+   const trial=make(start2,candidate.group,w2,r2);
+   if(!trial.error){
+    const workCount=trial.work.segments.length,restCount=trial.rest.segments.length;
+    const firstWorkDays=trial.work.segments[0]?.days||0;
+    const firstRestDays=trial.rest.segments[0]?.days||0;
+    validPlans.push({plan:trial,group:candidate.group,workCount,restCount,firstWorkDays,firstRestDays,
+      totalTransitions:workCount+restCount});
+   }
+  }
+  validPlans.sort((a,b)=>
+   // Ne jamais accepter une rotation d'un seul jour si une autre rotation
+   // est déjà en travail au même jour et permet une période plus continue.
+   b.firstWorkDays-a.firstWorkDays||
+   a.totalTransitions-b.totalTransitions||
+   b.firstRestDays-a.firstRestDays||
+   circularDistance(a.group,prev)-circularDistance(b.group,prev)
+  );
+  const p2=validPlans[0]?.plan||null;
+  if(!p2){out.innerHTML=`<div class="notice error">Programme 2 : impossible de trouver une séquence complète de travail puis de repos pour les rotations disponibles. Essayez une autre durée.</div>`;lastEmployeePlan=null;return;}ps.push(p2);
+ }
+ const ws=ps.flatMap(p=>p.work.segments),rs=ps.flatMap(p=>p.rest.segments),last=ps.at(-1);
+ const sumW=ps.reduce((n,p)=>n+p.workDays,0),sumR=ps.reduce((n,p)=>n+p.restDays,0);
+ const html=ps.map((p,i)=>`<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length?p.work.segments.map((x,j)=>segmentHTML(x,j,"Phase de travail "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("T",replacementSegments)+replacementOrbitHTML("RSTART",replacementSegments):""}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length?p.rest.segments.map((x,j)=>segmentHTML(x,j,"Phase de repos "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("REND",replacementSegments):""}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`).join("");
+ lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks:ww,workDays:sumW,restDays:sumR,restWeeks:rw,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,continuing:cont,
+  programs:ps.map((p,i)=>({number:i+1,workDays:p.workDays,restDays:p.restDays})),
+  workSegments:ws.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),restSegments:rs.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),
+  workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:"",replacementEnabled,replacementFlags:{tEnabled,rStartEnabled,rEndEnabled},replacementSegments};
+ renderCodingSummary(lastEmployeePlan);
+ if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
+ const replacementHTML=replacementEnabled?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.length?replacementSegments.map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>Remplacement ${x.code}</strong> — ${x.weeks} semaine(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join(""):`<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>`}`:"";
+ out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1. Le groupe suivant est recherché dans l’ordre circulaire R1 → R2 → … → R8 → R1, en retenant le premier groupe réellement en travail à cette date.</div>`;
+}
+function clearEmployeeResult(){document.getElementById("employeeResult").innerHTML="";document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications des groupes.</div>';lastEmployeePlan=null;}
+
+/* Aperçu avant impression */
+function openPreview(){
+ if(!lastEmployeePlan){alert("Veuillez d'abord générer le plan de l'agent.");return;}
+ const p=lastEmployeePlan,paper=document.getElementById("previewPaper");
+ const rows=[
+  ...p.workSegments.map((s,i)=>({phase:"Travail "+(i+1),group:s.group,state:"Travail",start:s.start,end:s.end,days:s.days})),
+  ...p.restSegments.map((s,i)=>({phase:"Repos "+(i+1),group:s.group,state:"Repos",start:s.start,end:s.end,days:s.days})),
+  ...(p.replacementSegments||[]).map(s=>({phase:"Remplacement "+s.code,group:s.code,state:"Remplacement",start:s.start,end:s.end,days:daysBetween(parseDate(s.start),addDays(parseDate(s.end),1))}))
+ ].sort((a,b)=>a.start.localeCompare(b.start));
+
+ const baseRows=rows.filter(r=>r.state!=="Remplacement");
+ const codingRows=[...baseRows.map((r,i)=>{
+   const next=baseRows[i+1];
+   const codingEnd=next?inputDate(addDays(parseDate(next.start),-1)):LAST_DATE;
+   return {...r,number:i+1,codingEnd};
+ }),...(p.replacementSegments||[]).map((r,i)=>({phase:"Remplacement "+r.code,group:r.code,state:"Remplacement",start:r.start,end:r.end,days:daysBetween(parseDate(r.start),addDays(parseDate(r.end),1)),number:baseRows.length+i+1,codingEnd:r.end}))].sort((a,b)=>a.start.localeCompare(b.start));
+ const phaseRows=codingRows.map(r=>`<tr>
+  <td>${r.number}</td><td>${r.phase}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
+  <td>${r.state}</td><td>${formatDate(parseDate(r.start))}</td>
+  <td>${formatDate(parseDate(r.end))}</td><td>${r.days}</td>
+  <td>${formatDate(parseDate(r.start))} → ${r.codingEnd===LAST_DATE?"31/12/9999":formatDate(parseDate(r.codingEnd))}</td>
+ </tr>`).join("");
+
+ // Regrouper les rotations identiques qui se suivent sans interruption.
+ // Une nouvelle ligne commence uniquement lorsqu'une autre rotation intervient.
+ const mergedRotations=[];
+ for(const r of [...codingRows].sort((a,b)=>a.start.localeCompare(b.start))){
+  const previous=mergedRotations[mergedRotations.length-1];
+  const nextDay=previous?inputDate(addDays(parseDate(previous.end),1)):null;
+  if(previous && previous.group===r.group && nextDay===r.start && previous.state!=="Remplacement" && r.state!=="Remplacement"){
+   previous.end=r.end;
+   previous.days+=r.days;
+   previous.states=[...new Set([...(previous.states||[previous.state]),r.state])];
+  }else{
+   mergedRotations.push({...r,states:[r.state]});
+  }
+ }
+ const mergedRows=mergedRotations.map((r,i)=>`<tr>
+  <td>${i+1}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
+  <td>${r.states.join(" + ")}</td><td>${formatDate(parseDate(r.start))}</td>
+  <td>${i===mergedRotations.length-1?"21/12/9999":formatDate(parseDate(r.end))}</td>
+  <td>${i===mergedRotations.length-1?"Codification finale":"Rotation suivante"}</td>
+ </tr>`).join("");
+
+ const ref=validateReference();
+ const checkDate=parseDate(document.getElementById("checkDate").value) ||
+                (ref.referenceDate || parseDate(p.startDate));
+
+
+ const last=codingRows.filter(r=>r.state!=="Remplacement").at(-1);
+ paper.innerHTML=`
+  <div class="print-head">
+   <div class="print-brand">SONATRACH</div>
+   <div class="print-product"><strong>SH-ONE</strong>　|　ERP-SAP　|　PLAN DE ROULEMENT</div>
+   <div class="print-title">ÉTAT DE PLANIFICATION ET RÉCAPITULATIF DES CODIFICATIONS</div>
+  </div>
+
+  <div class="print-block">
+   <div class="print-block-title">1. Paramètres de référence et informations de l'agent</div>
+   <div class="print-data-grid">
+    <span><b>Agent / Matricule :</b> ${escapeHTML(p.name||"Non renseigné")}</span>
+    <span><b>Groupe d'origine :</b> R${p.startGroup}</span>
+    <span><b>Date de début :</b> ${formatDate(parseDate(p.startDate))}</span>
+    <span><b>Jour de relève :</b> ${DAY_NAMES[ref.selectedDay]}</span>
+    <span><b>Groupe de référence :</b> R${ref.referenceGroup||"—"}</span>
+    <span><b>Date de référence :</b> ${ref.referenceDate?formatDate(ref.referenceDate):"—"}</span>
+    <span><b>Date de situation :</b> ${formatDate(checkDate)}</span>
+    <span><b>Cycle général :</b> ${p.cycleWorkDays}/${p.cycleRestDays}</span>
+    <span><b>Durée travail :</b> ${p.workDays} jours (${p.workWeeks} semaine(s))</span>
+    <span><b>Durée repos :</b> ${p.restDays} jours (${p.restWeeks} semaine(s))</span>
+   </div>
+  </div>
+
+  <div class="print-block">
+   <div class="print-block-title">2. Déroulement du travail, du repos et codifications</div>
+   <table class="print-table">
+    <thead><tr><th>N°</th><th>Phase</th><th>Groupe</th><th>Situation</th><th>Début phase</th><th>Fin phase</th><th>Durée</th><th>Période de codification</th></tr></thead>
+    <tbody>${phaseRows}</tbody>
+   </table>
+   <div class="print-block-title" style="margin-top:2.5mm">Tableau récapitulatif des rotations continues</div>
+   <table class="print-table">
+    <thead><tr><th>N°</th><th>Rotation</th><th>Situation(s)</th><th>Du</th><th>Au</th><th>Observation</th></tr></thead>
+    <tbody>${mergedRows}</tbody>
+   </table>
+   <div class="print-summary">
+    <b>Parcours travail :</b> ${p.workSegments.map(s=>"R"+s.group).join(" → ")}
+    &nbsp; | &nbsp; <b>Parcours repos :</b> ${p.restSegments.length?p.restSegments.map(s=>"R"+s.group).join(" → "):"Non complété"}
+    &nbsp; | &nbsp; <b>Fin du travail :</b> ${formatDate(parseDate(p.workEnd))}
+    &nbsp; | &nbsp; <b>Fin du repos :</b> ${p.restSuccess?formatDate(parseDate(p.restEnd)):"Non déterminée"}
+   </div>
+   ${p.restSuccess?"":`<div class="print-warning"><b>Attention :</b> Plan de repos non complété — ${escapeHTML(p.restError||"Aucune combinaison disponible")}.</div>`}
+  </div>
+
+
+  <div class="print-bottom">
+   <div><b>Dernière codification :</b> R${last?last.group:"—"} — valable du ${last?formatDate(parseDate(last.start)):"—"} au 31/12/9999</div>
+   <div class="print-footer">Developer: BENAKRAB AHCENE　|　Société SONATRACH　|　ERP-SAP — Document généré par SH-ONE</div>
+  </div>`;
+ document.getElementById("previewOverlay").classList.add("open");
+ document.body.style.overflow="hidden";
+ requestAnimationFrame(()=>requestAnimationFrame(fitPreviewToOnePage));
+}
+function closePreview(){document.getElementById("previewOverlay").classList.remove("open");document.body.style.overflow="";}
+function fitPreviewToOnePage(){
+ const paper=document.getElementById("previewPaper");
+ if(!paper)return;
+ paper.style.zoom="1";
+ paper.style.transform="none";
+ const availableWidth=Math.min(paper.parentElement.clientWidth-16,1000);
+ const naturalWidth=Math.max(paper.scrollWidth,1);
+ const naturalHeight=Math.max(paper.scrollHeight,1);
+ const pageHeight=availableWidth*(210/297);
+ const scale=Math.min(1,availableWidth/naturalWidth,pageHeight/naturalHeight);
+ paper.style.zoom=String(scale);
+}
+window.addEventListener("beforeprint",fitPreviewToOnePage);
+window.addEventListener("afterprint",()=>{const paper=document.getElementById("previewPaper");if(paper)paper.style.zoom="1";});
+function printPreview(){if(lastEmployeePlan){fitPreviewToOnePage();window.print();}}
+function printCodingSummary(){
+ if(!lastEmployeePlan){alert("Veuillez d'abord générer le plan de l'agent.");return;}
+ openPreview();
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  fitPreviewToOnePage();
+  window.print();
+ }));
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePreview();});
+document.getElementById("previewOverlay").addEventListener("click",e=>{if(e.target.id==="previewOverlay")closePreview();});
+
+/* Export CSV */
+function downloadCSV(data,filename){
+ const csv="\uFEFF"+data.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+}
+function exportCodingSummary(){
+ if(!lastEmployeePlan){alert("Veuillez d’abord générer le plan de l’agent.");return;}
+ const rows=buildCodingRows(lastEmployeePlan),data=[["N°","Groupe","Statut","Date de début","Date de fin","Statut"]];
+ rows.forEach(r=>data.push([r.number,"R"+r.group,r.type,r.start,r.end,r.last?"Dernière codification":"Terminée"]));
+ downloadCSV(data,"SH-ONE_Codifications_Agent.csv");
+}
+
+/* Historique local */
+function getRecords(){try{return JSON.parse(localStorage.getItem("rotation_records")||"[]");}catch(e){return[];}}
+function saveCurrentRecord(){
+ if(!lastEmployeePlan){alert("Veuillez d’abord générer le plan de l’agent.");return;}
+ const records=getRecords(),newStart=parseDate(lastEmployeePlan.startDate);
+ records.forEach(record=>{if(record.end===LAST_DATE){const oldStart=parseDate(record.startDate);if(daysBetween(oldStart,newStart)<0)record.end=inputDate(addDays(newStart,-1));}});
+ records.push({...lastEmployeePlan,end:LAST_DATE,codingRows:buildCodingRows(lastEmployeePlan),createdAt:new Date().toISOString()});
+ records.sort((a,b)=>a.startDate.localeCompare(b.startDate));localStorage.setItem("rotation_records",JSON.stringify(records));renderRecords();alert("Le plan a été enregistré dans l'historique.");
+}
+function renderRecords(){
+ const records=getRecords(),target=document.getElementById("recordsResult");
+ if(!records.length){target.innerHTML='<div class="empty">Aucune codification enregistrée.</div>';return;}
+ const rows=records.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(r.name||"Non renseigné")}</td><td>R${r.startGroup}</td><td>${formatDate(parseDate(r.startDate))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.workDays??(r.workWeeks*7)} jours</td><td>${r.restDays??(r.restWeeks*7)} jours</td><td>${(r.workSegments||[]).map(s=>"R"+s.group).join(" ← ")}</td><td>${(r.restSegments||[]).map(s=>"R"+s.group).join(" ← ")||"Non finalisé"}</td></tr>`).join("");
+ target.innerHTML=`<div class="table-wrap"><table><thead><tr><th>N°</th><th>Agent</th><th>Groupe d'origine</th><th>Début</th><th>Fin</th><th>Travail</th><th>Repos</th><th>Ordre des groupes de travail</th><th>Ordre des groupes de repos</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function clearRecords(){if(!confirm("Voulez-vous vraiment supprimer tout l’historique des codifications ?"))return;localStorage.removeItem("rotation_records");renderRecords();}
+function exportCSV(){
+ const records=getRecords();if(!records.length){alert("Aucun historique à exporter.");return;}
+ const rows=[["Agent","Groupe d'origine","Date de début de codification","Date de fin de codification","Jours de travail","Ordre des groupes de travail","Date de fin du travail","Jours de repos","Ordre des groupes de repos","Date de début du repos","ReposDate de fin","Statut du repos","Cycle"]];
+ records.forEach(r=>rows.push([r.name||"","R"+r.startGroup,r.startDate,r.end,r.workDays??(r.workWeeks*7),(r.workSegments||[]).map(s=>"R"+s.group).join(" - "),r.workEnd,r.restDays??(r.restWeeks*7),(r.restSegments||[]).map(s=>"R"+s.group).join(" - "),r.restStart,r.restEnd,r.restSuccess?"Correspondance trouvée":"Non finalisé",(r.cycleWorkDays||28)+"/"+(r.cycleRestDays||28)]));
+ downloadCSV(rows,"SH-ONE_Historique_Roulement.csv");
+}
+
+/* Restauration des paramètres */
+function restoreSettings(){
+ const saved=localStorage.getItem("rotation_reference");
+ if(saved){try{const d=JSON.parse(saved);document.getElementById("referenceDate").value=d.referenceDate;document.getElementById("checkDate").value=d.checkDate;}catch(e){}}
+ const savedCycle=localStorage.getItem("rotation_cycle2927");document.getElementById("cycle2927").checked=savedCycle==="1";applyCycleSelection();renderRecords();
+}
+
+/* Événements */
+const replacementMaster=document.getElementById("replacementMasterEnabled");
+const replacementOptions=document.getElementById("replacementOptions");
+replacementMaster.addEventListener("change",()=>{
+ replacementOptions.style.display=replacementMaster.checked?"grid":"none";
+ if(!replacementMaster.checked){["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled"].forEach(id=>document.getElementById(id).checked=false);}
+ if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
+});
+["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled","replacementTWeeks","replacementRStartWeeks","replacementREndWeeks"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);}));
+const continueToggle=document.getElementById("continueProgram");
+const continueFields=document.getElementById("continueFields");
+continueToggle.addEventListener("change",()=>{
+ continueFields.style.display=continueToggle.checked?"grid":"none";
+ if(continueToggle.checked)updateSecondRestOptions();
+});
+continueFields.style.display=continueToggle.checked?"grid":"none";
+document.getElementById("cycle2927").addEventListener("change",()=>{
+ document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.remove("is-visible"));
+ applyCycleSelection();currentGroups=null;lastEmployeePlan=null;
+ document.getElementById("groupsResult").innerHTML='<div class="empty">Le cycle a été modifié. Veuillez recalculer la situation des groupes.</div>';
+ document.getElementById("employeeResult").innerHTML="";
+ document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer à nouveau le plan de l’agent avec le cycle sélectionné.</div>';
+ document.getElementById("referenceMessage").innerHTML='<div class="notice info">Le cycle a été modifié. Cliquez sur « Calculer la situation des groupes » pour appliquer le nouveau cycle aux huit groupes.</div>';
+});
+document.getElementById("checkDate").addEventListener("change",()=>{if(!currentGroups)return;const date=parseDate(document.getElementById("checkDate").value);if(date)renderGroups(date);});
+
+document.getElementById("workWeeks").addEventListener("change",updateDurationHints);
+document.getElementById("restWeeks").addEventListener("change",updateDurationHints);
+document.getElementById("referenceDate").addEventListener("change",updateReferenceDisplay);
+window.calculateAll=calculateAll;
+const calculateButton=document.querySelector('.actions button.primary[onclick="calculateAll()"]');
+if(calculateButton)calculateButton.addEventListener("click",event=>{event.preventDefault();calculateAll();});
+restoreSettings();
+updateDurationHints();
+if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
+updateReferenceDisplay();
+
+</script>
+</body>
+</html>
