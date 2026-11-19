@@ -405,9 +405,9 @@ function calculateAll(){
 function calculateGroups(){
  applyCycleSelection();const v=validateReference(),message=document.getElementById("referenceMessage");
  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
- currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
+ currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
  const checkDate=parseDate(document.getElementById("checkDate").value)||v.referenceDate;renderGroups(checkDate);
- message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}).<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
+ message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du lundi ${formatDate(v.cycleWeekStart)}.<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
  localStorage.setItem("rotation_reference",JSON.stringify({referenceGroup:v.referenceGroup,referenceDate:inputDate(v.referenceDate),referenceDay:v.selectedDay,checkDate:inputDate(checkDate)}));
 }
 function renderGroups(date){
@@ -601,7 +601,7 @@ function renderCodingSummary(plan){
 function calculateEmployee(){
  applyCycleSelection();const v=validateReference(),out=document.getElementById("employeeResult");
  if(v.error){out.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
- if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
+ if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
  const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup,startDate=v.referenceDate;
  const ww=Number(document.getElementById("workWeeks").value),rw=Number(document.getElementById("restWeeks").value)/7,alt=WORK_DAYS===29,cont=document.getElementById("continueProgram").checked;
  if(ww===0&&rw===0){out.innerHTML='<div class="notice error">Les durées de travail et de repos ne peuvent pas être toutes les deux égales à zéro.</div>';lastEmployeePlan=null;return;}
