@@ -405,16 +405,16 @@ function calculateAll(){
 function calculateGroups(){
  applyCycleSelection();const v=validateReference(),message=document.getElementById("referenceMessage");
  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
- currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
+ currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
  const checkDate=parseDate(document.getElementById("checkDate").value)||v.referenceDate;renderGroups(checkDate);
- message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du lundi ${formatDate(v.cycleWeekStart)}.<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
+ message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}).<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
  localStorage.setItem("rotation_reference",JSON.stringify({referenceGroup:v.referenceGroup,referenceDate:inputDate(v.referenceDate),referenceDay:v.selectedDay,checkDate:inputDate(checkDate)}));
 }
 function renderGroups(date){
  if(!currentGroups)return;
  currentCheckDate=new Date(date.getTime());
  const rows=currentGroups.map(g=>{const s=getGroupStatus(g.number,date),cls=s.status==="work"?"work":"rest";return`<tr><td><strong>R${g.number}</strong></td><td><span class="status ${cls}">${s.status==="work"?"Travail":"Repos"}</span></td><td>${s.status==="work"?"Semaine "+s.week+" (travail)":"Semaine "+s.week+" (repos)"}</td><td>${s.daysRemaining} jours</td><td>${formatDate(s.nextChange)}</td></tr>`;}).join("");
- const myGroup=resolveReference(date).group; // Le groupe de référence évolue automatiquement chaque lundi.
+ const myGroup=Number(document.getElementById("referenceGroup").value||1);
  const mine=getGroupStatus(myGroup,date);
  const wheelNodes=currentGroups.map(g=>{
   const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
@@ -430,12 +430,12 @@ function renderGroups(date){
    <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="#365448" font-size="10" font-weight="700">${isWork?"TRAVAIL":"REPOS"}</text>
   </g>`;
  }).join("");
- const wheelMarkup=`<div class="rotation-wheel-wrap"><svg class="rotation-wheel" viewBox="0 0 360 360" role="img" aria-label="Position des huit rotations à la date du ${formatDate(date)}. Le groupe de référence R${myGroup} est entouré en orange.">
+ const wheelMarkup=`<div class="rotation-wheel-wrap"><svg class="rotation-wheel" viewBox="0 0 360 360" role="img" aria-label="Position des huit rotations. Ma rotation R${myGroup} est entourée en orange.">
   <circle cx="180" cy="180" r="143" fill="none" stroke="#dce8e1" stroke-width="2" stroke-dasharray="4 5"/>
   <circle cx="180" cy="180" r="105" fill="#f5faf6" stroke="#dce8e1" stroke-width="2"/>
   ${wheelNodes}
   <circle cx="180" cy="180" r="78" fill="#fff" stroke="#e0ebe4" stroke-width="1.5"/>
-  <text x="180" y="158" text-anchor="middle" fill="#687b73" font-size="11" font-weight="700">GROUPE DE RÉFÉRENCE</text>
+  <text x="180" y="158" text-anchor="middle" fill="#687b73" font-size="11" font-weight="700">MA ROTATION</text>
   <text x="180" y="190" text-anchor="middle" fill="#075b43" font-size="29" font-weight="900">R${myGroup}</text>
   <text x="180" y="211" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="12" font-weight="900">${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</text>
   ${(()=>{const day=mine.status==="work"?mine.phase:mine.phase-WORK_DAYS+1;const ordinal=day===1?"1er":`${day}ème`;return `<text x="180" y="232" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="11" font-weight="800">${ordinal} jr</text>`;})()}
@@ -601,7 +601,7 @@ function renderCodingSummary(plan){
 function calculateEmployee(){
  applyCycleSelection();const v=validateReference(),out=document.getElementById("employeeResult");
  if(v.error){out.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
- if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.cycleWeekStart);
+ if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
  const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup,startDate=v.referenceDate;
  const ww=Number(document.getElementById("workWeeks").value),rw=Number(document.getElementById("restWeeks").value)/7,alt=WORK_DAYS===29,cont=document.getElementById("continueProgram").checked;
  if(ww===0&&rw===0){out.innerHTML='<div class="notice error">Les durées de travail et de repos ne peuvent pas être toutes les deux égales à zéro.</div>';lastEmployeePlan=null;return;}
