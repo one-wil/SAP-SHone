@@ -47,16 +47,25 @@ th{background:#eaf3ed;color:var(--green)}tr:nth-child(even) td{background:#fafcf
 .stat{padding:14px;border-radius:11px;background:#f0f6f2;text-align:center}
 .stat small{display:block;color:var(--muted);margin-bottom:7px}.stat strong{font-size:16px;color:var(--green)}
 .phase-orbit{display:inline-flex;vertical-align:top;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;width:190px;min-height:230px;margin:10px 9px;padding:15px 10px;background:#f5f9f6;border:1px solid #e0ebe4;border-radius:18px;text-align:center;box-sizing:border-box}
-.phase-orbit-ring{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--orbit-color) var(--phase-progress),#e5ece7 0);position:relative;box-shadow:0 4px 13px #123d2410}
-.phase-orbit-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1px #e8eee9}
+.phase-orbit-ring{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--orbit-color) var(--phase-progress),#e5ece7 0);position:relative;box-shadow:0 8px 22px #123d2418,inset 0 0 0 1px #ffffffb8;transition:transform .22s ease,box-shadow .22s ease}
+.phase-orbit-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:linear-gradient(145deg,#fff,#f8fbf9);box-shadow:inset 0 0 0 1px #e8eee9,0 2px 8px #123d240c}
 .phase-orbit-core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;line-height:1.18}
 .phase-orbit-core small{font-size:10px;color:#718078}
 .phase-orbit-core strong{font-size:23px;color:var(--green);margin:3px 0}
 .phase-orbit-core b{font-size:22px;color:var(--orbit-color);margin-top:2px}
-.phase-work{--orbit-color:#07845b}.phase-rest{--orbit-color:#d0a43e}
+.phase-work{--orbit-color:#07845b}.phase-rest{--orbit-color:#d0a43e}.phase-orbit:hover{transform:translateY(-3px);box-shadow:0 12px 25px #123d2420}.phase-orbit-details span{display:block}.phase-state{letter-spacing:.8px;font-size:11px}
 .phase-orbit-details{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#52665b;line-height:1.45}
 .phase-state{font-weight:800;color:var(--orbit-color);letter-spacing:.4px}
-@media(max-width:600px){.phase-orbit{width:calc(50% - 14px);min-width:135px;margin:7px 4px;padding:12px 5px}.phase-orbit-ring{width:112px;height:112px}.phase-orbit-core strong{font-size:20px}}
+@media(max-width:600px){.phase-orbit{width:100%;min-width:0;margin:0;padding:12px 5px}.phase-orbit-ring{width:112px;height:112px}.phase-orbit-core strong{font-size:20px}}
+.phase-pair{display:grid;grid-template-columns:repeat(2,minmax(0,190px));gap:12px;align-items:stretch;margin:8px 0 14px;max-width:410px}
+.replacement-orbit{--replacement-color:#2874a6;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;min-width:0;min-height:230px;padding:15px 9px;background:linear-gradient(160deg,#f2f8fc,#f8fbfd);border:1px solid #d8e7f0;border-radius:18px;text-align:center;box-shadow:0 5px 16px #164b6810}
+.replacement-orbit.r{--replacement-color:#b78322;background:linear-gradient(160deg,#fff9ec,#fffdf8);border-color:#f0e3c7}
+.replacement-orbit-ring{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--replacement-color) 50%,#e5ece7 0);position:relative;box-shadow:0 8px 22px #123d2418,inset 0 0 0 1px #ffffffb8}
+.replacement-orbit-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:linear-gradient(145deg,#fff,#f8fbf9);box-shadow:inset 0 0 0 1px #e8eee9}
+.replacement-orbit-core{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.replacement-orbit-core small{font-size:10px;color:#718078}.replacement-orbit-core strong{font-size:24px;color:var(--replacement-color);margin:4px 0}.replacement-orbit-core b{font-size:21px;color:var(--replacement-color)}
+.replacement-orbit-details{display:flex;flex-direction:column;gap:4px;font-size:10px;color:#52665b;line-height:1.45}.replacement-orbit-label{font-size:11px;font-weight:900;letter-spacing:.5px;color:var(--replacement-color)}
+@media(max-width:600px){.phase-pair{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:410px}.replacement-orbit{min-height:210px;padding:12px 5px}.replacement-orbit-ring{width:112px;height:112px}.replacement-orbit-core strong{font-size:21px}}
 .segment{border-left:4px solid var(--green2);background:#f5f9f6;border-radius:8px;padding:13px;margin:10px 0;line-height:1.9;font-size:13px}
 .segment.rest-segment{border-color:var(--gold)}.empty{color:var(--muted);text-align:center;padding:20px;font-size:13px}
 .mini-title{font-size:14px;color:var(--green);font-weight:bold;margin:0 0 10px}
@@ -89,7 +98,7 @@ th{background:#eaf3ed;color:var(--green)}tr:nth-child(even) td{background:#fafcf
 .rotation-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .rotation-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;padding:15px 9px 12px;border:1px solid #e1ebe4;border-radius:12px;background:#fff;box-shadow:0 4px 13px rgba(0,50,30,.045);min-width:0}
 .rotation-card.is-working{border-top:3px solid #07845b}.rotation-card.is-resting{border-top:3px solid #d6aa45}
-.rotation-donut{--phase-angle:0deg;position:relative;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(from -90deg,#07845b 0 var(--work-share),#d6aa45 var(--work-share) 100%);box-shadow:inset 0 0 0 1px #ffffff80}
+.rotation-donut{--phase-angle:0deg;position:relative;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(from -90deg,#07845b 0 var(--work-share),#d6aa45 var(--work-share) 100%);box-shadow:inset 0 0 0 2px #ffffffa8,0 7px 18px #123d2418;transition:transform .22s ease,box-shadow .22s ease}.rotation-card:hover .rotation-donut{transform:scale(1.035);box-shadow:inset 0 0 0 2px #ffffffa8,0 10px 23px #123d2424}
 .rotation-donut:before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff;box-shadow:0 2px 8px #153b2912}
 .rotation-donut:after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#173e30;border:2px solid #fff;left:50%;top:50%;transform:rotate(var(--phase-angle)) translateY(-51px) translate(-50%,-50%);transform-origin:0 0;box-shadow:0 1px 4px #0004}
 .rotation-center{position:relative;z-index:1;text-align:center;line-height:1.25}
@@ -108,6 +117,23 @@ th{background:#eaf3ed;color:var(--green)}tr:nth-child(even) td{background:#fafcf
 .rotation-footnote{font-size:10px;color:var(--muted);line-height:1.7;margin:12px 2px 0}
 @media(max-width:760px){.rotation-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.rotation-card{padding:12px 7px}.rotation-donut{width:100px;height:100px}.rotation-donut:after{transform:rotate(var(--phase-angle)) translateY(-45px) translate(-50%,-50%)}}
 @media(min-width:761px) and (max-width:950px){.rotation-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.wheel-visual-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(230px,.82fr);align-items:center;gap:18px;max-width:820px;margin:8px auto 16px;padding:14px;border:1px solid #e1ebe5;border-radius:20px;background:linear-gradient(145deg,#fbfefc,#f3f8f5);box-shadow:0 10px 28px rgba(13,66,42,.07)}
+.wheel-visual-layout .rotation-wheel-wrap{margin:0 auto;width:min(100%,390px)}
+.replacement-indicator{position:relative;overflow:hidden;border:1px solid #d8e8df;border-radius:17px;background:#fff;box-shadow:0 7px 20px rgba(16,65,43,.07)}
+.replacement-indicator:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(#0a8a60,#d3a33b)}
+.replacement-indicator-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px 10px;border-bottom:1px solid #edf2ee}
+.replacement-indicator-title{font-size:12px;font-weight:950;color:#164d38;letter-spacing:.35px}
+.replacement-indicator-tag{padding:4px 9px;border-radius:999px;background:#e8f5ed;color:#087344;font-size:9px;font-weight:900}
+.replacement-period{display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center;padding:11px 14px;border-bottom:1px solid #f0f3f1}
+.replacement-period:last-of-type{border-bottom:0}
+.replacement-code{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;font-size:12px;font-weight:950;box-shadow:inset 0 0 0 2px #fff,0 0 0 1px #dce8e1}
+.replacement-code.t{background:#dff3e8;color:#087344}.replacement-code.r{background:#fff0d3;color:#98620e}
+.replacement-period-name{font-size:10px;font-weight:900;color:#52665c;margin-bottom:4px}
+.replacement-period-date{font-size:11px;font-weight:900;color:#193f30;font-variant-numeric:tabular-nums}
+.replacement-period-empty{font-size:10px;color:#89958e;font-weight:700}
+.replacement-indicator-foot{padding:9px 14px;background:#f8fbf9;color:#78877f;font-size:9px;line-height:1.55}
+.replacement-indicator-pending{padding:18px 15px;text-align:center;color:#75857c;font-size:11px;line-height:1.7}
+@media(max-width:650px){.wheel-visual-layout{grid-template-columns:1fr;gap:12px;padding:10px}.wheel-visual-layout .rotation-wheel-wrap{max-width:340px}.replacement-indicator{max-width:430px;width:100%;margin:0 auto}}
 .last-code td{background:#e8f6ed!important;color:#17613d;font-weight:bold}
 footer{text-align:center;padding:22px 10px;color:#63766d;font-size:11px;line-height:2}
 footer strong{color:var(--green)}
@@ -198,17 +224,29 @@ footer strong{color:var(--green)}
   <div class="hint">Case non cochée : cycle standard 28/28. Case cochée : cycle alternatif 29/27. Le cycle choisi s’applique aux huit groupes.</div>
  </div>
  <div class="grid" style="margin-top:15px">
-  <div class="field"><label>Groupe de référence / Ma rotation</label><select id="referenceGroup">
-   <option value="1">R1</option><option value="2">R2</option><option value="3" selected>R3</option><option value="4">R4</option>
-   <option value="5">R5</option><option value="6">R6</option><option value="7">R7</option><option value="8">R8</option>
-  </select></div>
-  <div class="field"><label>Date de début de la première semaine de travail</label><input type="date" id="referenceDate"></div>
-  <div class="field automatic-field"><label>Jour de relève · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date</small></div>
+  <div class="field"><label>Date de situation / début de programme</label><input type="date" id="referenceDate"></div>
+  <div class="field automatic-field"><label>Groupe déterminé automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 17/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
+  <div class="field automatic-field"><label>Jour de la semaine · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date choisie</small></div>
   <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
-   <option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3" selected>3 semaines</option><option value="4">4 semaines</option>
+   <option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4" selected>4 semaines</option>
    <option value="5">5 semaines</option><option value="6">6 semaines</option><option value="7">7 semaines</option><option value="8">8 semaines</option>
   </select><small id="workDurationHint" class="field-hint">Selon le cycle choisi</small></div>
   <div class="field"><label>Nombre de semaines de repos</label><select id="restWeeks"></select><small id="restDurationHint" class="field-hint">Selon le cycle choisi</small></div>
+ </div>
+ <div class="cycle-option" style="margin-top:14px">
+  <label class="cycle-choice"><input type="checkbox" id="continueProgram">Continuer — ajouter un deuxième programme complémentaire</label>
+  <div id="continueFields" class="grid" style="display:none;margin-top:13px">
+   <div class="field"><label>Programme 2 — Nombre de semaines de travail</label><select id="workWeeks2"><option value="0">0 semaine(s)</option><option value="1">1 semaine(s)</option><option value="2">2 semaine(s)</option><option value="3">3 semaine(s)</option><option value="4" selected>4 semaine(s)</option><option value="5">5 semaine(s)</option><option value="6">6 semaine(s)</option><option value="7">7 semaine(s)</option><option value="8">8 semaine(s)</option></select></div>
+   <div class="field"><label>Programme 2 — Nombre de semaines de repos</label><select id="restWeeks2"></select></div>
+  </div>
+ </div>
+ <div class="cycle-option" style="margin-top:14px">
+  <label class="cycle-choice" style="display:block;margin-bottom:10px"><input type="checkbox" id="replacementMasterEnabled">Remplacements exceptionnels</label>
+  <div id="replacementOptions" class="grid" style="display:none;gap:12px">
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementTEnabled">Remplacement T — après le travail</label><label>Durée du remplacement T</label><select id="replacementTWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRStartEnabled">Replacement R : Absence Infotype 2001 — au début du premier travail</label><label>Durée de l'absence (début du travail)</label><select id="replacementRStartWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du premier jour du travail du Programme 1.</small></div>
+   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementREndEnabled">Replacement R : Absence Infotype 2001 — après le repos</label><label>Durée de l'absence (après repos)</label><select id="replacementREndWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
+  </div>
  </div>
  <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
  <div id="referenceMessage"></div>
@@ -256,10 +294,10 @@ function applyCycleSelection(){
  updateDurationHints();
 }
 function updateDurationHints(){
- const w=Number(document.getElementById("workWeeks").value||3);
- const r=Number(document.getElementById("restWeeks").value||21)/7;
- const workDays=WORK_DAYS===29?w*7+1:w*7;
- const restDays=WORK_DAYS===29?r*7-1:r*7;
+ const w=Number(document.getElementById("workWeeks").value);
+ const r=Number(document.getElementById("restWeeks").value)/7;
+ const workDays=w===0?0:(WORK_DAYS===29?w*7+1:w*7);
+ const restDays=r===0?0:(WORK_DAYS===29?r*7-1:r*7);
  document.getElementById("workDurationHint").textContent=`${workDays} jours calculés automatiquement`;
  document.getElementById("restDurationHint").textContent=`${restDays} jours calculés automatiquement`;
 }
@@ -268,16 +306,21 @@ function updateRestOptions(){
  const hint=document.getElementById("restDurationHint");
  const previous=select.value;
  if(document.getElementById("cycle2927").checked){
-  select.innerHTML=Array.from({length:8},(_,i)=>`<option value="${(i+1)*7}">${i+1} semaine — ${(i+1)*7-1} jours</option>`).join("");
-  select.value=previous && Number(previous)>=7 && Number(previous)<=56 && Number(previous)%7===0 ? previous : "21";
-  hint.textContent="Durée calculée automatiquement selon le cycle 29/27."
+  select.innerHTML='<option value="0">0 semaine</option>'+Array.from({length:8},(_,i)=>`<option value="${(i+1)*7}">${i+1} semaine — ${(i+1)*7-1} jours</option>`).join("");
+  select.value=previous==="0"?"0":(previous && Number(previous)>=7 && Number(previous)<=56 && Number(previous)%7===0 ? previous : "28");
+  hint.textContent="Durée calculée automatiquement selon le cycle 29/27.";
  }else{
-  select.innerHTML='<option value="7">1 semaine</option><option value="14">2 semaines</option><option value="21">3 semaines</option><option value="28">4 semaines</option><option value="35">5 semaines</option><option value="42">6 semaines</option><option value="49">7 semaines</option><option value="56">8 semaines</option>';
-  select.value=["7","14","21","28","35","42","49","56"].includes(previous)?previous:"21";
+  select.innerHTML='<option value="0">0 semaine</option><option value="7">1 semaine</option><option value="14">2 semaines</option><option value="21">3 semaines</option><option value="28">4 semaines</option><option value="35">5 semaines</option><option value="42">6 semaines</option><option value="49">7 semaines</option><option value="56">8 semaines</option>';
+  select.value=previous==="0"?"0":(["7","14","21","28","35","42","49","56"].includes(previous)?previous:"28");
   hint.textContent="Durée calculée automatiquement selon le cycle 28/28.";
  }
+ updateSecondRestOptions();
+ updateDurationHints();
 }
-
+function updateSecondRestOptions(){
+ const a=document.getElementById("restWeeks"),b=document.getElementById("restWeeks2");
+ if(!a||!b)return;const old=b.value;b.innerHTML=a.innerHTML;b.value=[...b.options].some(o=>o.value===old)?old:a.value;
+}
 /* Dates et outils */
 function parseDate(value){
  if(!value)return null;const p=value.split("-").map(Number);if(p.length!==3)return null;
@@ -302,29 +345,69 @@ function getGroupStatus(groupNumber,date){
  const restPhase=phase-WORK_DAYS,remaining=REST_DAYS-restPhase;
  return{group:groupNumber,status:"rest",week:Math.floor(restPhase/7)+1,phase,daysRemaining:remaining,nextChange:addDays(date,remaining)};
 }
+/* Référence fixe : du 17/10/2026 au 23/10/2026, R4 est en travail
+   durant sa première semaine. Le groupe change chaque samedi, mais le jour
+   affiché reste exactement celui de la date choisie. */
+const ANCHOR_DATE=parseDate("2026-10-17");
+const ANCHOR_GROUP=4;
+function resolveReference(date){
+ const day=date.getUTCDay();
+ const daysSinceSaturday=mod(day-6,7);
+ const weekStart=addDays(date,-daysSinceSaturday);
+ const weekOffset=Math.floor(daysBetween(ANCHOR_DATE,weekStart)/7);
+ const group=mod((ANCHOR_GROUP-1)+weekOffset,8)+1;
+ return{group,weekStart,selectedDay:day};
+}
+function updateReferenceDisplay(){
+ const date=parseDate(document.getElementById("referenceDate").value);
+ const groupDisplay=document.getElementById("referenceGroupDisplay");
+ const dayDisplay=document.getElementById("referenceDayDisplay");
+ if(!date){document.getElementById("referenceGroup").value=String(ANCHOR_GROUP);groupDisplay.value="À déterminer";dayDisplay.value="—";return;}
+ const resolved=resolveReference(date);
+ document.getElementById("referenceGroup").value=String(resolved.group);
+ groupDisplay.value=`R${resolved.group}`;
+ dayDisplay.value=DAY_NAMES[resolved.selectedDay];
+}
 function validateReference(){
- const referenceGroup=Number(document.getElementById("referenceGroup").value);
  const referenceDate=parseDate(document.getElementById("referenceDate").value);
- if(!referenceDate)return{error:"Veuillez saisir la date de début du groupe de référence."};
- const selectedDay=referenceDate.getUTCDay();
- return{referenceGroup,referenceDate,selectedDay};
+ if(!referenceDate)return{error:"Veuillez saisir une date."};
+ const resolved=resolveReference(referenceDate);
+ return{referenceGroup:resolved.group,referenceDate,cycleWeekStart:resolved.weekStart,selectedDay:resolved.selectedDay};
 }
 function calculateAll(){
- const v=validateReference(),message=document.getElementById("referenceMessage");
- if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
- 
- 
- calculateGroups();
- if(!currentGroups)return;
- calculateEmployee();
- if(lastEmployeePlan){document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.add("is-visible"));}
+ const message=document.getElementById("referenceMessage");
+ try{
+  const v=validateReference();
+  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+  // Rebuild the eight rotations from the fixed reference before calculating the agent plan.
+  calculateGroups();
+  if(!currentGroups){message.innerHTML='<div class="notice error">تعذر إنشاء جدول المجموعات. تحقق من التاريخ ثم أعد المحاولة.</div>';return;}
+  calculateEmployee();
+  // Always reveal calculation output, including validation errors.
+  // Previously, errors were written into employeeResult while its parent section
+  // remained hidden, making the Calculate button appear not to work.
+  document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.add("is-visible"));
+  if(!lastEmployeePlan){
+   const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
+   if(employeeCard) employeeCard.classList.add("is-visible");
+   const errorText=document.getElementById("employeeResult").innerText.trim();
+   if(errorText) message.innerHTML += `<div class="notice error" role="alert"><strong>Plan de l’agent non généré :</strong><br>${escapeHTML(errorText)}</div>`;
+   if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
+  } else {
+   const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
+   if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+ }catch(error){
+  console.error("SH-ONE calculation error:",error);
+  message.innerHTML=`<div class="notice error">حدث خطأ أثناء الحساب: ${escapeHTML(error&&error.message?error.message:"خطأ غير محدد")}.</div>`;
+ }
 }
 function calculateGroups(){
  applyCycleSelection();const v=validateReference(),message=document.getElementById("referenceMessage");
  if(v.error){message.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
  currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
  const checkDate=parseDate(document.getElementById("checkDate").value)||v.referenceDate;renderGroups(checkDate);
- message.innerHTML=`<div class="notice success">Groupe de référence R${v.referenceGroup} confirmé. Le calcul des huit groupes commence à partir du : ${formatDate(v.referenceDate)}.<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
+ message.innerHTML=`<div class="notice success">Date ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}) : groupe R${v.referenceGroup}. Début du calcul des phases à partir du ${formatDate(v.referenceDate)} (${DAY_NAMES[v.selectedDay]}).<br><strong>Cycle appliqué à tous les groupes : </strong> ${WORK_DAYS} jours de travail + ${REST_DAYS} jours de repos。</div>`;
  localStorage.setItem("rotation_reference",JSON.stringify({referenceGroup:v.referenceGroup,referenceDate:inputDate(v.referenceDate),referenceDay:v.selectedDay,checkDate:inputDate(checkDate)}));
 }
 function renderGroups(date){
@@ -337,10 +420,13 @@ function renderGroups(date){
   const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
   const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=180+143*Math.cos(angle),cy=180+143*Math.sin(angle);
   const fill=isWork?"#07845b":"#d6aa45",stroke=isMine?"#f58220":"#ffffff",radius=isMine?31:25;
-  return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}">
+  const dayNumber=isWork?st.phase+1:st.phase-WORK_DAYS+1;
+  const dayLabel=dayNumber===1?"1er j":`${dayNumber}e j`;
+  return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}, ${dayLabel}">
    <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+5}" fill="none" stroke="${isMine?"#f58220":"#dce8e1"}" stroke-width="${isMine?4:1}"/>
    <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
-   <text x="${cx.toFixed(1)}" y="${(cy+5).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?17:15}" font-weight="900">R${g.number}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy-4).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?15:13}" font-weight="900">R${g.number}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+12).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?9:8}" font-weight="800">${dayLabel}</text>
    <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="#365448" font-size="10" font-weight="700">${isWork?"TRAVAIL":"REPOS"}</text>
   </g>`;
  }).join("");
@@ -364,7 +450,7 @@ function renderGroups(date){
  }).join("");
  const sameStatusCount=currentGroups.filter(g=>g.number!==myGroup&&getGroupStatus(g.number,date).status===mine.status).length;
  const otherStatusCount=7-sameStatusCount;
- document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div>${wheelMarkup}</div>`;
+ document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div><div class="wheel-visual-layout" style="grid-template-columns:1fr;max-width:430px">${wheelMarkup}</div></div>`;
 }
 function setMyRotationCompare(value){
  const group=Number(value);if(group<1||group>8||!currentGroups||!currentCheckDate)return;
@@ -373,77 +459,105 @@ function setMyRotationCompare(value){
 }
 function setCheckToday(){const n=new Date(),today=new Date(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()));document.getElementById("checkDate").value=inputDate(today);if(currentGroups)renderGroups(today);}
 
-/* Recherche d'un groupe en travail */
-function findWorkingGroup(date,excludedGroup){
- const candidates=[];for(let i=1;i<=8;i++){if(i===excludedGroup)continue;const s=getGroupStatus(i,date);if(s&&s.status==="work")candidates.push(s);}
- candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||a.group-b.group);return candidates[0]||null;
+/* Choix déterministe : maximiser la durée continue disponible, puis départager
+   les égalités selon l'ordre circulaire R1 → R2 → … → R8 → R1. */
+function circularDistance(group,previousGroup){
+ const previous=Number(previousGroup);
+ if(!Number.isInteger(previous)||previous<1||previous>8)return group;
+ return mod(group-previous,8)||8;
 }
-
-/* Planification du travail : durée demandée en jours */
-function calculateWorkPlan(startDate,startGroup,requiredDays){
- let remaining=requiredDays,currentDate=new Date(startDate),currentGroup=startGroup;const segments=[];let safety=0;
- while(remaining>0&&safety++<20){
-  const status=getGroupStatus(currentGroup,currentDate);
-  if(!status||status.status!=="work")return{error:`Le groupe R${currentGroup} à la date du ${formatDate(currentDate)} n’est pas en période de travail.`};
-  const duration=Math.min(remaining,status.daysRemaining),endDate=addDays(currentDate,duration-1);
-  segments.push({group:currentGroup,start:new Date(currentDate),end:endDate,days:duration,type:"work"});
-  remaining-=duration;if(remaining===0)return{segments,endDate,nextDate:addDays(endDate,1)};
-  const transferDate=addDays(endDate,1),next=findWorkingGroup(transferDate,currentGroup);
-  if(!next)return{error:`Aucun autre groupe disponible en période de travail à cette date :${formatDate(transferDate)}.`};
-  currentDate=transferDate;currentGroup=next.group;
- }
- return{error:"Impossible de terminer le calcul de la périodesemaines（Travail）."};
-}
-
-/* Recherche des phasessemaines（Repos） : chaque phase doit correspondre à une durée autorisée */
-function findRestGroupExact(date,requiredDays,excludedGroup){
+/* Le groupe opposé est situé à quatre positions dans le cycle R1..R8. */
+function oppositeGroup(group){return mod(Number(group)-1+4,8)+1;}
+function findNextWorkingGroupInRotation(date,previousGroup){
  const candidates=[];
- for(let i=1;i<=8;i++){
-  if(i===excludedGroup)continue;
-  const status=getGroupStatus(i,date);
-  if(status&&status.status==="rest"&&status.daysRemaining===requiredDays)candidates.push(status);
+ for(let group=1;group<=8;group++){
+  const status=getGroupStatus(group,date);
+  if(status&&status.status==="work")candidates.push(status);
  }
- return candidates.sort((a,b)=>a.group-b.group);
+ candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+ return candidates[0]||null;
 }
-function calculateRestPlan(startDate,requiredDays){
- const allowedDurations=WORK_DAYS===29?[27,20,13,6]:[28,21,14,7];
+
+/* Recherche globale du travail : la dernière rotation doit entrer en repos
+   exactement au début de la période de repos de l'agent. */
+function calculateWorkPlan(startDate,startGroup,requiredDays){
  const memo=new Set();
- function search(date,remaining,previousGroup,path){
+ function search(date,remaining,previousGroup,path,first){
   if(remaining===0)return path;
-  if(remaining<0)return null;
-  const key=[inputDate(date),remaining,previousGroup].join("|");
+  if(remaining<0||path.length>=20)return null;
+  const key=[inputDate(date),remaining,previousGroup??"-",first?"1":"0"].join("|");
   if(memo.has(key))return null;
   memo.add(key);
-  /* Priorité aux phases complètes correspondant exactement au cycle réel. */
-  for(const duration of allowedDurations){
-   if(duration>remaining)continue;
-   const matches=findRestGroupExact(date,duration,previousGroup);
-   for(const match of matches){
-    const end=addDays(date,duration-1);
-    const segment={group:match.group,start:new Date(date),end,days:duration,type:"rest",partial:false};
-    const result=search(addDays(end,1),remaining-duration,match.group,[...path,segment]);
-    if(result)return result;
+  let candidates=[];
+  if(first){
+   const status=getGroupStatus(startGroup,date);
+   if(status&&status.status==="work")candidates=[status];
+  }else{
+   for(let group=1;group<=8;group++){
+    const status=getGroupStatus(group,date);
+    if(status&&status.status==="work")candidates.push(status);
    }
   }
-
-  /* Dernière phase flexible : elle peut être plus courte que la durée normale,
-     uniquement si le groupe est réellement en repos et dispose du reliquat. */
-  for(let group=1;group<=8;group++){
-   if(group===previousGroup)continue;
-   const status=getGroupStatus(group,date);
-   if(status && status.status==="rest" && status.daysRemaining>=remaining){
-    const end=addDays(date,remaining-1);
-    const segment={group,start:new Date(date),end,days:remaining,type:"rest",partial:status.daysRemaining>remaining};
-    return [...path,segment];
-   }
+  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  for(const candidate of candidates){
+   const duration=Math.min(remaining,candidate.daysRemaining);
+   const end=addDays(date,duration-1),nextDate=addDays(end,1);
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"work",partial:duration<candidate.daysRemaining};
+   // La dernière phase peut être partielle : une durée inférieure à 4 semaines
+   // ne doit pas obligatoirement atteindre la relève complète du groupe.
+   if(duration===remaining)return [...path,segment];
+   const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
+   if(result)return result;
   }
   return null;
  }
- const segments=search(new Date(startDate),requiredDays,null,[]);
- if(!segments){
-  const allowed=allowedDurations.join(", ");
-  return{error:`À partir du ${formatDate(startDate)}, aucune combinaison de phases de repos de ${allowed} jours n’a pu être trouvée pour un total de ${requiredDays} jours, compte tenu des disponibilités réelles des huit groupes.`,segments:[]};
+ const segments=search(new Date(startDate),requiredDays,null,[],true);
+ if(!segments)return{error:`Impossible de trouver une séquence de travail de ${requiredDays} jours qui se termine exactement lorsqu’une rotation entre en repos. Vérifiez la date et la durée choisies.`};
+ const endDate=segments[segments.length-1].end;
+ return{segments,endDate,nextDate:addDays(endDate,1)};
+}
+
+/* Recherche globale du repos : la dernière rotation doit entrer en travail
+   exactement à la fin de la période de repos de l'agent. */
+function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
+ const memo=new Set();
+ function search(date,remaining,previousGroup,path,first){
+  if(remaining===0)return path;
+  if(remaining<0||path.length>=20)return null;
+  const key=[inputDate(date),remaining,previousGroup??"-",first?"1":"0"].join("|");
+  if(memo.has(key))return null;
+  memo.add(key);
+  let candidates=[];
+  if(first&&preferredGroup){
+   const preferred=getGroupStatus(preferredGroup,date);
+   if(preferred&&preferred.status==="rest")candidates=[preferred];
+  }
+  // Si le groupe préféré n'est pas au repos à cette date, rechercher les
+  // groupes réellement au repos au lieu d'échouer avec une séquence vide.
+  if(!candidates.length){
+   for(let group=1;group<=8;group++){
+    const status=getGroupStatus(group,date);
+    if(status&&status.status==="rest")candidates.push(status);
+   }
+  }
+  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  for(const candidate of candidates){
+   const duration=Math.min(remaining,candidate.daysRemaining);
+   const end=addDays(date,duration-1),nextDate=addDays(end,1);
+   const partial=duration<candidate.daysRemaining;
+   const segment={group:candidate.group,start:new Date(date),end,days:duration,type:"rest",partial};
+   // يسمح بانتهاء فترة الراحة داخل مرحلة المجموعة، دون اشتراط انتظار
+   // انتقالها الكامل إلى العمل؛ وهذا ضروري للمدد الأقل من أربعة أسابيع.
+   if(duration===remaining)return [...path,segment];
+   const result=search(nextDate,remaining-duration,candidate.group,[...path,segment],false);
+   if(result)return result;
+  }
+  return null;
  }
+ const segments=search(new Date(startDate),requiredDays,preferredGroup,[],true);
+ if(!segments)return{error:`Impossible de trouver une séquence de repos de ${requiredDays} jours qui se termine exactement lorsqu’une rotation entre en travail. Vérifiez la date et la durée choisies.`,segments:[]};
  return{segments,matches:segments.map(s=>s.group),endDate:segments[segments.length-1].end};
 }
 
@@ -460,51 +574,110 @@ function segmentHTML(s,i,label){
   </div>`;
 }
 
+/* Carte circulaire du remplacement, placée à côté de sa phase correspondante */
+function replacementOrbitHTML(key, segments=[]){
+ const cfg={T:{enabled:"replacementTEnabled",weeks:"replacementTWeeks",title:"Remplacement T",label:"REMPLACEMENT TRAVAIL"},RSTART:{enabled:"replacementRStartEnabled",weeks:"replacementRStartWeeks",title:"Absence R — début travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",weeks:"replacementREndWeeks",title:"Absence R — après repos",label:"ABSENCE INFOTYPE 2001"}}[key];
+ if(!cfg||!document.getElementById(cfg.enabled)?.checked)return "";
+ const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7,cls=key==="T"?"t":"r";
+ const dates=seg?`<span>Du ${formatDate(parseDate(seg.start))}</span><span>Au ${formatDate(parseDate(seg.end))}</span>`:`<span>${weeks===0?"Aucune période (0 semaine)":"Dates après calcul"}</span>`;
+ return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
+}
+
 /* Tableau des codifications */
 function buildCodingRows(plan){
  const segments=[...plan.workSegments.map(s=>({...s,type:"Travail"})),...plan.restSegments.map(s=>({...s,type:"Repos"}))].sort((a,b)=>a.start.localeCompare(b.start));
- if(!segments.length)return[];
- return segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1};});
+ const base=segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};});
+ const extra=(plan.replacementSegments||[]).map((s,i)=>({number:base.length+i+1,group:s.code,type:s.type||("Remplacement "+s.code),start:s.start,end:s.end,last:false,replacement:true}));
+ return [...base,...extra].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement));
 }
 function renderCodingSummary(plan){
  const rows=buildCodingRows(plan);if(!rows.length){document.getElementById("codingSummary").innerHTML='<div class="empty">Aucune codification de groupe à afficher.</div>';return;}
- const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>R${r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':"Terminée"}</td></tr>`).join("");
- document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification :</strong> Groupe R${rows[rows.length-1].group}<br>Valable du :${formatDate(parseDate(rows[rows.length-1].start))} au 31/12/9999。</div></div>`;
+ const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>${r.replacement?r.group:"R"+r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':(r.replacement?"Période exceptionnelle":"Terminée")}</td></tr>`).join("");
+ const lastBase=rows.filter(r=>!r.replacement).at(-1);
+ document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe / Code</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification du roulement :</strong> Groupe R${lastBase.group}<br>Valable du :${formatDate(parseDate(lastBase.start))} au 31/12/9999.</div></div>`;
 }
 
 /* Calcul du plan de l'agent */
 function calculateEmployee(){
- applyCycleSelection();const v=validateReference(),output=document.getElementById("employeeResult");
- if(v.error){output.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
+ applyCycleSelection();const v=validateReference(),out=document.getElementById("employeeResult");
+ if(v.error){out.innerHTML=`<div class="notice error">${escapeHTML(v.error)}</div>`;return;}
  if(!currentGroups)currentGroups=buildGroups(v.referenceGroup,v.referenceDate);
- const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup;
- const startDate=v.referenceDate,workWeeks=Number(document.getElementById("workWeeks").value);
- const selectedRestWeeks=Number(document.getElementById("restWeeks").value)/7,is2927=WORK_DAYS===29;
- if(!startDate){output.innerHTML='<div class="notice error">Veuillez saisir la date de début de travail de l’agent.</div>';return;}
- if(startDate.getUTCDay()!==v.selectedDay){output.innerHTML=`<div class="notice error">La date de début de l’agent ne correspond pas au jour de relève sélectionné (${DAY_NAMES[v.selectedDay]}).</div>`;return;}
- const initialStatus=getGroupStatus(startGroup,startDate);
- if(initialStatus.status!=="work"){output.innerHTML=`<div class="notice error">Le groupe R${startGroup} est en période de repos à la date du ${formatDate(startDate)}.</div>`;return;}
-
- /* En cycle 29/27 : +1 jour pour le travail et -1 jour pour le repos. */
- const workDays=is2927?(workWeeks*7+1):(workWeeks*7);
- const restDays=is2927?(selectedRestWeeks*7-1):(selectedRestWeeks*7);
- if(!Number.isInteger(restDays)||restDays<1||restDays>56){output.innerHTML='<div class="notice error">La durée de repos calculée est invalide. Veuillez vérifier le nombre de semaines sélectionné.</div>';return;}
- const workPlan=calculateWorkPlan(startDate,startGroup,workDays);
- if(workPlan.error){output.innerHTML=`<div class="notice error">${escapeHTML(workPlan.error)}</div>`;lastEmployeePlan=null;document.getElementById("codingSummary").innerHTML='<div class="empty">Impossible de générer les codifications des groupes.</div>';return;}
- const restStart=addDays(workPlan.endDate,1),restPlan=calculateRestPlan(restStart,restDays);
- const workHTML=workPlan.segments.map((s,i)=>segmentHTML(s,i,"Phase de travail "+(i+1))).join("");
- const restHTML=restPlan.segments.map((s,i)=>segmentHTML(s,i,"Phase de repos "+(i+1))).join("");
- const restMessage=restPlan.error?`<div class="notice error"><strong>Impossible d’établir le plan de repos :</strong><br>${escapeHTML(restPlan.error)}<br>Aucun groupe de remplacement n’a été inventé.</div>`:`<div class="notice success"><strong>Les phases de repos conformes aux critères ont été trouvées.</strong><br>Ordre des groupes :  ${restPlan.matches.map(x=>"R"+x).join(" → ")}<br>Durée des phases :  ${restPlan.segments.map(s=>s.days+" jours"+(s.partial?"(dernière phase raccourcie)":"")).join(" + ")}<br>Début :  ${formatDate(restStart)}<br>Fin :  ${formatDate(restPlan.endDate)}<br>Durée totale : ${restDays} jours(base sélectionnée : ${selectedRestWeeks} semaines).</div>`;
- lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks,workDays,restDays,restWeeks:selectedRestWeeks,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,
-  workSegments:workPlan.segments.map(s=>({group:s.group,start:inputDate(s.start),end:inputDate(s.end),days:s.days})),
-  restSegments:restPlan.segments.map(s=>({group:s.group,start:inputDate(s.start),end:inputDate(s.end),days:s.days})),
-  workEnd:inputDate(workPlan.endDate),restStart:inputDate(restStart),restEnd:restPlan.endDate?inputDate(restPlan.endDate):"",restSuccess:!restPlan.error,restError:restPlan.error||""};
+ const name=document.getElementById("employeeName").value.trim(),startGroup=v.referenceGroup,startDate=v.referenceDate;
+ const ww=Number(document.getElementById("workWeeks").value),rw=Number(document.getElementById("restWeeks").value)/7,alt=WORK_DAYS===29,cont=document.getElementById("continueProgram").checked;
+ if(ww===0&&rw===0){out.innerHTML='<div class="notice error">Les durées de travail et de repos ne peuvent pas être toutes les deux égales à zéro.</div>';lastEmployeePlan=null;return;}
+ const referenceStatus=getGroupStatus(startGroup,startDate);
+ // Cas 0 semaine de travail :
+ // - cycle 28/28 : inversion immédiate du groupe dès la date de référence ;
+ // - cycle alternatif de 29 jours de travail : le premier jour est codifié
+ //   Absence-2001, puis le groupe opposé prend le relais le lendemain.
+ const zeroWorkTransition=ww===0&&alt;
+ const initialRestGroup=ww===0?oppositeGroup(startGroup):null;
+ const initialRestDate=zeroWorkTransition?addDays(startDate,1):startDate;
+ const initialRestStatus=ww===0?getGroupStatus(initialRestGroup,initialRestDate):null;
+ if((ww>0&&referenceStatus.status!=="work")||(ww===0&&(!initialRestStatus||initialRestStatus.status!=="rest"))){
+  out.innerHTML=`<div class="notice error">${ww===0?`Le groupe opposé R${initialRestGroup} doit être en période de repos à partir du ${formatDate(initialRestDate)}.`:`Le groupe R${startGroup} doit être en période de travail à la date de référence.`}</div>`;return;
+ }
+ const make=(date,group,w,r)=>{
+  const wd=w===0?0:(w*7+(alt?1:0)),rd=r===0?0:(r*7-(alt?1:0));
+  if(rd<0||rd>56)return{error:"Durée de repos invalide."};
+  let work,restStart;
+  if(wd===0){
+   work={segments:[],endDate:addDays(date,-1),nextDate:new Date(date)};
+   restStart=zeroWorkTransition?addDays(date,1):new Date(date);
+  }else{work=calculateWorkPlan(date,group,wd);if(work.error)return{error:work.error};restStart=addDays(work.endDate,1);}
+  let rest;
+  if(rd===0){rest={segments:[],matches:[],endDate:addDays(restStart,-1)};}
+  else{
+   const lastWorkGroup=work.segments.length?work.segments[work.segments.length-1].group:null;
+   const preferredRestGroup=wd===0?oppositeGroup(group):lastWorkGroup;
+   rest=calculateRestPlan(restStart,rd,preferredRestGroup);
+   if(rest.error)return{error:rest.error};
+  }
+  return{work,rest,workDays:wd,restDays:rd,restStart};
+ };
+ const ps=[make(startDate,startGroup,ww,rw)];
+ if(ps[0].error){out.innerHTML=`<div class="notice error">${escapeHTML(ps[0].error)}</div>`;lastEmployeePlan=null;return;}
+ const tEnabled=document.getElementById("replacementTEnabled").checked;
+ const rStartEnabled=document.getElementById("replacementRStartEnabled").checked;
+ const rEndEnabled=document.getElementById("replacementREndEnabled").checked;
+ const replacementEnabled=tEnabled||rStartEnabled||rEndEnabled;
+ if(replacementEnabled&&(ww!==4||rw!==4)){out.innerHTML='<div class="notice error">Les remplacements sont disponibles lorsque le programme de référence est réglé sur 4 semaines de travail et 4 semaines de repos.</div>';lastEmployeePlan=null;return;}
+ const replacementSegments=[];
+ if(zeroWorkTransition){
+  replacementSegments.push({key:"ZERO_WORK_TRANSITION",code:"Absence-2001",type:"Absence-2001 (Infotype 2001)",start:inputDate(startDate),end:inputDate(startDate),weeks:0});
+ }
+ const addReplacement=(key,code,date,weeks)=>{if(weeks>0)replacementSegments.push({key,code,start:inputDate(date),end:inputDate(addDays(date,weeks*7-1)),weeks});};
+ if(tEnabled)addReplacement("T","T",addDays(ps[0].work.endDate,1),Number(document.getElementById("replacementTWeeks").value));
+ if(rStartEnabled)addReplacement("RSTART","R",startDate,Number(document.getElementById("replacementRStartWeeks").value));
+ if(rEndEnabled)addReplacement("REND","R",addDays(ps[0].rest.endDate,1),Number(document.getElementById("replacementREndWeeks").value));
+ if(cont){
+  const p=ps[0],start2=addDays(p.rest.endDate,1);
+  // Continuer : le groupe qui termine sa période de repos dans le programme 1
+  // est exactement celui qui reprend le travail au début du programme 2.
+  // Aucun passage au groupe opposé ni recherche circulaire d'un autre groupe.
+  const startGroup2=(p.rest.segments.at(-1)||p.work.segments.at(-1)||{group:startGroup}).group;
+  const w2=Number(document.getElementById("workWeeks2").value),r2=Number(document.getElementById("restWeeks2").value)/7;
+  const status2=getGroupStatus(startGroup2,start2);
+  if(!status2||status2.status!=="work"){
+   out.innerHTML=`<div class="notice error">Programme 2 : le groupe R${startGroup2}, dernier groupe ayant terminé le repos du programme 1, n'est pas indiqué en travail à la date de reprise (${formatDate(start2)}). Vérifiez les périodes du programme 1.</div>`;
+   lastEmployeePlan=null;return;
+  }
+  const p2=make(start2,startGroup2,w2,r2);
+  if(p2.error){out.innerHTML=`<div class="notice error">Programme 2 — démarrage obligatoire avec R${startGroup2} : ${escapeHTML(p2.error)}</div>`;lastEmployeePlan=null;return;}
+  ps.push(p2);
+ }
+ const ws=ps.flatMap(p=>p.work.segments),rs=ps.flatMap(p=>p.rest.segments),last=ps.at(-1);
+ const sumW=ps.reduce((n,p)=>n+p.workDays,0),sumR=ps.reduce((n,p)=>n+p.restDays,0);
+ const html=ps.map((p,i)=>`<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length?p.work.segments.map((x,j)=>segmentHTML(x,j,"Phase de travail "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("T",replacementSegments)+replacementOrbitHTML("RSTART",replacementSegments):""}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length?p.rest.segments.map((x,j)=>segmentHTML(x,j,"Phase de repos "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("REND",replacementSegments):""}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`).join("");
+ lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks:ww,workDays:sumW,restDays:sumR,restWeeks:rw,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,continuing:cont,
+  programs:ps.map((p,i)=>({number:i+1,workDays:p.workDays,restDays:p.restDays})),
+  workSegments:ws.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),restSegments:rs.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),
+  workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:"",replacementEnabled,replacementFlags:{tEnabled,rStartEnabled,rEndEnabled},replacementSegments};
  renderCodingSummary(lastEmployeePlan);
- output.innerHTML=`<div class="notice info"><strong>Cycle appliqué aux huit groupes :</strong> ${WORK_DAYS} jours de travail / ${REST_DAYS} jours de repos.</div>
- <h3 style="color:var(--green);font-size:15px;margin-top:22px">A. Déroulement de la période de travail</h3>${workHTML}
- <div class="notice info"><strong>Ordre des groupes de travail : </strong> ${workPlan.segments.map(s=>"R"+s.group).join(" ← ")}<br>Durée totale : ${workDays} jours (base sélectionnée : ${workWeeks} semaines).</div>
- <h3 style="color:var(--green);font-size:15px;margin-top:22px">B. Déroulement de la période de repos</h3>${restHTML}${restMessage}
- <div class="notice info"><strong>Principe de calcul :</strong><br>Chaque changement de groupe intervient le lendemain de la fin de la phase précédente.La position réelle de chaque groupe d’accueil dans le cycle de roulement est conservée.</div>`;
+ if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
+ const replacementHTML=replacementEnabled?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.length?replacementSegments.map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>Remplacement ${x.code}</strong> — ${x.weeks} semaine(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join(""):`<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>`}`:"";
+ const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence-2001 — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
+ out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${zeroTransitionHTML}${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1, avec le même groupe que celui qui vient de terminer sa période de repos.</div>`;
 }
 function clearEmployeeResult(){document.getElementById("employeeResult").innerHTML="";document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications des groupes.</div>';lastEmployeePlan=null;}
 
@@ -514,27 +687,61 @@ function openPreview(){
  const p=lastEmployeePlan,paper=document.getElementById("previewPaper");
  const rows=[
   ...p.workSegments.map((s,i)=>({phase:"Travail "+(i+1),group:s.group,state:"Travail",start:s.start,end:s.end,days:s.days})),
-  ...p.restSegments.map((s,i)=>({phase:"Repos "+(i+1),group:s.group,state:"Repos",start:s.start,end:s.end,days:s.days}))
+  ...p.restSegments.map((s,i)=>({phase:"Repos "+(i+1),group:s.group,state:"Repos",start:s.start,end:s.end,days:s.days})),
+  ...(p.replacementSegments||[]).map(s=>({phase:"Remplacement "+s.code,group:s.code,state:"Remplacement",start:s.start,end:s.end,days:daysBetween(parseDate(s.start),addDays(parseDate(s.end),1))}))
  ].sort((a,b)=>a.start.localeCompare(b.start));
 
- const codingRows=rows.map((r,i)=>{
-   const next=rows[i+1];
+ const baseRows=rows.filter(r=>r.state!=="Remplacement");
+ const codingRows=[...baseRows.map((r,i)=>{
+   const next=baseRows[i+1];
    const codingEnd=next?inputDate(addDays(parseDate(next.start),-1)):LAST_DATE;
    return {...r,number:i+1,codingEnd};
- });
+ }),...(p.replacementSegments||[]).map((r,i)=>({phase:"Remplacement "+r.code,group:r.code,state:"Remplacement",start:r.start,end:r.end,days:daysBetween(parseDate(r.start),addDays(parseDate(r.end),1)),number:baseRows.length+i+1,codingEnd:r.end}))].sort((a,b)=>a.start.localeCompare(b.start));
  const phaseRows=codingRows.map(r=>`<tr>
-  <td>${r.number}</td><td>${r.phase}</td><td><strong>R${r.group}</strong></td>
+  <td>${r.number}</td><td>${r.phase}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
   <td>${r.state}</td><td>${formatDate(parseDate(r.start))}</td>
   <td>${formatDate(parseDate(r.end))}</td><td>${r.days}</td>
   <td>${formatDate(parseDate(r.start))} → ${r.codingEnd===LAST_DATE?"31/12/9999":formatDate(parseDate(r.codingEnd))}</td>
  </tr>`).join("");
+
+ // Regrouper les rotations identiques qui se suivent sans interruption.
+ // Une nouvelle ligne commence uniquement lorsqu'une autre rotation intervient.
+ const mergedRotations=[];
+ for(const r of [...codingRows].sort((a,b)=>a.start.localeCompare(b.start))){
+  const previous=mergedRotations[mergedRotations.length-1];
+  const nextDay=previous?inputDate(addDays(parseDate(previous.end),1)):null;
+  if(previous && previous.group===r.group && nextDay===r.start && previous.state!=="Remplacement" && r.state!=="Remplacement"){
+   previous.end=r.end;
+   previous.days+=r.days;
+   previous.states=[...new Set([...(previous.states||[previous.state]),r.state])];
+  }else{
+   mergedRotations.push({...r,states:[r.state]});
+  }
+ }
+ // في الجدول الثاني: إظهار Absence-2001 أولاً إذا كان موجوداً،
+ // مع الإبقاء على قاعدة إخفاء أول دوران عادي عند وجود دورانين أو أكثر.
+ const absenceRows=mergedRotations.filter(r=>r.group==="Absence-2001" || String(r.phase||"").includes("Absence-2001"));
+ const normalRotations=mergedRotations.filter(r=>!absenceRows.includes(r));
+ const rotationsForPrint=normalRotations.length>=2?normalRotations.slice(1):normalRotations;
+ const absencePrintRows=absenceRows.map((r,i)=>`<tr>
+  <td>${i+1}</td><td><strong>Absence-2001</strong></td>
+  <td>Absence-2001 (Infotype 2001)</td><td>${formatDate(parseDate(r.start))}</td>
+  <td>${formatDate(parseDate(r.end))}</td><td>Absence exceptionnelle — premier jour</td>
+ </tr>`).join("");
+ const rotationPrintRows=rotationsForPrint.map((r,i)=>`<tr>
+  <td>${absenceRows.length+i+1}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
+  <td>${r.states.join(" + ")}</td><td>${formatDate(parseDate(r.start))}</td>
+  <td>${normalRotations.indexOf(r)===normalRotations.length-1?"21/12/9999":formatDate(parseDate(r.end))}</td>
+  <td>${normalRotations.indexOf(r)===normalRotations.length-1?"Codification finale":"Rotation suivante"}</td>
+ </tr>`).join("");
+ const mergedRows=absencePrintRows+rotationPrintRows;
 
  const ref=validateReference();
  const checkDate=parseDate(document.getElementById("checkDate").value) ||
                 (ref.referenceDate || parseDate(p.startDate));
 
 
- const last=codingRows[codingRows.length-1];
+ const last=codingRows.filter(r=>r.state!=="Remplacement").at(-1);
  paper.innerHTML=`
   <div class="print-head">
    <div class="print-brand">SONATRACH</div>
@@ -563,6 +770,11 @@ function openPreview(){
    <table class="print-table">
     <thead><tr><th>N°</th><th>Phase</th><th>Groupe</th><th>Situation</th><th>Début phase</th><th>Fin phase</th><th>Durée</th><th>Période de codification</th></tr></thead>
     <tbody>${phaseRows}</tbody>
+   </table>
+   <div class="print-block-title" style="margin-top:2.5mm">Tableau récapitulatif des rotations continues</div>
+   <table class="print-table">
+    <thead><tr><th>N°</th><th>Rotation</th><th>Situation(s)</th><th>Du</th><th>Au</th><th>Observation</th></tr></thead>
+    <tbody>${mergedRows}</tbody>
    </table>
    <div class="print-summary">
     <b>Parcours travail :</b> ${p.workSegments.map(s=>"R"+s.group).join(" → ")}
@@ -648,11 +860,26 @@ function exportCSV(){
 /* Restauration des paramètres */
 function restoreSettings(){
  const saved=localStorage.getItem("rotation_reference");
- if(saved){try{const d=JSON.parse(saved);document.getElementById("referenceGroup").value=d.referenceGroup;document.getElementById("referenceDate").value=d.referenceDate;document.getElementById("checkDate").value=d.checkDate;}catch(e){}}
+ if(saved){try{const d=JSON.parse(saved);document.getElementById("referenceDate").value=d.referenceDate;document.getElementById("checkDate").value=d.checkDate;}catch(e){}}
  const savedCycle=localStorage.getItem("rotation_cycle2927");document.getElementById("cycle2927").checked=savedCycle==="1";applyCycleSelection();renderRecords();
 }
 
 /* Événements */
+const replacementMaster=document.getElementById("replacementMasterEnabled");
+const replacementOptions=document.getElementById("replacementOptions");
+replacementMaster.addEventListener("change",()=>{
+ replacementOptions.style.display=replacementMaster.checked?"grid":"none";
+ if(!replacementMaster.checked){["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled"].forEach(id=>document.getElementById(id).checked=false);}
+ if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
+});
+["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled","replacementTWeeks","replacementRStartWeeks","replacementREndWeeks"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);}));
+const continueToggle=document.getElementById("continueProgram");
+const continueFields=document.getElementById("continueFields");
+continueToggle.addEventListener("change",()=>{
+ continueFields.style.display=continueToggle.checked?"grid":"none";
+ if(continueToggle.checked)updateSecondRestOptions();
+});
+continueFields.style.display=continueToggle.checked?"grid":"none";
 document.getElementById("cycle2927").addEventListener("change",()=>{
  document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.remove("is-visible"));
  applyCycleSelection();currentGroups=null;lastEmployeePlan=null;
@@ -662,21 +889,17 @@ document.getElementById("cycle2927").addEventListener("change",()=>{
  document.getElementById("referenceMessage").innerHTML='<div class="notice info">Le cycle a été modifié. Cliquez sur « Calculer la situation des groupes » pour appliquer le nouveau cycle aux huit groupes.</div>';
 });
 document.getElementById("checkDate").addEventListener("change",()=>{if(!currentGroups)return;const date=parseDate(document.getElementById("checkDate").value);if(date)renderGroups(date);});
+
 document.getElementById("workWeeks").addEventListener("change",updateDurationHints);
 document.getElementById("restWeeks").addEventListener("change",updateDurationHints);
-document.getElementById("referenceDate").addEventListener("change",()=>{
- const date=parseDate(document.getElementById("referenceDate").value);
- document.getElementById("referenceDayDisplay").value=date?DAY_NAMES[date.getUTCDay()] : "—";
-
-});
-document.getElementById("referenceGroup").addEventListener("change",()=>{
-
-});
+document.getElementById("referenceDate").addEventListener("change",updateReferenceDisplay);
+window.calculateAll=calculateAll;
+const calculateButton=document.querySelector('.actions button.primary[onclick="calculateAll()"]');
+if(calculateButton)calculateButton.addEventListener("click",event=>{event.preventDefault();calculateAll();});
 restoreSettings();
 updateDurationHints();
 if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
-const restoredReferenceDate=parseDate(document.getElementById("referenceDate").value);
-if(restoredReferenceDate){document.getElementById("referenceDayDisplay").value=DAY_NAMES[restoredReferenceDate.getUTCDay()];}
+updateReferenceDisplay();
 
 </script>
 </body>
