@@ -225,7 +225,7 @@ footer strong{color:var(--green)}
  </div>
  <div class="grid" style="margin-top:15px">
   <div class="field"><label>Date de situation / début de programme</label><input type="date" id="referenceDate"></div>
-  <div class="field automatic-field"><label>Groupe déterminé automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 17/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
+  <div class="field automatic-field"><label>Groupe déterminé automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 19/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
   <div class="field automatic-field"><label>Jour de la semaine · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date choisie</small></div>
   <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
    <option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4" selected>4 semaines</option>
@@ -345,15 +345,15 @@ function getGroupStatus(groupNumber,date){
  const restPhase=phase-WORK_DAYS,remaining=REST_DAYS-restPhase;
  return{group:groupNumber,status:"rest",week:Math.floor(restPhase/7)+1,phase,daysRemaining:remaining,nextChange:addDays(date,remaining)};
 }
-/* Référence fixe : du 17/10/2026 au 23/10/2026, R4 est en travail
-   durant sa première semaine. Le groupe change chaque samedi, mais le jour
-   affiché reste exactement celui de la date choisie. */
-const ANCHOR_DATE=parseDate("2026-10-17");
+/* Référence fixe : du lundi 19/10/2026 au dimanche 25/10/2026,
+   R4 est en première semaine de travail. Le groupe de référence change
+   chaque lundi selon le cycle des huit groupes R1 à R8. */
+const ANCHOR_DATE=parseDate("2026-10-19");
 const ANCHOR_GROUP=4;
 function resolveReference(date){
  const day=date.getUTCDay();
- const daysSinceSaturday=mod(day-6,7);
- const weekStart=addDays(date,-daysSinceSaturday);
+ const daysSinceMonday=mod(day-1,7);
+ const weekStart=addDays(date,-daysSinceMonday);
  const weekOffset=Math.floor(daysBetween(ANCHOR_DATE,weekStart)/7);
  const group=mod((ANCHOR_GROUP-1)+weekOffset,8)+1;
  return{group,weekStart,selectedDay:day};
