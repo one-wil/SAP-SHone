@@ -578,7 +578,7 @@ function segmentHTML(s,i,label){
 function replacementOrbitHTML(key, segments=[]){
  const cfg={T:{enabled:"replacementTEnabled",weeks:"replacementTWeeks",title:"Remplacement T",label:"REMPLACEMENT TRAVAIL"},RSTART:{enabled:"replacementRStartEnabled",weeks:"replacementRStartWeeks",title:"Absence R — début travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",weeks:"replacementREndWeeks",title:"Absence R — après repos",label:"ABSENCE INFOTYPE 2001"}}[key];
  if(!cfg||!document.getElementById(cfg.enabled)?.checked)return "";
- const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7,cls=key==="T"?"t":"r";
+ const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7+(WORK_DAYS===29&&weeks>0?1:0),cls=key==="T"?"t":"r";
  const dates=seg?`<span>Du ${formatDate(parseDate(seg.start))}</span><span>Au ${formatDate(parseDate(seg.end))}</span>`:`<span>${weeks===0?"Aucune période (0 semaine)":"Dates après calcul"}</span>`;
  return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
 }
@@ -646,7 +646,15 @@ function calculateEmployee(){
  if(zeroWorkTransition){
   replacementSegments.push({key:"ZERO_WORK_TRANSITION",code:"Absence-2001",type:"Absence-2001 (Infotype 2001)",start:inputDate(startDate),end:inputDate(startDate),weeks:0});
  }
- const addReplacement=(key,code,date,weeks)=>{if(weeks>0)replacementSegments.push({key,code,start:inputDate(date),end:inputDate(addDays(date,weeks*7-1)),weeks});};
+ const addReplacement=(key,code,date,weeks)=>{
+  if(weeks>0){
+   // En cycle 29/27, une absence de 4 semaines couvre 29 jours
+   // (même règle pour les durées sélectionnées en semaines).
+   const days=weeks*7+(alt?1:0);
+   replacementSegments.push({key,code,type:code==="Absence-2001"?"Absence-2001 (Infotype 2001)":undefined,
+    start:inputDate(date),end:inputDate(addDays(date,days-1)),weeks,days});
+  }
+ };
  if(tEnabled)addReplacement("T","T",addDays(ps[0].work.endDate,1),Number(document.getElementById("replacementTWeeks").value));
  if(rStartEnabled)addReplacement("RSTART","R",startDate,Number(document.getElementById("replacementRStartWeeks").value));
  if(rEndEnabled)addReplacement("REND","R",addDays(ps[0].rest.endDate,1),Number(document.getElementById("replacementREndWeeks").value));
@@ -664,6 +672,12 @@ function calculateEmployee(){
   }
   const p2=make(start2,startGroup2,w2,r2);
   if(p2.error){out.innerHTML=`<div class="notice error">Programme 2 — démarrage obligatoire avec R${startGroup2} : ${escapeHTML(p2.error)}</div>`;lastEmployeePlan=null;return;}
+  // Avec 0 semaine de travail en 29/27, le jour de reprise entre les
+  // deux périodes de repos est codifié séparément en Absence-2001.
+  if(alt&&w2===0){
+   replacementSegments.push({key:"ZERO_WORK_CONTINUE",code:"Absence-2001",
+    type:"Absence-2001 (Infotype 2001)",start:inputDate(start2),end:inputDate(start2),weeks:0,days:1});
+  }
   ps.push(p2);
  }
  const ws=ps.flatMap(p=>p.work.segments),rs=ps.flatMap(p=>p.rest.segments),last=ps.at(-1);
@@ -675,7 +689,7 @@ function calculateEmployee(){
   workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:"",replacementEnabled,replacementFlags:{tEnabled,rStartEnabled,rEndEnabled},replacementSegments};
  renderCodingSummary(lastEmployeePlan);
  if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
- const replacementHTML=replacementEnabled?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.length?replacementSegments.map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>Remplacement ${x.code}</strong> — ${x.weeks} semaine(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join(""):`<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>`}`:"";
+ const replacementHTML=replacementEnabled?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.length?replacementSegments.map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>${x.code==="Absence-2001"?"Absence Infotype 2001":"Remplacement "+x.code}</strong> — ${x.days??(daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))} jour(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join(""):`<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>`}`:"";
  const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence-2001 — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
  out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${zeroTransitionHTML}${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1, avec le même groupe que celui qui vient de terminer sa période de repos.</div>`;
 }
@@ -726,7 +740,7 @@ function openPreview(){
  const absencePrintRows=absenceRows.map((r,i)=>`<tr>
   <td>${i+1}</td><td><strong>Absence-2001</strong></td>
   <td>Absence-2001 (Infotype 2001)</td><td>${formatDate(parseDate(r.start))}</td>
-  <td>${formatDate(parseDate(r.end))}</td><td>Absence exceptionnelle — premier jour</td>
+  <td>${formatDate(parseDate(r.end))}</td><td>Absence exceptionnelle — ${daysBetween(parseDate(r.start),addDays(parseDate(r.end),1))} jour(s)</td>
  </tr>`).join("");
  const rotationPrintRows=rotationsForPrint.map((r,i)=>`<tr>
   <td>${absenceRows.length+i+1}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
