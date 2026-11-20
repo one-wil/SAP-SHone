@@ -1121,7 +1121,7 @@ function openPreview(){
  // مع الإبقاء على قاعدة إخفاء أول دوران عادي عند وجود دورانين أو أكثر.
  const absenceRows=mergedRotations.filter(r=>r.group==="Absence-2001" || String(r.phase||"").includes("Absence-2001"));
  const normalRotations=mergedRotations.filter(r=>!absenceRows.includes(r));
- const rotationsForPrint=normalRotations.length>=2?normalRotations.slice(1):normalRotations;
+ const rotationsForPrint=p.workWeeks===0?normalRotations:(normalRotations.length>=2?normalRotations.slice(1):normalRotations);
  const absencePrintRows=absenceRows.map((r,i)=>`<tr>
   <td>${i+1}</td><td><strong>Absence-2001</strong></td>
   <td>Absence-2001 (Infotype 2001)</td><td>${formatDate(parseDate(r.start))}</td>
