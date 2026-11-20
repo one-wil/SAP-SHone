@@ -541,8 +541,13 @@ function calculateRestPlan(startDate,requiredDays,preferredGroup=null){
     if(status&&status.status==="rest")candidates.push(status);
    }
   }
-  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
-   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  // Priorité au groupe dont les jours de repos restants correspondent
+  // le plus exactement à la durée qu'il reste à compléter.
+  // Exemple : s'il reste 7 jours, R3 (7 jours) passe avant R5 (21 jours).
+  candidates.sort((a,b)=>
+   Math.abs(a.daysRemaining-remaining)-Math.abs(b.daysRemaining-remaining)||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup)
+  );
   for(const candidate of candidates){
    const duration=Math.min(remaining,candidate.daysRemaining);
    const end=addDays(date,duration-1),nextDate=addDays(end,1);
