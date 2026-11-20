@@ -570,7 +570,7 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
 <div class="container">
 <section class="card">
  <h2>1. Paramètres de référence</h2>
- <div class="notice info">Veuillez sélectionner un groupe de référence et saisir la date de début de sa première semaine de travail. Le système calculera automatiquement la situation des huit groupes.</div>
+ <div class="notice info">Veuillez saisir la date de début de sa première semaine de travail. Le système sélectionnera automatiquement le groupe de référence et calculera la situation des huit groupes.</div>
  <div class="field"><label>Nom ou matricule de l’agent (facultatif)</label><input id="employeeName" type="text" placeholder="Nom ou matricule"></div>
  <div class="cycle-option">
   <div class="cycle-option-title">Sélection du cycle de roulement</div>
@@ -579,8 +579,8 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
   <div class="hint">Case non cochée : cycle standard 28/28. Case cochée : cycle alternatif 29/27. Le cycle choisi s’applique aux huit groupes.</div>
  </div>
  <div class="grid" style="margin-top:15px">
-  <div class="field"><label>Date de situation / début de programme</label><input type="date" id="referenceDate"></div>
-  <div class="field automatic-field"><label>Groupe déterminé automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 19/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
+  <div class="field"><label>Date de début de la première semaine de travail</label><input type="date" id="referenceDate"></div>
+  <div class="field automatic-field"><label>Groupe de référence sélectionné automatiquement</label><input type="text" id="referenceGroupDisplay" value="À déterminer" readonly><small>Selon le cycle de référence fixe du 19/10/2026</small><input type="hidden" id="referenceGroup" value="4"></div>
   <div class="field automatic-field"><label>Jour de la semaine · automatique</label><input type="text" id="referenceDayDisplay" value="—" readonly><small>Calculé depuis la date choisie</small></div>
   <div class="field"><label>Nombre de semaines de travail</label><select id="workWeeks">
    <option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4" selected>4 semaines</option>
@@ -1243,7 +1243,12 @@ function openPreview(){
 
   <div class="print-bottom">
    <div><b>Dernière codification :</b> R${last?last.group:"—"} — valable du ${last?formatDate(parseDate(last.start)):"—"} au 31/12/9999</div>
-   <div class="print-footer">Developer: BENAKRAB AHCENE　|　Société SONATRACH　|　ERP-SAP — Document généré par SH-ONE</div>
+   <div class="print-footer">
+    <div><b>Contribuer à la réussite du changement et à la mise en œuvre du système ERP SAP, c’est prendre part activement à la transformation de notre entreprise.</b></div>
+    <div>Engagés aux côtés de SONATRACH, nous accompagnons cette évolution avec responsabilité, esprit d’équipe et volonté d’excellence.</div>
+    <div>Ensemble, construisons une entreprise plus performante, innovante et résolument tournée vers l’avenir.</div>
+    <div style="margin-top:1.5mm">Developer: BENAKRAB AHCENE　|　Société SONATRACH　|　ERP-SAP — Document généré par SH-ONE</div>
+   </div>
   </div>`;
  document.getElementById("previewOverlay").classList.add("open");
  document.body.style.overflow="hidden";
