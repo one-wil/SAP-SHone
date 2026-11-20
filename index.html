@@ -583,7 +583,7 @@ function segmentHTML(s,i,label){
 function replacementOrbitHTML(key, segments=[]){
  const cfg={T:{enabled:"replacementTEnabled",weeks:"replacementTWeeks",title:"Remplacement T",label:"REMPLACEMENT TRAVAIL"},RSTART:{enabled:"replacementRStartEnabled",weeks:"replacementRStartWeeks",title:"Absence R — début travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",weeks:"replacementREndWeeks",title:"Absence R — après repos",label:"ABSENCE INFOTYPE 2001"}}[key];
  if(!cfg||!document.getElementById(cfg.enabled)?.checked)return "";
- const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7+(WORK_DAYS===29&&weeks>0?1:0),cls=key==="T"?"t":"r";
+ const weeks=Number(document.getElementById(cfg.weeks)?.value||0),seg=segments.find(x=>x.key===key),days=weeks*7,cls=key==="T"?"t":"r";
  const dates=seg?`<span>Du ${formatDate(parseDate(seg.start))}</span><span>Au ${formatDate(parseDate(seg.end))}</span>`:`<span>${weeks===0?"Aucune période (0 semaine)":"Dates après calcul"}</span>`;
  return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
 }
@@ -653,9 +653,9 @@ function calculateEmployee(){
  }
  const addReplacement=(key,code,date,weeks)=>{
   if(weeks>0){
-   // En cycle 29/27, une absence de 4 semaines couvre 29 jours
-   // (même règle pour les durées sélectionnées en semaines).
-   const days=weeks*7+(alt?1:0);
+   // Les trois types de remplacement utilisent une semaine fixe de 7 jours,
+   // indépendamment du cycle de roulement (28/28 ou 29/27).
+   const days=weeks*7;
    replacementSegments.push({key,code,type:code==="Absence-2001"?"Absence-2001 (Infotype 2001)":undefined,
     start:inputDate(date),end:inputDate(addDays(date,days-1)),weeks,days});
   }
