@@ -957,17 +957,18 @@ function replacementOrbitHTML(key, segments=[]){
 function renderChronologicalOrbits(phaseSegments, replacementKeys, allReplacements, phaseLabel){
  const items=[];
  phaseSegments.forEach((segment,index)=>items.push({
-  start:inputDate(segment.start),priority:0,
+  start:inputDate(segment.start),priority:1,
   html:segmentHTML(segment,index,phaseLabel+(index+1))
  }));
  for(const key of replacementKeys){
   const segment=allReplacements.find(item=>item.key===key);
   if(segment)items.push({
-   start:segment.start,priority:1,
+   start:segment.start,priority:0,
    html:replacementOrbitHTML(key,allReplacements)
   });
  }
- // À date égale, la phase normale reste à gauche et le remplacement à droite.
+ // En RTL, le premier élément de la grille apparaît à droite :
+ // à date égale, afficher le remplacement avant la phase normale.
  items.sort((a,b)=>a.start.localeCompare(b.start)||a.priority-b.priority);
  return items.map(item=>item.html).join("");
 }
@@ -1085,7 +1086,26 @@ function calculateEmployee(){
  }
  const ws=ps.flatMap(p=>p.work.segments),rs=ps.flatMap(p=>p.rest.segments),last=ps.at(-1);
  const sumW=ps.reduce((n,p)=>n+p.workDays,0),sumR=ps.reduce((n,p)=>n+p.restDays,0);
- const html=ps.map((p,i)=>`<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length|| (i===0&&replacementSegments.some(x=>x.key==="RSTART"))?renderChronologicalOrbits(p.work.segments,i===0?["RSTART"]:[],replacementSegments,"Phase de travail "):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length|| (i===0&&replacementSegments.some(x=>["T","REND"].includes(x.key)))?renderChronologicalOrbits(p.rest.segments,i===0?["T","REND"]:[],replacementSegments,"Phase de repos "):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`).join("");
+ const html=ps.map((p,i)=>{
+  // Associer chaque absence à la phase réellement concernée par ses dates.
+  // RSTART et REND appartiennent au Travail ; T appartient au Repos.
+  const overlaps=(replacement,pSegments)=>pSegments.some(seg=>
+   parseDate(replacement.start)<=parseDate(seg.end)&&parseDate(replacement.end)>=parseDate(seg.start)
+  );
+  const workReplacementKeys=replacementSegments
+   .filter(r=>["RSTART","REND"].includes(r.key)&&overlaps(r,p.work.segments))
+   .map(r=>r.key);
+  const restReplacementKeys=replacementSegments
+   .filter(r=>r.key==="T"&&overlaps(r,p.rest.segments))
+   .map(r=>r.key);
+  const workOrbits=p.work.segments.length||workReplacementKeys.length
+   ?renderChronologicalOrbits(p.work.segments,workReplacementKeys,replacementSegments,"Phase de travail ")
+   :`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`;
+  const restOrbits=p.rest.segments.length||restReplacementKeys.length
+   ?renderChronologicalOrbits(p.rest.segments,restReplacementKeys,replacementSegments,"Phase de repos ")
+   :`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`;
+  return `<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${workOrbits}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${restOrbits}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`;
+ }).join("");
  lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks:ww,workDays:sumW,restDays:sumR,restWeeks:rw,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,continuing:cont,
   programs:ps.map((p,i)=>({number:i+1,workDays:p.workDays,restDays:p.restDays})),
   workSegments:ws.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),restSegments:rs.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),
