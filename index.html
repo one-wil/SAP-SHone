@@ -199,359 +199,9 @@ footer strong{color:var(--green)}
 .post-calc-section{display:none}
 .post-calc-section.is-visible{display:block}
 
-/* Les informations d'aide restent visibles dans la version professionnelle. */
+/* Suppression des textes explicatifs */
+.hint,.notice.info,.rotation-footnote,.compare-insight,.cycle-description{display:none!important}
 
-
-
-
-/* ================================================================
-   SH-ONE — PROFESSIONAL UI LAYER
-   Presentation-only enhancement: no rotation or business logic changed.
-   ================================================================ */
-:root{
- --brand-burgundy:#681b36;
- --brand-burgundy-deep:#4f1429;
- --brand-blue:#07549a;
- --surface:#ffffff;
- --surface-soft:#f7faf8;
- --shadow-card:0 12px 34px rgba(21,54,39,.075);
- --shadow-hover:0 16px 38px rgba(21,54,39,.12);
- --radius-card:18px;
-}
-html{scroll-behavior:smooth;scroll-padding-top:18px}
-body{
- font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
- background:
-  radial-gradient(ellipse at 8% 0%,rgba(104,27,54,.055),transparent 30%),
-  radial-gradient(ellipse at 96% 12%,rgba(7,84,154,.055),transparent 28%),
-  #f4f7f5;
- color:#20372d;
- line-height:1.55;
- -webkit-font-smoothing:antialiased;
-}
-.brand-header{
- position:relative;
- padding:26px 16px 20px;
- background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.82) 100%);
- border-bottom:1px solid rgba(216,229,220,.8);
-}
-.brand-header:after{
- content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);
- width:min(180px,35vw);height:3px;border-radius:9px;
- background:linear-gradient(90deg,var(--brand-burgundy),var(--orange),var(--brand-blue));
-}
-.product-box{max-width:700px;margin:0 auto;padding:8px 12px 10px}
-.sonatrach-name{
- color:var(--brand-burgundy);font-size:clamp(29px,4vw,39px);
- font-weight:950;letter-spacing:3px;margin:0 0 12px;
- text-shadow:0 2px 0 rgba(104,27,54,.06);
-}
-.product-info{
- position:relative;overflow:hidden;
- background:linear-gradient(125deg,#06365f 0%,#07549a 54%,#0878b8 100%);
- border:1px solid rgba(255,255,255,.18);border-radius:15px;
- padding:17px 14px;box-shadow:0 10px 25px rgba(7,64,111,.18);
-}
-.product-info:before,.product-info:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:50%;pointer-events:none}
-.product-info:before{width:190px;height:190px;right:-80px;top:-120px}
-.product-info:after{width:120px;height:120px;left:-55px;bottom:-90px}
-.product-name{position:relative;font-size:clamp(23px,3vw,29px);letter-spacing:3px}
-.product-erp{position:relative;font-size:14px;letter-spacing:4px;opacity:.94}
-.product-caption{position:relative;margin-top:8px;font-size:14px;letter-spacing:1.2px}
-.container{max-width:1180px;margin:26px auto;padding:0 18px}
-.card{
- position:relative;background:var(--surface);border:1px solid #e2ebe5;
- border-radius:var(--radius-card);padding:clamp(16px,2.2vw,24px);
- margin-bottom:20px;box-shadow:var(--shadow-card);
- transition:box-shadow .2s ease,border-color .2s ease;
-}
-.card:hover{box-shadow:var(--shadow-hover);border-color:#d5e4da}
-.card h2{
- display:flex;align-items:center;gap:10px;
- color:#164d38;font-size:16px;font-weight:850;letter-spacing:.1px;
- margin:0 0 19px;padding:0 0 13px;border-bottom:1px solid #e8efea;
-}
-.card h2:before{content:"";width:4px;height:21px;flex:0 0 4px;border-radius:8px;background:linear-gradient(180deg,#0b7657,#d6aa45)}
-.grid{gap:15px}
-.field{min-width:0}
-.field label{font-size:12px;font-weight:800;color:#385448;margin-bottom:8px;line-height:1.5}
-input,select{
- min-height:44px;padding:11px 13px;border:1px solid #d6e2da;border-radius:10px;
- background:#fff;color:#1e3b2e;font-size:13px;font-weight:550;
- box-shadow:inset 0 1px 2px rgba(20,60,39,.025);
- transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
-}
-input:hover,select:hover{border-color:#a9c6b5}
-input:focus,select:focus{border-color:#0b7657;box-shadow:0 0 0 3px rgba(11,118,87,.12);background:#fff}
-input[readonly]{cursor:default}
-.automatic-field{padding:12px;background:linear-gradient(145deg,#f2f8f4,#eaf4ee);border:1px solid #dcebe1;border-radius:12px}
-.automatic-field input{background:#fff;border-color:#d8e8dd;color:#216044}
-.automatic-field small,.field-hint{font-size:10px;color:#698275;font-weight:650}
-.hint{display:block;font-size:11px;color:#718278;line-height:1.65;margin-top:7px}
-.notice{border:1px solid transparent;border-radius:11px;padding:12px 14px;font-size:12px;line-height:1.8}
-.notice.info{display:block;background:#f0f6f2;color:#365c49;border-color:#e0ebe3}
-.notice.success{background:#edf8f0;color:#17613d;border-color:#d8eddf}
-.notice.error{background:#fff3f2;color:#9c3030;border-color:#f2d9d7}
-.cycle-option{
- margin-top:16px;padding:16px;border:1px solid #e0eae3;border-radius:13px;
- background:linear-gradient(145deg,#fbfdfb,#f3f8f5);
-}
-.cycle-option-title{font-size:12px;font-weight:900;color:#1b5b40;margin-bottom:12px;letter-spacing:.25px}
-.cycle-choice{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;font-weight:800;color:#29483a;line-height:1.55}
-.cycle-choice input{width:18px;height:18px;min-height:18px;flex:0 0 18px;margin:0;accent-color:#087451;box-shadow:none}
-.cycle-description{display:block;margin-top:12px;padding:10px 12px;border-radius:9px;background:#eaf4ed;color:#286044;font-size:11px;font-weight:800}
-.cycle-description.active{background:#eaf1fb;color:#07549a}
-.actions{gap:9px;align-items:center}
-button{
- min-height:42px;padding:11px 17px;border-radius:10px;font-size:12px;font-weight:850;
- letter-spacing:.1px;box-shadow:0 2px 5px rgba(18,53,35,.06);
- transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
-}
-button:hover{filter:brightness(1.025);transform:translateY(-1px);box-shadow:0 6px 13px rgba(18,53,35,.11)}
-button:active{transform:translateY(0);box-shadow:0 2px 5px rgba(18,53,35,.07)}
-button:focus-visible{outline:3px solid rgba(11,118,87,.24);outline-offset:2px}
-.primary{background:linear-gradient(135deg,#075b43,#0b7657);color:#fff}
-.secondary{background:#eaf3ed;color:#15583d;border:1px solid #dcebe1}
-.gold{background:#f8efd9;color:#795817;border:1px solid #eee0b9}
-.danger{background:#fff0ef;color:#a52e2e;border:1px solid #f3d8d6}
-.blue-btn{background:linear-gradient(135deg,#06477f,#0873b8);color:#fff}
-.table-wrap{border:1px solid #e2ebe5;border-radius:12px;overflow:auto;background:#fff}
-table{min-width:650px;font-size:12px;border-collapse:separate;border-spacing:0}
-th,td{padding:11px 10px;border-right:0;border-left:0;border-top:0;border-bottom:1px solid #e8efea}
-th{position:sticky;top:0;background:#edf4ef;color:#24543e;font-size:11px;font-weight:900;letter-spacing:.15px}
-tbody tr:last-child td{border-bottom:0}
-tbody tr:nth-child(even) td{background:#fbfdfb}
-tbody tr:hover td{background:#f1f7f3}
-.status{padding:5px 10px;font-size:10px;font-weight:900;letter-spacing:.15px}
-.status.work{background:#e5f4e9;color:#087344}
-.status.rest{background:#fff2d9;color:#94620f}
-.summary{gap:12px}
-.stat{padding:16px 12px;border:1px solid #e4ede7;border-radius:12px;background:linear-gradient(145deg,#fbfdfb,#f1f7f3)}
-.stat small{font-size:10px;font-weight:700;color:#718278}
-.stat strong{font-size:17px;font-weight:900;color:#15583d}
-.segment{border-left-width:4px;border-radius:11px;padding:14px 16px;background:#f5f9f6;box-shadow:0 3px 10px rgba(20,60,39,.035)}
-.phase-orbit,.replacement-orbit{box-shadow:0 6px 18px rgba(18,58,37,.06);border-radius:17px}
-.phase-orbit:hover,.replacement-orbit:hover{box-shadow:0 12px 24px rgba(18,58,37,.11)}
-.rotation-dashboard{border-radius:16px;padding:18px;background:linear-gradient(145deg,#fbfdfb,#f1f7f3)}
-.rotation-grid{gap:13px}
-.rotation-card{border-radius:14px;padding:15px 10px;box-shadow:0 5px 16px rgba(0,50,30,.055)}
-.rotation-card.is-working{border-top-width:4px}
-.rotation-card.is-resting{border-top-width:4px}
-.rotation-compare{border-radius:14px;border-color:#e1ebe4;padding:16px}
-.my-rotation-summary{border:1px solid #deebe2}
-.empty{padding:26px 16px;color:#77877e;background:#fafcfb;border:1px dashed #dce7df;border-radius:12px}
-footer{margin-top:30px;padding:24px 12px;background:#fff;border-top:1px solid #e4ece6;color:#75837b;font-size:10px}
-footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
-.preview-overlay{backdrop-filter:blur(5px)}
-.preview-window{border:1px solid rgba(255,255,255,.22);box-shadow:0 25px 80px rgba(0,0,0,.3)}
-.preview-toolbar{background:linear-gradient(110deg,#064632,#075b43 65%,#0b7657)}
-.preview-paper{border-radius:3px}
-
-@media(max-width:700px){
- .brand-header{padding:19px 12px 16px}
- .product-box{padding:4px 3px 8px}
- .container{padding:0 10px;margin:16px auto}
- .card{border-radius:14px;padding:14px;margin-bottom:14px}
- .card h2{font-size:14px;margin-bottom:15px}
- .grid{grid-template-columns:1fr;gap:12px}
- .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .actions button{width:100%;min-width:0;padding:10px 8px;font-size:11px}
- .actions button.primary{grid-column:1/-1}
- .cycle-option{padding:13px}
- .rotation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .phase-orbit{min-height:205px}
- .preview-toolbar{align-items:flex-start}
- .preview-toolbar .actions{display:flex;width:100%}
- .preview-toolbar .actions button{flex:1}
-}
-@media(max-width:390px){
- .sonatrach-name{font-size:27px;letter-spacing:2px}
- .product-name{font-size:21px}
- .product-erp{font-size:12px}
- .product-caption{font-size:12px}
- .actions{grid-template-columns:1fr}
- .actions button.primary{grid-column:auto}
- .rotation-grid{gap:7px}
- .rotation-card{padding:10px 5px}
- .rotation-donut{width:88px;height:88px}
- .rotation-donut:after{transform:rotate(var(--phase-angle)) translateY(-39px) translate(-50%,-50%)}
-}
-@media(prefers-reduced-motion:reduce){
- *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
-}
-
-
-/* ================================================================
-   SH-ONE — EXECUTIVE DESIGN SYSTEM (VISUAL ONLY)
-   Keeps all existing content, calculations, events and print rules.
-   ================================================================ */
-@media screen {
- :root{
-  --brand-burgundy:#681b36;
-  --brand-burgundy-deep:#451124;
-  --brand-blue:#07549a;
-  --green:#14563f;
-  --green2:#197653;
-  --text:#20352d;
-  --muted:#718078;
-  --border:#e1e9e4;
-  --surface:#fff;
-  --surface-soft:#f6f9f7;
-  --shadow-card:0 10px 30px rgba(25,49,38,.065);
-  --shadow-hover:0 16px 36px rgba(25,49,38,.11);
- }
- html{scroll-behavior:smooth;background:#f2f5f3}
- body{
-  background:
-   radial-gradient(ellipse at 12% 0%,rgba(104,27,54,.055),transparent 34rem),
-   radial-gradient(ellipse at 92% 9%,rgba(7,84,154,.055),transparent 32rem),
-   #f3f6f4;
-  color:var(--text);
-  font-family:Inter,"Segoe UI",Arial,Tahoma,sans-serif;
-  letter-spacing:.05px;
- }
- .brand-header{position:relative;padding:27px 14px 18px;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.72) 100%);border-bottom:1px solid rgba(220,230,224,.8)}
- .brand-header:before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--brand-burgundy),#9b4964 48%,var(--brand-blue))}
- .product-box{max-width:760px;margin:0 auto;padding:17px 18px 15px;border:1px solid #e8e0e4;border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 14px 38px rgba(65,24,42,.075)}
- .sonatrach-name{color:var(--brand-burgundy);font-size:clamp(30px,4vw,39px);font-weight:950;letter-spacing:2.5px;margin:0 0 13px;text-shadow:0 1px 0 #fff}
- .product-info{position:relative;overflow:hidden;background:linear-gradient(112deg,#06345d 0%,#07549a 58%,#1478b8 100%);border:1px solid rgba(255,255,255,.18);border-radius:15px;padding:17px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 18px rgba(7,64,111,.16)}
- .product-info:after{content:"";position:absolute;width:210px;height:210px;right:-80px;top:-130px;border:1px solid rgba(255,255,255,.13);border-radius:50%;box-shadow:0 0 0 22px rgba(255,255,255,.035),0 0 0 45px rgba(255,255,255,.025);pointer-events:none}
- .product-name{font-size:clamp(22px,3vw,28px);letter-spacing:2.2px;text-shadow:0 2px 8px rgba(0,0,0,.15)}
- .product-erp{font-size:14px;letter-spacing:4px;opacity:.94}
- .product-caption{font-size:13px;letter-spacing:.7px;opacity:.92}
- .container{max-width:1180px;margin:25px auto;padding:0 18px}
- .card{position:relative;background:rgba(255,255,255,.97);border:1px solid #e4ebe6;border-radius:18px;padding:22px;margin-bottom:19px;box-shadow:var(--shadow-card);transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
- .card:hover{box-shadow:var(--shadow-hover);border-color:#d5e2da}
- .card h2{display:flex;align-items:center;gap:10px;color:var(--brand-burgundy);font-size:17px;font-weight:850;margin:0 0 19px;padding:0 0 13px;border-bottom:1px solid #edf1ee;letter-spacing:.1px}
- .card h2:before{content:"";width:4px;height:21px;flex:0 0 4px;border-radius:8px;background:linear-gradient(180deg,var(--brand-burgundy),#b56b83)}
- .grid{gap:16px}
- .field label{font-size:12px;color:#40564b;font-weight:800;letter-spacing:.1px;margin-bottom:8px}
- input,select{min-height:44px;padding:11px 13px;border:1px solid #d8e2dc;border-radius:11px;background:#fff;color:#20352d;font-size:13px;box-shadow:0 1px 2px rgba(18,48,32,.025);transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
- input:hover,select:hover{border-color:#b8cbbf}
- input:focus,select:focus{border-color:#197653;box-shadow:0 0 0 4px rgba(25,118,83,.11);background:#fff}
- .automatic-field{background:linear-gradient(145deg,#f2f8f4,#eaf4ee);border:1px solid #d9e9df;border-radius:13px;padding:11px}
- .automatic-field input{background:#edf6f0;border-color:#d6e8dc}
- .hint,.field-hint{font-size:11px;line-height:1.7;color:#7a8981}
- .actions{gap:10px;margin-top:18px}
- button{min-height:42px;border-radius:11px;padding:11px 17px;font-size:12px;font-weight:800;letter-spacing:.1px;box-shadow:0 2px 5px rgba(23,48,35,.06);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
- button:hover{filter:brightness(1.025);transform:translateY(-1px);box-shadow:0 6px 14px rgba(23,48,35,.12)}
- button:active{transform:translateY(0);box-shadow:0 2px 4px rgba(23,48,35,.08)}
- button:focus-visible{outline:3px solid rgba(7,84,154,.25);outline-offset:2px}
- .primary{background:linear-gradient(135deg,#145c42,#197653);color:#fff}
- .secondary{background:#edf4ef;color:#14563f;border:1px solid #dce9e0}
- .gold{background:linear-gradient(135deg,#f8efd9,#f1e2bb);color:#765714;border:1px solid #ead9ac}
- .danger{background:#fff0f0;color:#a42f35;border:1px solid #f2dada}
- .blue-btn{background:linear-gradient(135deg,#06477f,#0872b2);color:#fff}
- .notice{border-radius:12px;padding:13px 15px;font-size:12px;line-height:1.85;border:1px solid transparent}
- .notice.info{background:#eff5fa;color:#285474;border-color:#dce9f2}
- .notice.error{background:#fff3f2;color:#9e3430;border-color:#f2dedd}
- .notice.success{background:#edf7f0;color:#216443;border-color:#d9ebdf}
- .table-wrap{border:1px solid #e2eae5;border-radius:13px;overflow:auto;background:#fff}
- table{font-size:12px;border-collapse:separate;border-spacing:0}
- th,td{border:0;border-bottom:1px solid #e9efeb;border-right:1px solid #edf1ee;padding:12px 10px}
- th{position:sticky;top:0;background:#edf4ef;color:#234e39;font-size:11px;font-weight:850;letter-spacing:.15px}
- tr:last-child td{border-bottom:0}
- td:last-child,th:last-child{border-right:0}
- tr:nth-child(even) td{background:#fafcfb}
- tbody tr:hover td{background:#f2f8f4}
- .status{padding:6px 10px;font-size:10px;letter-spacing:.2px}
- .status.work{background:#e3f4e9;color:#087344}
- .status.rest{background:#fff2dc;color:#98620e}
- .summary{gap:12px}
- .stat{padding:16px 12px;border:1px solid #e4ece6;border-radius:14px;background:linear-gradient(145deg,#fff,#f5f9f6);box-shadow:0 3px 10px rgba(20,60,39,.035)}
- .stat small{font-size:10px;font-weight:700;color:#7b8981}
- .stat strong{font-size:18px;color:var(--brand-burgundy);font-weight:900}
- .segment{border-left:4px solid #197653;background:linear-gradient(100deg,#f0f7f2,#fbfdfb);border-radius:11px;padding:14px 16px;box-shadow:inset 0 0 0 1px #e8f0ea}
- .segment.rest-segment{border-color:#d0a43e;background:linear-gradient(100deg,#fff8e9,#fffdf8)}
- .code-summary,.rotation-compare,.rotation-dashboard{border-radius:15px;border-color:#e1eae4;box-shadow:0 4px 14px rgba(20,60,39,.035)}
- .rotation-dashboard{background:linear-gradient(145deg,#fff,#f5f9f6)}
- .phase-orbit,.replacement-orbit{box-shadow:0 6px 18px rgba(20,60,39,.055)}
- .phase-orbit{border-radius:20px}
- .replacement-orbit{border-radius:20px}
- .my-rotation-summary{border:1px solid #e0ebe4;border-radius:13px}
- .mini-title{color:var(--brand-burgundy);font-weight:850}
- .empty{border:1px dashed #dbe5de;border-radius:12px;background:#fafcfb;color:#839087}
- footer{padding:27px 12px;color:#87938c;font-size:10px}
- footer strong{color:var(--brand-burgundy);letter-spacing:.3px}
- .preview-overlay{backdrop-filter:blur(5px);background:rgba(13,25,20,.72)}
- .preview-window{border:1px solid rgba(255,255,255,.25);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.3)}
- .preview-toolbar{background:linear-gradient(100deg,#451124,#681b36 60%,#07549a)}
-}
-@media screen and (max-width:760px){
- .brand-header{padding:21px 12px 15px}
- .product-box{padding:13px 11px;border-radius:17px}
- .container{padding:0 11px;margin:16px auto}
- .card{padding:16px 13px;border-radius:15px;margin-bottom:14px}
- .card h2{font-size:15px;margin-bottom:15px}
- .grid{grid-template-columns:repeat(auto-fit,minmax( min(100%, 190px),1fr));gap:12px}
- .actions{gap:8px}
- .actions button{flex:1 1 135px}
- .summary{grid-template-columns:repeat(2,minmax(0,1fr))}
- .stat{padding:13px 8px}
- .stat strong{font-size:16px}
- .table-wrap{border-radius:10px}
-}
-@media screen and (prefers-reduced-motion:reduce){
- *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
-}
-
-
-/* Active-option visual hierarchy: clearly connect expanded controls to their parent option */
-.cycle-option{
- position:relative;transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s ease;
- border:1px solid #dfe8e2;background:linear-gradient(145deg,#fbfdfb,#f4f8f5);
-}
-.cycle-option.is-selected{
- background:linear-gradient(145deg,#edf5ff 0%,#f5f9ff 100%);
- border:1.5px solid #8db5df;box-shadow:0 7px 20px rgba(28,91,148,.10),inset 4px 0 0 #2874b5;
-}
-.cycle-option.is-selected>.cycle-choice,
-.cycle-option.is-selected>.cycle-option-title{color:#174f83}
-.cycle-option.is-selected>.cycle-description{background:#e1efff;color:#174f83;border:1px solid #c8def4}
-/* The expanded content is indented by approximately one centimetre from its option label. */
-.cycle-option .option-children,
-.cycle-option #continueFields,
-.cycle-option #replacementOptions{
- margin-inline-start:1cm!important;padding:12px 13px;border-inline-start:3px solid #9bbbd9;
- border-radius:10px;background:rgba(255,255,255,.68);transition:background .2s ease,border-color .2s ease;
-}
-.cycle-option.is-selected .option-children,
-.cycle-option.is-selected #continueFields,
-.cycle-option.is-selected #replacementOptions{background:rgba(255,255,255,.78);border-inline-start-color:#2874b5}
-.cycle-option .field.is-selected{
- padding:11px 12px;border:1px solid #a9c7e3;border-inline-start:3px solid #2874b5;
- border-radius:10px;background:#f4f9ff;box-shadow:0 3px 10px rgba(35,91,143,.06);
-}
-.cycle-option .field.is-selected>.cycle-choice{color:#174f83}
-.cycle-option .field.is-selected select{border-color:#b8cfe5;background:#fff}
-.cycle-option .cycle-choice input:checked{accent-color:#1768a7}
-.cycle-option .cycle-choice:has(input:checked){color:#174f83}
-@media(max-width:600px){
- .cycle-option{padding:13px}
- .cycle-option .option-children,.cycle-option #continueFields,.cycle-option #replacementOptions{margin-inline-start:1cm!important;padding:10px 9px}
- .cycle-option .field.is-selected{padding:9px}
-}
-@media(prefers-reduced-motion:reduce){.cycle-option,.cycle-option *{transition:none!important}}
-
-
-/* SH-ONE INDUSTRIAL CONTROL ORBIT — panneau centralise, français */
- .rotation-dashboard{width:min(100%,760px);margin:22px auto!important;position:relative;overflow:hidden;padding:18px;border:1px solid #29465b!important;border-radius:20px!important;background:linear-gradient(135deg,#0b1c2a 0%,#102b3d 52%,#0a1a28 100%)!important;box-shadow:0 18px 42px rgba(5,20,32,.22)!important;color:#e8f2f8}
-.rotation-dashboard:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(125,177,204,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(125,177,204,.035) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
- .rotation-dashboard-head{position:relative;z-index:1;text-align:center;padding:4px 4px 13px;border-bottom:1px solid rgba(132,169,191,.2)}
-.rotation-dashboard-head strong{color:#eaf5fb!important;font-size:14px!important;letter-spacing:.5px}
- .rotation-legend{color:#b7cbd8!important;justify-content:center}.rotation-legend .work-dot{background:#16cdb7;box-shadow:0 0 9px #16cdb7}.rotation-legend .rest-dot{background:#f5c66b;box-shadow:0 0 9px #f5c66b}
-.industrial-wheel-layout{position:relative;z-index:1;border:1px solid rgba(125,165,188,.25)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(24,51,70,.8),rgba(8,25,39,.88))!important;box-shadow:inset 0 1px rgba(255,255,255,.04),0 12px 30px rgba(0,0,0,.18)!important;padding:12px!important}
-.industrial-wheel-layout{display:flex!important;justify-content:center!important;align-items:center!important;width:100%;max-width:560px;margin:14px auto 0!important}
-.industrial-wheel-layout .rotation-wheel-wrap{display:block;width:min(100%,470px)!important;margin:0 auto!important}
-.rotation-wheel{filter:drop-shadow(0 10px 18px rgba(0,0,0,.22))}
- /* Captions are outside the SVG orbit so they cannot collide with top/bottom nodes. */
-.industrial-wheel-layout .rotation-wheel-wrap{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:min(100%,470px)!important;margin:0 auto!important;overflow:visible}
-.orbit-caption-top,.orbit-caption-bottom{position:relative;z-index:2;width:100%;box-sizing:border-box;text-align:center;line-height:1.35;white-space:normal;overflow-wrap:anywhere;padding:7px 12px;border:1px solid rgba(125,165,188,.22);border-radius:9px;background:linear-gradient(90deg,rgba(10,28,42,.35),rgba(29,62,82,.72),rgba(10,28,42,.35));color:#b9d1df;font-weight:800;letter-spacing:1.25px;font-size:clamp(9px,2.1vw,11px)}
-.orbit-caption-top{margin-top:2px;color:#e3f0f7}
-.orbit-caption-bottom{margin-bottom:2px;color:#91b3c7;letter-spacing:1px}
-.orbit-caption-top span,.orbit-caption-bottom span{color:#20cbb8;padding:0 4px}
-.wheel-node{transition:filter .25s ease}.wheel-node.is-mine{filter:drop-shadow(0 0 7px rgba(245,190,91,.85))}.wheel-node.is-mine .node-halo{filter:url(#orbitGlow)}
-@media(max-width:600px){.rotation-dashboard{width:100%;margin:16px auto!important;padding:12px}.rotation-dashboard-head{text-align:center}.rotation-legend{justify-content:center;gap:12px}.industrial-wheel-layout{width:100%;max-width:100%;padding:6px!important}.industrial-wheel-layout .rotation-wheel-wrap{width:100%!important;max-width:470px!important;gap:8px}.orbit-caption-top,.orbit-caption-bottom{padding:8px 6px;letter-spacing:.7px;font-size:9px}}
 
 </style>
 </head>
@@ -585,14 +235,14 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
  </div>
  <div class="cycle-option" style="margin-top:14px">
   <label class="cycle-choice"><input type="checkbox" id="continueProgram">Continuer — ajouter un deuxième programme complémentaire</label>
-  <div id="continueFields" class="grid option-children" style="display:none;margin-top:13px">
+  <div id="continueFields" class="grid" style="display:none;margin-top:13px">
    <div class="field"><label>Programme 2 — Nombre de semaines de travail</label><select id="workWeeks2"><option value="0">0 semaine(s)</option><option value="1">1 semaine(s)</option><option value="2">2 semaine(s)</option><option value="3">3 semaine(s)</option><option value="4" selected>4 semaine(s)</option><option value="5">5 semaine(s)</option><option value="6">6 semaine(s)</option><option value="7">7 semaine(s)</option><option value="8">8 semaine(s)</option></select></div>
    <div class="field"><label>Programme 2 — Nombre de semaines de repos</label><select id="restWeeks2"></select></div>
   </div>
  </div>
  <div class="cycle-option" style="margin-top:14px">
   <label class="cycle-choice" style="display:block;margin-bottom:10px"><input type="checkbox" id="replacementMasterEnabled">Remplacements exceptionnels</label>
-  <div id="replacementOptions" class="grid option-children" style="display:none;gap:12px">
+  <div id="replacementOptions" class="grid" style="display:none;gap:12px">
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementTEnabled">Remplacement T — après le travail</label><label>Durée du remplacement T</label><select id="replacementTWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRStartEnabled">Replacement R : Absence Infotype 2001 — au début du premier travail</label><label>Durée de l'absence (début du travail)</label><select id="replacementRStartWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du premier jour du travail du Programme 1.</small></div>
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementREndEnabled">Replacement R : Absence Infotype 2001 — après le repos</label><label>Durée de l'absence (après repos)</label><select id="replacementREndWeeks"><option value="0">0 semaine</option><option value="1">1 semaine</option><option value="2">2 semaines</option><option value="3">3 semaines</option><option value="4">4 semaines</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
@@ -768,43 +418,28 @@ function renderGroups(date){
  const mine=getGroupStatus(myGroup,date);
  const wheelNodes=currentGroups.map(g=>{
   const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
-  const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=210+143*Math.cos(angle),cy=210+143*Math.sin(angle);
-  const fill=isWork?"url(#orbitWork)":"url(#orbitRest)",radius=isMine?30:25;
+  const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=180+143*Math.cos(angle),cy=180+143*Math.sin(angle);
+  const fill=isWork?"#07845b":"#d6aa45",stroke=isMine?"#f58220":"#ffffff",radius=isMine?31:25;
   const dayNumber=isWork?st.phase+1:st.phase-WORK_DAYS+1;
-  const dayLabel=dayNumber===1?"J1":`J${dayNumber}`;
+  const dayLabel=dayNumber===1?"1er j":`${dayNumber}e j`;
   return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}, ${dayLabel}">
-   <circle class="node-halo" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+8}" fill="none" stroke="${isMine?"#f2b84b":(isWork?"#16d7c0":"#f3bd55")}" stroke-width="${isMine?3.5:1.4}" opacity="${isMine?1:.55}"/>
-   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${isMine?"#fff0c2":"#b8d0df"}" stroke-width="${isMine?2.5:1.4}"/>
-   <text x="${cx.toFixed(1)}" y="${(cy-3).toFixed(1)}" text-anchor="middle" fill="#f7fbff" font-size="${isMine?15:13}" font-weight="900">R${g.number}</text>
-   <text x="${cx.toFixed(1)}" y="${(cy+12).toFixed(1)}" text-anchor="middle" fill="#f7fbff" font-size="${isMine?9:8}" font-weight="800">${dayLabel}</text>
-   <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="${isWork?"#63ead8":"#ffd27a"}" font-size="9" font-weight="900" letter-spacing=".6">${isWork?"TRAVAIL":"REPOS"}</text>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+5}" fill="none" stroke="${isMine?"#f58220":"#dce8e1"}" stroke-width="${isMine?4:1}"/>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
+   <text x="${cx.toFixed(1)}" y="${(cy-4).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?15:13}" font-weight="900">R${g.number}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+12).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="${isMine?9:8}" font-weight="800">${dayLabel}</text>
+   <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="#365448" font-size="10" font-weight="700">${isWork?"TRAVAIL":"REPOS"}</text>
   </g>`;
  }).join("");
- const wheelMarkup=`<div class="rotation-wheel-wrap"><div class="orbit-caption-top">SH-ONE <span>•</span> SUPERVISION DU CYCLE</div><svg class="rotation-wheel" viewBox="0 0 420 420" role="img" aria-label="Panneau industriel de contrôle des huit rotations. Groupe de référence R${myGroup}.">
-  <defs>
-   <linearGradient id="orbitPanel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#142b40"/><stop offset="1" stop-color="#071522"/></linearGradient>
-   <linearGradient id="orbitWork" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16cdb7"/><stop offset="1" stop-color="#087f89"/></linearGradient>
-   <linearGradient id="orbitRest" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5c66b"/><stop offset="1" stop-color="#b7792d"/></linearGradient>
-   <radialGradient id="orbitCore"><stop offset="0" stop-color="#1c3d55"/><stop offset="1" stop-color="#0a1b2b"/></radialGradient>
-   <filter id="orbitGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <circle cx="210" cy="210" r="202" fill="url(#orbitPanel)" stroke="#34536a" stroke-width="1.5"/>
-  <circle cx="210" cy="210" r="185" fill="none" stroke="#38546a" stroke-width="1" stroke-dasharray="2 7"/>
-  <circle cx="210" cy="210" r="157" fill="none" stroke="#547187" stroke-width="1.2" stroke-dasharray="3 6" opacity=".75"/>
-  <circle cx="210" cy="210" r="143" fill="none" stroke="#23475d" stroke-width="10" opacity=".75"/>
-  <circle cx="210" cy="210" r="143" fill="none" stroke="#11bcae" stroke-width="2" stroke-dasharray="22 12" opacity=".8"/>
-  ${Array.from({length:48},(_,i)=>{const a=(-90+i*7.5)*Math.PI/180,r1=190,r2=i%6===0?180:185,x1=210+r1*Math.cos(a),y1=210+r1*Math.sin(a),x2=210+r2*Math.cos(a),y2=210+r2*Math.sin(a);return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${i%6===0?"#9bb5c8":"#557186"}" stroke-width="${i%6===0?2:1}" opacity=".8"/>`;}).join("")}
-  <circle cx="210" cy="210" r="112" fill="none" stroke="#36556a" stroke-width="1.5" stroke-dasharray="5 5"/>
+ const wheelMarkup=`<div class="rotation-wheel-wrap"><svg class="rotation-wheel" viewBox="0 0 360 360" role="img" aria-label="Position des huit rotations. Ma rotation R${myGroup} est entourée en orange.">
+  <circle cx="180" cy="180" r="143" fill="none" stroke="#dce8e1" stroke-width="2" stroke-dasharray="4 5"/>
+  <circle cx="180" cy="180" r="105" fill="#f5faf6" stroke="#dce8e1" stroke-width="2"/>
   ${wheelNodes}
-  <circle cx="210" cy="210" r="91" fill="url(#orbitCore)" stroke="#5b7a91" stroke-width="1.5"/>
-  <circle cx="210" cy="210" r="82" fill="none" stroke="#1bbcae" stroke-width="1" opacity=".45"/>
-  <text x="210" y="158" text-anchor="middle" fill="#9bb8ca" font-size="10" font-weight="800" letter-spacing="2">GROUPE DE RÉFÉRENCE</text>
-  <text x="210" y="197" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900">R${myGroup}</text>
-  <rect x="157" y="211" width="106" height="24" rx="12" fill="${mine.status==="work"?"#087f78":"#946329"}" stroke="${mine.status==="work"?"#43e0ca":"#f3c56f"}" stroke-width=".8"/>
-  <text x="210" y="227" text-anchor="middle" fill="#fff" font-size="10" font-weight="900" letter-spacing="1">${mine.status==="work"?"EN SERVICE":"AU REPOS"}</text>
-  <text x="210" y="254" text-anchor="middle" fill="#c0d4e2" font-size="11" font-weight="700">${formatDate(date)}</text>
-  ${(()=>{const day=mine.status==="work"?mine.phase:mine.phase-WORK_DAYS+1;return `<text x="210" y="272" text-anchor="middle" fill="#6fe4d2" font-size="10" font-weight="800">JOUR ${day} / ${mine.status==="work"?WORK_DAYS:REST_DAYS}</text>`;})()}
- </svg><div class="orbit-caption-bottom">CYCLE DES 8 GROUPES <span>•</span> ÉTAT EN DIRECT</div></div>`;
+  <circle cx="180" cy="180" r="78" fill="#fff" stroke="#e0ebe4" stroke-width="1.5"/>
+  <text x="180" y="158" text-anchor="middle" fill="#687b73" font-size="11" font-weight="700">MA ROTATION</text>
+  <text x="180" y="190" text-anchor="middle" fill="#075b43" font-size="29" font-weight="900">R${myGroup}</text>
+  <text x="180" y="211" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="12" font-weight="900">${mine.status==="work"?"EN TRAVAIL":"EN REPOS"}</text>
+  ${(()=>{const day=mine.status==="work"?mine.phase:mine.phase-WORK_DAYS+1;const ordinal=day===1?"1er":`${day}ème`;return `<text x="180" y="232" text-anchor="middle" fill="${mine.status==="work"?"#07845b":"#98620e"}" font-size="11" font-weight="800">${ordinal} jr</text>`;})()}
+ </svg></div>`;
  const comparisonRows=currentGroups.filter(g=>g.number!==myGroup).map(g=>{
   const other=getGroupStatus(g.number,date);
   let delta=mod(other.phase-mine.phase,CYCLE_DAYS);
@@ -815,7 +450,7 @@ function renderGroups(date){
  }).join("");
  const sameStatusCount=currentGroups.filter(g=>g.number!==myGroup&&getGroupStatus(g.number,date).status===mine.status).length;
  const otherStatusCount=7-sameStatusCount;
- document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div><div class="wheel-visual-layout industrial-wheel-layout" style="grid-template-columns:minmax(280px,1fr);max-width:500px">${wheelMarkup}</div></div>`;
+ document.getElementById("groupsResult").innerHTML=`<div class="notice info">Situation des groupes au : <strong>${formatDate(date)}</strong><br>Cycle appliqué aux huit groupes : travail ${WORK_DAYS} jours / repos ${REST_DAYS} jours.</div><div class="rotation-dashboard"><div class="rotation-dashboard-head"><strong>Vue circulaire des huit rotations</strong><div class="rotation-legend"><span><i class="work-dot"></i>Travail (${WORK_DAYS} j)</span><span><i class="rest-dot"></i>Repos (${REST_DAYS} j)</span></div></div><div class="wheel-visual-layout" style="grid-template-columns:1fr;max-width:430px">${wheelMarkup}</div></div>`;
 }
 function setMyRotationCompare(value){
  const group=Number(value);if(group<1||group>8||!currentGroups||!currentCheckDate)return;
@@ -956,7 +591,22 @@ function replacementOrbitHTML(key, segments=[]){
 /* Tableau des codifications */
 function buildCodingRows(plan){
  const segments=[...plan.workSegments.map(s=>({...s,type:"Travail"})),...plan.restSegments.map(s=>({...s,type:"Repos"}))].sort((a,b)=>a.start.localeCompare(b.start));
- const base=segments.map((s,i)=>{const start=parseDate(s.start),end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};});
+ const exceptions=(plan.replacementSegments||[]).filter(s=>s.code==="Absence-2001");
+ const base=segments.map((s,i)=>{
+  const start=parseDate(s.start);
+  let end=i<segments.length-1?addDays(parseDate(segments[i+1].start),-1):parseDate(LAST_DATE);
+  // Une journée Absence-2001 intercalée entre deux programmes ne doit
+  // jamais être absorbée dans la codification de la période de repos précédente.
+  // Exemple 29/27 avec 0 travail : repos J+1 à J+27, Absence-2001 J+28,
+  // puis le repos du programme suivant commence à J+29.
+  for(const exception of exceptions){
+   const exceptionDate=parseDate(exception.start);
+   if(exceptionDate&&exceptionDate>start&&exceptionDate<=end){
+    end=addDays(exceptionDate,-1);
+   }
+  }
+  return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};
+ });
  const extra=(plan.replacementSegments||[]).map((s,i)=>({number:base.length+i+1,group:s.code,type:s.type||("Remplacement "+s.code),start:s.start,end:s.end,last:false,replacement:true}));
  return [...base,...extra].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement));
 }
@@ -1248,30 +898,11 @@ function restoreSettings(){
  const savedCycle=localStorage.getItem("rotation_cycle2927");document.getElementById("cycle2927").checked=savedCycle==="1";applyCycleSelection();renderRecords();
 }
 
-/* Synchronise uniquement l'apparence des options activées; aucun calcul métier n'est modifié. */
-function syncOptionVisuals(){
- document.querySelectorAll('.cycle-option').forEach(card=>{
-  const master=card.querySelector(':scope > .cycle-choice input[type="checkbox"],:scope > label.cycle-choice input[type="checkbox"]');
-  card.classList.toggle('is-selected',!!master?.checked);
- });
- [
-  ['replacementTEnabled','replacementTWeeks'],
-  ['replacementRStartEnabled','replacementRStartWeeks'],
-  ['replacementREndEnabled','replacementREndWeeks']
- ].forEach(([toggleId,selectId])=>{
-  const toggle=document.getElementById(toggleId),select=document.getElementById(selectId);
-  const field=toggle?.closest('.field');
-  if(field)field.classList.toggle('is-selected',!!toggle.checked);
-  if(select&&field)select.setAttribute('aria-describedby',toggleId);
- });
-}
-
 /* Événements */
 const replacementMaster=document.getElementById("replacementMasterEnabled");
 const replacementOptions=document.getElementById("replacementOptions");
 replacementMaster.addEventListener("change",()=>{
  replacementOptions.style.display=replacementMaster.checked?"grid":"none";
- syncOptionVisuals();
  if(!replacementMaster.checked){["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled"].forEach(id=>document.getElementById(id).checked=false);}
  if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
 });
@@ -1280,14 +911,10 @@ const continueToggle=document.getElementById("continueProgram");
 const continueFields=document.getElementById("continueFields");
 continueToggle.addEventListener("change",()=>{
  continueFields.style.display=continueToggle.checked?"grid":"none";
- syncOptionVisuals();
  if(continueToggle.checked)updateSecondRestOptions();
- syncOptionVisuals();
 });
 continueFields.style.display=continueToggle.checked?"grid":"none";
- syncOptionVisuals();
 document.getElementById("cycle2927").addEventListener("change",()=>{
- syncOptionVisuals();
  document.querySelectorAll(".post-calc-section").forEach(section=>section.classList.remove("is-visible"));
  applyCycleSelection();currentGroups=null;lastEmployeePlan=null;
  document.getElementById("groupsResult").innerHTML='<div class="empty">Le cycle a été modifié. Veuillez recalculer la situation des groupes.</div>';
@@ -1304,8 +931,6 @@ window.calculateAll=calculateAll;
 const calculateButton=document.querySelector('.actions button.primary[onclick="calculateAll()"]');
 if(calculateButton)calculateButton.addEventListener("click",event=>{event.preventDefault();calculateAll();});
 restoreSettings();
-document.querySelectorAll(".cycle-option input[type=checkbox]").forEach(input=>input.addEventListener("change",syncOptionVisuals));
-syncOptionVisuals();
 updateDurationHints();
 if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
 updateReferenceDisplay();
