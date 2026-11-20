@@ -953,6 +953,24 @@ function replacementOrbitHTML(key, segments=[]){
  return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
 }
 
+/* Affiche les phases et remplacements dans l'ordre chronologique réel. */
+function renderChronologicalOrbits(phaseSegments, replacementKeys, allReplacements, phaseLabel){
+ const items=[];
+ phaseSegments.forEach((segment,index)=>items.push({
+  start:inputDate(segment.start),priority:1,
+  html:segmentHTML(segment,index,phaseLabel+(index+1))
+ }));
+ for(const key of replacementKeys){
+  const segment=allReplacements.find(item=>item.key===key);
+  if(segment)items.push({
+   start:segment.start,priority:0,
+   html:replacementOrbitHTML(key,allReplacements)
+  });
+ }
+ items.sort((a,b)=>a.start.localeCompare(b.start)||a.priority-b.priority);
+ return items.map(item=>item.html).join("");
+}
+
 /* Tableau des codifications */
 function buildCodingRows(plan){
  const segments=[...plan.workSegments.map(s=>({...s,type:"Travail"})),...plan.restSegments.map(s=>({...s,type:"Repos"}))].sort((a,b)=>a.start.localeCompare(b.start));
@@ -1066,7 +1084,7 @@ function calculateEmployee(){
  }
  const ws=ps.flatMap(p=>p.work.segments),rs=ps.flatMap(p=>p.rest.segments),last=ps.at(-1);
  const sumW=ps.reduce((n,p)=>n+p.workDays,0),sumR=ps.reduce((n,p)=>n+p.restDays,0);
- const html=ps.map((p,i)=>`<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length?p.work.segments.map((x,j)=>segmentHTML(x,j,"Phase de travail "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("T",replacementSegments)+replacementOrbitHTML("RSTART",replacementSegments):""}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length?p.rest.segments.map((x,j)=>segmentHTML(x,j,"Phase de repos "+(j+1))).join(""):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}${i===0?replacementOrbitHTML("REND",replacementSegments):""}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`).join("");
+ const html=ps.map((p,i)=>`<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length|| (i===0&&replacementSegments.some(x=>["T","RSTART"].includes(x.key)))?renderChronologicalOrbits(p.work.segments,i===0?["T","RSTART"]:[],replacementSegments,"Phase de travail "):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length|| (i===0&&replacementSegments.some(x=>x.key==="REND"))?renderChronologicalOrbits(p.rest.segments,i===0?["REND"]:[],replacementSegments,"Phase de repos "):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`).join("");
  lastEmployeePlan={name,startGroup,startDate:inputDate(startDate),workWeeks:ww,workDays:sumW,restDays:sumR,restWeeks:rw,cycleWorkDays:WORK_DAYS,cycleRestDays:REST_DAYS,continuing:cont,
   programs:ps.map((p,i)=>({number:i+1,workDays:p.workDays,restDays:p.restDays})),
   workSegments:ws.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),restSegments:rs.map(x=>({group:x.group,start:inputDate(x.start),end:inputDate(x.end),days:x.days})),
