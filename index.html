@@ -811,9 +811,12 @@ function renderGroups(date){
   const dayNumber=isWork?st.phase+1:st.phase-WORK_DAYS+1;
   const dayLabel=dayNumber===1?"J1":`J${dayNumber}`;
   return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}, ${dayLabel}">
-   <circle class="node-halo" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+8}" fill="none" stroke="${isMine?"#f2b84b":(isWork?"#16d7c0":"#f3bd55")}" stroke-width="${isMine?3.5:1.4}" opacity="${isMine?1:.55}"/>
-   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${isMine?"#fff0c2":"#b8d0df"}" stroke-width="${isMine?2.5:1.4}"/>
-   <text x="${cx.toFixed(1)}" y="${(cy-3).toFixed(1)}" text-anchor="middle" fill="#f7fbff" font-size="${isMine?15:13}" font-weight="900">R${g.number}</text>
+   <circle class="node-halo" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius+10}" fill="none" stroke="${isMine?"#ffd36f":(isWork?"#16d7c0":"#f3bd55")}" stroke-width="${isMine?4:1.5}" opacity="${isMine?1:.62}" filter="url(#orbitGlow)"/>
+   <circle cx="${cx.toFixed(1)}" cy="${(cy+3).toFixed(1)}" r="${radius+1.5}" fill="#020b13" opacity=".72"/>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius}" fill="${fill}" stroke="${isMine?"#fff0c2":"#d7e8f2"}" stroke-width="${isMine?2.8:1.8}" filter="url(#nodeShadow)"/>
+   <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius-4}" fill="none" stroke="rgba(255,255,255,.42)" stroke-width="1"/>
+   <ellipse cx="${(cx-radius*.28).toFixed(1)}" cy="${(cy-radius*.42).toFixed(1)}" rx="${(radius*.48).toFixed(1)}" ry="${(radius*.19).toFixed(1)}" fill="#fff" opacity=".24"/>
+   <text x="${cx.toFixed(1)}" y="${(cy-3).toFixed(1)}" text-anchor="middle" fill="#ffffff" font-size="${isMine?15:13}" font-weight="900" style="paint-order:stroke;stroke:#10283a;stroke-width:.7px">R${g.number}</text>
    <text x="${cx.toFixed(1)}" y="${(cy+12).toFixed(1)}" text-anchor="middle" fill="#f7fbff" font-size="${isMine?9:8}" font-weight="800">${dayLabel}</text>
    <text x="${cx.toFixed(1)}" y="${(cy+radius+17).toFixed(1)}" text-anchor="middle" fill="${isWork?"#63ead8":"#ffd27a"}" font-size="9" font-weight="900" letter-spacing=".6">${isWork?"TRAVAIL":"REPOS"}</text>
   </g>`;
@@ -821,21 +824,31 @@ function renderGroups(date){
  const wheelMarkup=`<div class="rotation-wheel-wrap"><div class="orbit-caption-top">SH-ONE <span>•</span> SUPERVISION DU CYCLE</div><svg class="rotation-wheel" viewBox="0 0 420 420" role="img" aria-label="Panneau industriel de contrôle des huit rotations. Groupe de référence R${myGroup}.">
   <defs>
    <linearGradient id="orbitPanel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#142b40"/><stop offset="1" stop-color="#071522"/></linearGradient>
-   <linearGradient id="orbitWork" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16cdb7"/><stop offset="1" stop-color="#087f89"/></linearGradient>
-   <linearGradient id="orbitRest" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5c66b"/><stop offset="1" stop-color="#b7792d"/></linearGradient>
-   <radialGradient id="orbitCore"><stop offset="0" stop-color="#1c3d55"/><stop offset="1" stop-color="#0a1b2b"/></radialGradient>
-   <filter id="orbitGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+   <linearGradient id="orbitWork3D" x1="0" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#bafff5"/><stop offset=".16" stop-color="#39ead6"/><stop offset=".48" stop-color="#0bb9ad"/><stop offset=".78" stop-color="#087b83"/><stop offset="1" stop-color="#034653"/></linearGradient>
+   <linearGradient id="orbitRest3D" x1="0" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#fff0bd"/><stop offset=".18" stop-color="#ffd477"/><stop offset=".5" stop-color="#e5a83f"/><stop offset=".8" stop-color="#a96825"/><stop offset="1" stop-color="#75431e"/></linearGradient>
+   <radialGradient id="orbitCore" cx="48%" cy="35%" r="70%"><stop offset="0" stop-color="#315c76"/><stop offset=".52" stop-color="#17384f"/><stop offset="1" stop-color="#071522"/></radialGradient>
+   <linearGradient id="orbitMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0fa"/><stop offset=".48" stop-color="#66869b"/><stop offset="1" stop-color="#203c50"/></linearGradient>
+   <filter id="orbitGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+   <filter id="nodeShadow" x="-80%" y="-80%" width="260%" height="280%"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/><feOffset dy="4" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <circle cx="210" cy="210" r="202" fill="url(#orbitPanel)" stroke="#34536a" stroke-width="1.5"/>
+  <circle cx="210" cy="210" r="204" fill="#06111c" opacity=".75"/>
+  <circle cx="210" cy="210" r="202" fill="url(#orbitPanel)" stroke="url(#orbitMetal)" stroke-width="2.2"/>
+  <circle cx="210" cy="210" r="198" fill="none" stroke="#8bb4c8" stroke-width=".7" opacity=".22"/>
+  <circle cx="210" cy="210" r="193" fill="none" stroke="#8bb4c8" stroke-width=".7" opacity=".16"/>
   <circle cx="210" cy="210" r="185" fill="none" stroke="#38546a" stroke-width="1" stroke-dasharray="2 7"/>
   <circle cx="210" cy="210" r="157" fill="none" stroke="#547187" stroke-width="1.2" stroke-dasharray="3 6" opacity=".75"/>
-  <circle cx="210" cy="210" r="143" fill="none" stroke="#23475d" stroke-width="10" opacity=".75"/>
-  <circle cx="210" cy="210" r="143" fill="none" stroke="#11bcae" stroke-width="2" stroke-dasharray="22 12" opacity=".8"/>
+  <circle cx="210" cy="210" r="146" fill="none" stroke="#020b13" stroke-width="13" opacity=".75"/>
+  <circle cx="210" cy="210" r="143" fill="none" stroke="#23475d" stroke-width="10" opacity=".95"/>
+  <circle cx="210" cy="210" r="143" fill="none" stroke="#11bcae" stroke-width="3.2" stroke-dasharray="22 12" opacity=".95" filter="url(#orbitGlow)"/>
+  <circle cx="210" cy="210" r="135" fill="none" stroke="#9bd8df" stroke-width="1" opacity=".24"/>
   ${Array.from({length:48},(_,i)=>{const a=(-90+i*7.5)*Math.PI/180,r1=190,r2=i%6===0?180:185,x1=210+r1*Math.cos(a),y1=210+r1*Math.sin(a),x2=210+r2*Math.cos(a),y2=210+r2*Math.sin(a);return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${i%6===0?"#9bb5c8":"#557186"}" stroke-width="${i%6===0?2:1}" opacity=".8"/>`;}).join("")}
   <circle cx="210" cy="210" r="112" fill="none" stroke="#36556a" stroke-width="1.5" stroke-dasharray="5 5"/>
   ${wheelNodes}
-  <circle cx="210" cy="210" r="91" fill="url(#orbitCore)" stroke="#5b7a91" stroke-width="1.5"/>
-  <circle cx="210" cy="210" r="82" fill="none" stroke="#1bbcae" stroke-width="1" opacity=".45"/>
+  <circle cx="210" cy="210" r="96" fill="#030d17" opacity=".75"/>
+  <circle cx="210" cy="210" r="92" fill="url(#orbitCore)" stroke="url(#orbitMetal)" stroke-width="2.2"/>
+  <circle cx="210" cy="210" r="85" fill="none" stroke="#a6c8d9" stroke-width="1" opacity=".28"/>
+  <circle cx="210" cy="210" r="82" fill="none" stroke="#1bbcae" stroke-width="1.5" opacity=".62"/>
+  <path d="M145 171 A82 82 0 0 1 275 171" fill="none" stroke="#ffffff" stroke-width="2" opacity=".10" stroke-linecap="round"/>
   <text x="210" y="158" text-anchor="middle" fill="#9bb8ca" font-size="10" font-weight="800" letter-spacing="2">GROUPE DE RÉFÉRENCE</text>
   <text x="210" y="197" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900">R${myGroup}</text>
   <rect x="157" y="211" width="106" height="24" rx="12" fill="${mine.status==="work"?"#087f78":"#946329"}" stroke="${mine.status==="work"?"#43e0ca":"#f3c56f"}" stroke-width=".8"/>
@@ -1436,3 +1449,58 @@ updateReferenceDisplay();
 </script>
 </body>
 </html>
+
+<style id="shone-executive-orbit-v2">
+/* SH-ONE — immersive executive 3D control console */
+.rotation-dashboard{
+  width:min(100%,790px)!important;
+  padding:clamp(16px,3vw,26px)!important;
+  border:1px solid rgba(129,190,216,.42)!important;
+  border-radius:28px!important;
+  background:
+    radial-gradient(ellipse at 50% 38%,rgba(24,94,119,.25),transparent 48%),
+    radial-gradient(ellipse at 8% 4%,rgba(24,205,183,.13),transparent 34%),
+    linear-gradient(145deg,#071521 0%,#102b3e 42%,#071522 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -18px 35px rgba(0,0,0,.28),0 22px 55px rgba(3,17,28,.28),0 4px 0 #06111b!important;
+}
+.rotation-dashboard:after{
+ content:"";position:absolute;inset:7px;border:1px solid rgba(161,205,224,.12);
+ border-radius:22px;pointer-events:none;box-shadow:inset 0 0 28px rgba(88,171,205,.035)
+}
+.rotation-dashboard-head{padding:8px 8px 18px!important}
+.rotation-dashboard-head strong{font-size:clamp(15px,2.3vw,19px)!important;letter-spacing:1.1px!important;text-shadow:0 2px 8px #0008}
+.rotation-legend{font-size:clamp(11px,1.8vw,14px)!important;gap:20px!important}
+.rotation-legend i{width:13px!important;height:13px!important}
+.industrial-wheel-layout{
+ max-width:620px!important;padding:clamp(10px,2.5vw,20px)!important;
+ border:1px solid rgba(137,190,215,.32)!important;border-radius:26px!important;
+ background:
+  radial-gradient(ellipse at 50% 42%,rgba(34,91,119,.26),transparent 58%),
+  linear-gradient(145deg,rgba(24,52,72,.96),rgba(5,19,31,.98))!important;
+ box-shadow:inset 0 2px 0 rgba(255,255,255,.11),inset 0 -12px 24px rgba(0,0,0,.28),0 16px 34px rgba(0,0,0,.28),0 3px 0 rgba(129,179,204,.12)!important;
+}
+.rotation-wheel{filter:drop-shadow(0 18px 22px rgba(0,0,0,.42))!important}
+.orbit-caption-top,.orbit-caption-bottom{
+ border-radius:13px!important;padding:10px 14px!important;
+ background:linear-gradient(110deg,rgba(8,25,39,.96),rgba(34,72,93,.9),rgba(8,25,39,.96))!important;
+ border:1px solid rgba(147,194,216,.32)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 5px 14px rgba(0,0,0,.2);
+ text-shadow:0 2px 6px #0008;letter-spacing:1.35px!important;
+}
+.wheel-node{transform-box:fill-box;transform-origin:center;transition:filter .25s ease,opacity .25s ease}
+.wheel-node.is-mine{filter:drop-shadow(0 0 10px rgba(255,190,77,.9)) drop-shadow(0 7px 9px rgba(0,0,0,.45))}
+.wheel-node:not(.is-mine):hover{filter:drop-shadow(0 0 8px rgba(140,220,240,.55))}
+@media(max-width:600px){
+ .rotation-dashboard{padding:12px!important;border-radius:21px!important}
+ .industrial-wheel-layout{padding:7px!important;border-radius:18px!important}
+ .orbit-caption-top,.orbit-caption-bottom{font-size:9px!important;padding:8px 5px!important}
+}
+@media(prefers-reduced-motion:no-preference){
+ .wheel-node.is-mine .node-halo{animation:orbitBreath 2.8s ease-in-out infinite}
+ @keyframes orbitBreath{0%,100%{opacity:.72}50%{opacity:1}}
+}
+@media print{
+ .rotation-dashboard,.industrial-wheel-layout{box-shadow:none!important}
+ .wheel-node.is-mine .node-halo{animation:none!important}
+}
+</style>
