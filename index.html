@@ -1118,7 +1118,7 @@ function calculateEmployee(){
   ).join(""):'<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>')
  ):"";
  const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence-2001 — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
- out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${zeroTransitionHTML}${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1, avec le même groupe que celui qui vient de terminer sa période de repos.</div>`;
+ out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1, avec le même groupe que celui qui vient de terminer sa période de repos.</div>`;
 }
 function clearEmployeeResult(){document.getElementById("employeeResult").innerHTML="";document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications des groupes.</div>';lastEmployeePlan=null;}
 
