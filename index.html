@@ -558,6 +558,24 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
 .wheel-node{transition:filter .25s ease}.wheel-node.is-mine{filter:drop-shadow(0 0 7px rgba(245,190,91,.85))}.wheel-node.is-mine .node-halo{filter:url(#orbitGlow)}
 @media(max-width:600px){.rotation-dashboard{width:100%;margin:16px auto!important;padding:12px}.rotation-dashboard-head{text-align:center}.rotation-legend{justify-content:center;gap:12px}.industrial-wheel-layout{width:100%;max-width:100%;padding:6px!important}.industrial-wheel-layout .rotation-wheel-wrap{width:100%!important;max-width:470px!important;gap:8px}.orbit-caption-top,.orbit-caption-bottom{padding:8px 6px;letter-spacing:.7px;font-size:9px}}
 
+/* 3D finish for every circular indicator and badge */
+.phase-orbit-ring,.replacement-orbit-ring,.rotation-donut{
+ border:1px solid rgba(255,255,255,.82);
+ box-shadow:inset 0 3px 5px rgba(255,255,255,.72),inset 0 -7px 12px rgba(18,43,31,.20),0 5px 0 rgba(22,55,39,.12),0 10px 20px rgba(15,45,32,.22);
+}
+.phase-orbit-ring:before,.replacement-orbit-ring:before,.rotation-donut:before{
+ background:linear-gradient(145deg,#fff 0%,#f7faf8 48%,#dfe9e2 100%);
+ box-shadow:inset 0 3px 5px rgba(255,255,255,.95),inset 0 -3px 7px rgba(31,65,45,.12),0 2px 5px rgba(16,43,29,.16);
+}
+.phase-orbit-ring:after,.replacement-orbit-ring:after{
+ content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(255,255,255,.58);pointer-events:none;
+}
+.rotation-donut:after{filter:drop-shadow(0 2px 2px rgba(0,0,0,.38))}
+.rotation-card .rotation-donut,.phase-orbit:hover .phase-orbit-ring,.replacement-orbit:hover .replacement-orbit-ring{filter:drop-shadow(0 4px 5px rgba(12,38,25,.18))}
+.phase-orbit-core strong,.replacement-orbit-core strong,.rotation-center b{text-shadow:0 1px 0 #fff,0 2px 3px rgba(20,48,34,.18)}
+.replacement-code,.rotation-legend i,.wheel-node circle,.rotation-wheel circle{filter:drop-shadow(0 2px 2px rgba(0,0,0,.22))}
+@media print{.phase-orbit-ring,.replacement-orbit-ring,.rotation-donut{box-shadow:inset 0 2px 4px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.12)!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
 </style>
 </head>
 <body>
@@ -1196,8 +1214,9 @@ function openPreview(){
   .sort((a,b)=>a.start.localeCompare(b.start))
   .map((r,i)=>{
    const duration=daysBetween(parseDate(r.start),addDays(parseDate(r.end),1));
-   const label=r.code==="Absence-2001"?"Absence-2001":"Remplacement "+r.code;
-   const detail=r.code==="Absence-2001"?"Absence-2001 (Infotype 2001)":"Remplacement exceptionnel";
+   const isAbsence = r.code==="R" || r.code==="Absence" || r.code==="Absence-2001";
+   const label = isAbsence ? "Absence" : "Remplacement "+r.code;
+   const detail = r.code==="Absence-2001" ? "Absence (Infotype 2001)" : (isAbsence ? "Absence exceptionnelle" : "Remplacement exceptionnel");
    return `<tr>
     <td>${i+1}</td><td><strong>${label}</strong></td><td>${detail}</td>
     <td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td>
