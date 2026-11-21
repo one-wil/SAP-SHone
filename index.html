@@ -999,12 +999,14 @@ function buildCodingRows(plan){
   }
   return{number:i+1,group:s.group,type:s.type,start:inputDate(start),end:inputDate(end),last:i===segments.length-1,replacement:false};
  });
- const extra=(plan.replacementSegments||[]).map((s,i)=>({number:base.length+i+1,group:s.code,type:s.type||("Remplacement "+s.code),start:s.start,end:s.end,last:false,replacement:true}));
- return [...base,...extra].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement));
+ const extra=(plan.replacementSegments||[]).map(s=>({group:s.code,type:s.type||(s.code==="R"?"Absence":"Remplacement "+s.code),start:s.start,end:s.end,last:false,replacement:true}));
+ return [...base,...extra]
+  .sort((a,b)=>a.start.localeCompare(b.start)||Number(a.replacement)-Number(b.replacement))
+  .map((row,index)=>({...row,number:index+1}));
 }
 function renderCodingSummary(plan){
  const rows=buildCodingRows(plan);if(!rows.length){document.getElementById("codingSummary").innerHTML='<div class="empty">Aucune codification de groupe à afficher.</div>';return;}
- const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>${r.replacement?r.group:"R"+r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':(r.replacement?"Période exceptionnelle":"Terminée")}</td></tr>`).join("");
+ const tableRows=rows.map(r=>`<tr class="${r.last?"last-code":""}"><td>${r.number}</td><td><strong>${r.replacement?(r.group==="R"?"Absence":r.group):"R"+r.group}</strong></td><td>${r.type}</td><td>${formatDate(parseDate(r.start))}</td><td>${formatDate(parseDate(r.end))}</td><td>${r.last?'<span class="status work">Dernière codification</span>':(r.replacement?"Période exceptionnelle":"Terminée")}</td></tr>`).join("");
  const lastBase=rows.filter(r=>!r.replacement).at(-1);
  document.getElementById("codingSummary").innerHTML=`<div class="code-summary"><div class="mini-title">Ordre des codifications :${escapeHTML(plan.name||"Informations de l’agent non renseignées")}</div><div class="table-wrap"><table><thead><tr><th>N°</th><th>Groupe / Code</th><th>Statut</th><th>Date de début</th><th>Date de fin</th><th>Statut</th></tr></thead><tbody>${tableRows}</tbody></table></div><div class="notice success"><strong>Dernière codification du roulement :</strong> Groupe R${lastBase.group}<br>Valable du :${formatDate(parseDate(lastBase.start))} au 31/12/9999.</div></div>`;
 }
@@ -1114,7 +1116,7 @@ function calculateEmployee(){
  const replacementHTML=(replacementEnabled||showAbsence2001Card)?(
   '<h3 style="color:var(--blue);font-size:15px;margin-top:22px">'+(replacementEnabled?"Remplacements exceptionnels":"Codification de transition")+'</h3>'+
   (replacementSegments.length?replacementSegments.slice().sort((a,b)=>a.start.localeCompare(b.start)).map(x=>
-   '<div class="segment" style="border-color:'+(x.code==="T"?"var(--green2)":"var(--gold)")+'"><strong>'+(x.key==="RSTART"||x.key==="REND"?"Absence - Infotype 2001":(x.code==="Absence-2001"?"Absence-2001 — Infotype 2001":"Remplacement "+x.code))+'</strong> — '+(x.days??daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))+' jour(s)<br>Du '+formatDate(parseDate(x.start))+' au '+formatDate(parseDate(x.end))+'<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>'
+   '<div class="segment" style="border-color:'+(x.code==="T"?"var(--green2)":"var(--gold)")+'"><strong>'+(x.key==="RSTART"||x.key==="REND"?"Absence":(x.code==="Absence-2001"?"Absence-2001 — Infotype 2001":"Remplacement "+x.code))+'</strong> — '+(x.days??daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))+' jour(s)<br>Du '+formatDate(parseDate(x.start))+' au '+formatDate(parseDate(x.end))+'<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>'
   ).join(""):'<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>')
  ):"";
  const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence-2001 — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
@@ -1133,11 +1135,16 @@ function openPreview(){
  ].sort((a,b)=>a.start.localeCompare(b.start));
 
  const baseRows=rows.filter(r=>r.state!=="Remplacement");
- const codingRows=[...baseRows.map((r,i)=>{
-   const next=baseRows[i+1];
+ const codingRows=[...baseRows.map(r=>{
+   const next=baseRows.find(candidate=>candidate.start>r.start);
    const codingEnd=next?inputDate(addDays(parseDate(next.start),-1)):LAST_DATE;
-   return {...r,number:i+1,codingEnd};
- }),...(p.replacementSegments||[]).map((r,i)=>({phase:"Remplacement "+r.code,group:r.code,state:"Remplacement",start:r.start,end:r.end,days:daysBetween(parseDate(r.start),addDays(parseDate(r.end),1)),number:baseRows.length+i+1,codingEnd:r.end}))].sort((a,b)=>a.start.localeCompare(b.start));
+   return {...r,codingEnd};
+  }),...(p.replacementSegments||[]).map(r=>({
+   phase:r.code==="R"?"Absence":"Remplacement "+r.code,
+   group:r.code,state:r.code==="R"?"Absence":"Remplacement",
+   start:r.start,end:r.end,days:daysBetween(parseDate(r.start),addDays(parseDate(r.end),1)),codingEnd:r.end
+  }))].sort((a,b)=>a.start.localeCompare(b.start)||Number(a.state==="Remplacement"||a.state==="Absence")-Number(b.state==="Remplacement"||b.state==="Absence"))
+   .map((row,index)=>({...row,number:index+1}));
  const phaseRows=codingRows.map(r=>`<tr>
   <td>${r.number}</td><td>${r.phase}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
   <td>${r.state}</td><td>${formatDate(parseDate(r.start))}</td>
@@ -1164,17 +1171,23 @@ function openPreview(){
  const absenceRows=mergedRotations.filter(r=>r.group==="Absence-2001" || String(r.phase||"").includes("Absence-2001"));
  const normalRotations=mergedRotations.filter(r=>!absenceRows.includes(r));
  const rotationsForPrint=p.workWeeks===0?normalRotations:(normalRotations.length>=2?normalRotations.slice(1):normalRotations);
- const absencePrintRows=absenceRows.map((r,i)=>`<tr>
-  <td>${i+1}</td><td><strong>Absence-2001</strong></td>
-  <td>Absence-2001 (Infotype 2001)</td><td>${formatDate(parseDate(r.start))}</td>
-  <td>${formatDate(parseDate(r.end))}</td><td>Absence exceptionnelle — ${daysBetween(parseDate(r.start),addDays(parseDate(r.end),1))} jour(s)</td>
- </tr>`).join("");
- const rotationPrintRows=rotationsForPrint.map((r,i)=>`<tr>
-  <td>${absenceRows.length+i+1}</td><td><strong>${r.state==="Remplacement"?r.group:"R"+r.group}</strong></td>
-  <td>${r.states.join(" + ")}</td><td>${formatDate(parseDate(r.start))}</td>
-  <td>${normalRotations.indexOf(r)===normalRotations.length-1?"21/12/9999":formatDate(parseDate(r.end))}</td>
-  <td>${normalRotations.indexOf(r)===normalRotations.length-1?"Codification finale":"Rotation suivante"}</td>
- </tr>`).join("");
+ const noReplacementPrintItems=[
+  ...absenceRows.map(r=>({kind:"absence",row:r})),
+  ...rotationsForPrint.map(r=>({kind:"rotation",row:r}))
+ ].sort((a,b)=>a.row.start.localeCompare(b.row.start));
+ const noReplacementPrintRows=noReplacementPrintItems.map((item,i)=>{
+  const r=item.row;
+  return item.kind==="absence"?`<tr>
+   <td>${i+1}</td><td><strong>Absence-2001</strong></td>
+   <td>Absence-2001 (Infotype 2001)</td><td>${formatDate(parseDate(r.start))}</td>
+   <td>${formatDate(parseDate(r.end))}</td><td>Absence exceptionnelle — ${daysBetween(parseDate(r.start),addDays(parseDate(r.end),1))} jour(s)</td>
+  </tr>`:`<tr>
+   <td>${i+1}</td><td><strong>${r.state==="Remplacement"||r.state==="Absence"?(r.group==="R"?"Absence":r.group):"R"+r.group}</strong></td>
+   <td>${r.states.join(" + ")}</td><td>${formatDate(parseDate(r.start))}</td>
+   <td>${normalRotations.indexOf(r)===normalRotations.length-1?"21/12/9999":formatDate(parseDate(r.end))}</td>
+   <td>${normalRotations.indexOf(r)===normalRotations.length-1?"Codification finale":"Rotation suivante"}</td>
+  </tr>`;
+ }).join("");
  // Si au moins un remplacement est effectivement généré, le deuxième tableau
  // de la feuille imprimée présente uniquement les remplacements (T et/ou R).
  // En l'absence de remplacement, conserver le récapitulatif habituel des rotations.
@@ -1191,10 +1204,10 @@ function openPreview(){
     <td>${duration} jour(s)</td>
    </tr>`;
   }).join(""):"";
- const mergedRows=hasReplacements?replacementPrintRows:(absencePrintRows+rotationPrintRows);
+ const mergedRows=hasReplacements?replacementPrintRows:noReplacementPrintRows;
  const secondTableTitle=hasReplacements?"Tableau récapitulatif des remplacements":"Tableau récapitulatif des rotations continues";
  const secondTableHead=hasReplacements
-  ?"<tr><th>N°</th><th>Remplacement</th><th>Type</th><th>Du</th><th>Au</th><th>Durée</th></tr>"
+  ?"<tr><th>N°</th><th>Absence / Remplacement</th><th>Type</th><th>Du</th><th>Au</th><th>Durée</th></tr>"
   :"<tr><th>N°</th><th>Rotation</th><th>Situation(s)</th><th>Du</th><th>Au</th><th>Observation</th></tr>";
 
  const ref=validateReference();
