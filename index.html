@@ -576,6 +576,18 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
 .replacement-code,.rotation-legend i,.wheel-node circle,.rotation-wheel circle{filter:drop-shadow(0 2px 2px rgba(0,0,0,.22))}
 @media print{.phase-orbit-ring,.replacement-orbit-ring,.rotation-donut{box-shadow:inset 0 2px 4px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.12)!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
+
+/* SH-ONE PREMIUM 3D — circular elements, glossy bevels, depth and controlled highlights */
+.phase-orbit-ring,.replacement-orbit-ring,.rotation-donut{isolation:isolate;transform:translateZ(0);border:1px solid rgba(255,255,255,.92)!important;box-shadow:inset 0 3px 7px rgba(255,255,255,.88),inset 0 -9px 15px rgba(12,38,27,.28),0 2px 0 rgba(255,255,255,.55),0 6px 0 rgba(17,48,34,.20),0 13px 24px rgba(10,35,24,.24)!important}
+.phase-orbit-ring:before,.replacement-orbit-ring:before,.rotation-donut:before{border:1px solid rgba(255,255,255,.85);background:linear-gradient(145deg,#fff 0%,#f8fcfa 34%,#dce9e1 100%)!important;box-shadow:inset 0 4px 7px rgba(255,255,255,.98),inset 0 -5px 9px rgba(28,61,43,.16),0 3px 7px rgba(7,29,19,.18)!important}
+.phase-orbit-ring:after,.replacement-orbit-ring:after{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(255,255,255,.72);box-shadow:inset 0 1px 3px rgba(255,255,255,.65),0 1px 3px rgba(0,0,0,.13);pointer-events:none}
+.rotation-donut:after{filter:drop-shadow(0 2px 3px rgba(0,0,0,.48))}
+.phase-orbit-core strong,.replacement-orbit-core strong,.rotation-center b{text-shadow:0 1px 0 #fff,0 2px 3px rgba(20,48,34,.22),0 5px 10px rgba(20,48,34,.10)}
+.replacement-code,.rotation-legend i{border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 2px 4px rgba(255,255,255,.8),inset 0 -3px 5px rgba(0,0,0,.17),0 3px 0 rgba(0,0,0,.12),0 5px 9px rgba(0,0,0,.18)}
+.wheel-node circle:not(.node-halo){filter:drop-shadow(0 4px 4px rgba(0,0,0,.38))}.wheel-node .node-halo{filter:drop-shadow(0 0 5px currentColor)}
+.rotation-wheel{filter:drop-shadow(0 12px 18px rgba(0,0,0,.28))}
+@media print{.phase-orbit-ring,.replacement-orbit-ring,.rotation-donut{box-shadow:inset 0 2px 4px rgba(0,0,0,.18),0 3px 5px rgba(0,0,0,.16)!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
 </style>
 </head>
 <body>
@@ -795,7 +807,7 @@ function renderGroups(date){
  const wheelNodes=currentGroups.map(g=>{
   const st=getGroupStatus(g.number,date),isMine=g.number===myGroup,isWork=st.status==="work";
   const angle=(-90+(g.number-1)*45)*Math.PI/180,cx=210+143*Math.cos(angle),cy=210+143*Math.sin(angle);
-  const fill=isWork?"url(#orbitWork)":"url(#orbitRest)",radius=isMine?30:25;
+  const fill=isWork?"url(#orbitWork3D)":"url(#orbitRest3D)",radius=isMine?30:25;
   const dayNumber=isWork?st.phase+1:st.phase-WORK_DAYS+1;
   const dayLabel=dayNumber===1?"J1":`J${dayNumber}`;
   return `<g class="wheel-node ${isMine?"is-mine":""}" aria-label="R${g.number} ${isWork?"en travail":"en repos"}, ${dayLabel}">
