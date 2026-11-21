@@ -1110,7 +1110,13 @@ function calculateEmployee(){
   workEnd:inputDate(last.work.endDate),restStart:inputDate(ps[0].restStart),restEnd:inputDate(last.rest.endDate),restSuccess:true,restError:"",replacementEnabled,replacementFlags:{tEnabled,rStartEnabled,rEndEnabled},replacementSegments};
  renderCodingSummary(lastEmployeePlan);
  if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
- const replacementHTML=replacementEnabled?`<h3 style="color:var(--blue);font-size:15px;margin-top:22px">Remplacements exceptionnels</h3>${replacementSegments.length?[...replacementSegments].sort((a,b)=>a.start.localeCompare(b.start)).map(x=>`<div class="segment" style="border-color:${x.code==="T"?"var(--green2)":"var(--gold)"}"><strong>${x.code==="Absence-2001"?"Absence Infotype 2001":"Remplacement "+x.code}</strong> — ${x.days??(daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))} jour(s)<br>Du ${formatDate(parseDate(x.start))} au ${formatDate(parseDate(x.end))}<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>`).join(""):`<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>`}`:"";
+ const showAbsence2001Card=replacementSegments.some(x=>x.code==="Absence-2001");
+ const replacementHTML=(replacementEnabled||showAbsence2001Card)?(
+  '<h3 style="color:var(--blue);font-size:15px;margin-top:22px">'+(replacementEnabled?"Remplacements exceptionnels":"Codification de transition")+'</h3>'+
+  (replacementSegments.length?replacementSegments.slice().sort((a,b)=>a.start.localeCompare(b.start)).map(x=>
+   '<div class="segment" style="border-color:'+(x.code==="T"?"var(--green2)":"var(--gold)")+'"><strong>'+(x.code==="Absence-2001"?"Absence-2001 — Infotype 2001":"Remplacement "+x.code)+'</strong> — '+(x.days??daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))+' jour(s)<br>Du '+formatDate(parseDate(x.start))+' au '+formatDate(parseDate(x.end))+'<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>'
+  ).join(""):'<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>')
+ ):"";
  const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence-2001 — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
  out.innerHTML=`<div class="notice info"><b>Programmes :</b> ${ps.length}<br><b>Total :</b> ${sumW} jours de travail + ${sumR} jours de repos.</div>${zeroTransitionHTML}${html}${replacementHTML}<div class="notice info">Le programme 2 débute le lendemain de la fin du repos du programme 1, avec le même groupe que celui qui vient de terminer sa période de repos.</div>`;
 }
