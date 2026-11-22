@@ -750,7 +750,24 @@ textarea:focus{
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRWeek2Enabled">Absence — Infotype 2001 — 2ème semaine du travail</label><label>Durée de l'absence (2ème semaine du travail, en jours)</label><select id="replacementRWeek2Days"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option><option value="8">8 jours</option><option value="9">9 jours</option><option value="10">10 jours</option><option value="11">11 jours</option><option value="12">12 jours</option><option value="13">13 jours</option><option value="14">14 jours</option><option value="15">15 jours</option><option value="16">16 jours</option><option value="17">17 jours</option><option value="18">18 jours</option><option value="19">19 jours</option><option value="20">20 jours</option><option value="21">21 jours</option><option value="22">22 jours</option><option value="23">23 jours</option><option value="24">24 jours</option><option value="25">25 jours</option><option value="26">26 jours</option><option value="27">27 jours</option><option value="28">28 jours</option><option value="29">29 jours</option></select><small class="field-hint">À partir du premier jour de la 2ème semaine du travail du Programme 1.</small></div>
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRWeek3Enabled">Absence — Infotype 2001 — 3ème semaine du travail</label><label>Durée de l'absence (3ème semaine du travail, en jours)</label><select id="replacementRWeek3Days"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option><option value="8">8 jours</option><option value="9">9 jours</option><option value="10">10 jours</option><option value="11">11 jours</option><option value="12">12 jours</option><option value="13">13 jours</option><option value="14">14 jours</option><option value="15">15 jours</option><option value="16">16 jours</option><option value="17">17 jours</option><option value="18">18 jours</option><option value="19">19 jours</option><option value="20">20 jours</option><option value="21">21 jours</option><option value="22">22 jours</option><option value="23">23 jours</option><option value="24">24 jours</option><option value="25">25 jours</option><option value="26">26 jours</option><option value="27">27 jours</option><option value="28">28 jours</option><option value="29">29 jours</option></select><small class="field-hint">À partir du premier jour de la 3ème semaine du travail du Programme 1.</small></div>
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementRWeek4Enabled">Absence — Infotype 2001 — 4ème semaine du travail</label><label>Durée de l'absence (4ème semaine du travail, en jours)</label><select id="replacementRWeek4Days"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option><option value="8">8 jours</option><option value="9">9 jours</option><option value="10">10 jours</option><option value="11">11 jours</option><option value="12">12 jours</option><option value="13">13 jours</option><option value="14">14 jours</option><option value="15">15 jours</option><option value="16">16 jours</option><option value="17">17 jours</option><option value="18">18 jours</option><option value="19">19 jours</option><option value="20">20 jours</option><option value="21">21 jours</option><option value="22">22 jours</option><option value="23">23 jours</option><option value="24">24 jours</option><option value="25">25 jours</option><option value="26">26 jours</option><option value="27">27 jours</option><option value="28">28 jours</option><option value="29">29 jours</option></select><small class="field-hint">À partir du premier jour de la 4ème semaine du travail du Programme 1.</small></div>
-   <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementTEnabled">Remplacement T — après le travail</label><label>Durée du remplacement T (en jours)</label><select id="replacementTWeeks"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option><option value="8">8 jours</option><option value="9">9 jours</option><option value="10">10 jours</option><option value="11">11 jours</option><option value="12">12 jours</option><option value="13">13 jours</option><option value="14">14 jours</option><option value="15">15 jours</option><option value="16">16 jours</option><option value="17">17 jours</option><option value="18">18 jours</option><option value="19">19 jours</option><option value="20">20 jours</option><option value="21">21 jours</option><option value="22">22 jours</option><option value="23">23 jours</option><option value="24">24 jours</option><option value="25">25 jours</option><option value="26">26 jours</option><option value="27">27 jours</option><option value="28">28 jours</option><option value="29">29 jours</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de travail.</small></div>
+   <div class="field absence-custom-field">
+    <label class="cycle-choice"><input type="checkbox" id="replacementRDuringWorkEnabled">Absence — Infotype 2001 — en jour durant le travail</label>
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:9px">
+     <div><label for="replacementRDuringWorkDate">Date de l'absence</label><input type="date" id="replacementRDuringWorkDate"></div>
+     <div><label for="replacementRDuringWorkDays">Nombre de jours</label><input type="number" id="replacementRDuringWorkDays" min="1" max="29" value="1" inputmode="numeric"></div>
+    </div>
+    <small class="field-hint">Saisir la date de début et la durée de l'absence pendant la période de travail.</small>
+   </div>
+   <div class="field replacement-t-field">
+    <label class="cycle-choice"><input type="checkbox" id="replacementTEnabled">Remplacement T — après le travail</label>
+    <div class="grid" style="grid-template-columns:1fr;gap:9px;margin-top:9px">
+     <div><label for="replacementTWeek1Days">Remplacement T — après le travail 1ème semaine T (en jours)</label><select id="replacementTWeek1Days"><option value="0">0 jour</option><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option></select></div>
+     <div><label for="replacementTWeek2Days">Remplacement T — après le travail 2ème semaine T (en jours)</label><select id="replacementTWeek2Days"><option value="0">0 jour</option><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option></select></div>
+     <div><label for="replacementTWeek3Days">Remplacement T — après le travail 3ème semaine T (en jours)</label><select id="replacementTWeek3Days"><option value="0">0 jour</option><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option></select></div>
+     <div><label for="replacementTWeek4Days">Remplacement T — après le travail 4ème semaine T (en jours)</label><select id="replacementTWeek4Days"><option value="0">0 jour</option><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option></select></div>
+    </div>
+    <small class="field-hint">Chaque durée est calculée dans sa semaine T correspondante après la fin du travail.</small>
+   </div>
    <div class="field"><label class="cycle-choice"><input type="checkbox" id="replacementREndEnabled">Absence — Infotype 2001 — après le repos</label><label>Durée de l'absence (après repos, en jours)</label><select id="replacementREndWeeks"><option value="1">1 jour</option><option value="2">2 jours</option><option value="3">3 jours</option><option value="4">4 jours</option><option value="5">5 jours</option><option value="6">6 jours</option><option value="7" selected>7 jours</option><option value="8">8 jours</option><option value="9">9 jours</option><option value="10">10 jours</option><option value="11">11 jours</option><option value="12">12 jours</option><option value="13">13 jours</option><option value="14">14 jours</option><option value="15">15 jours</option><option value="16">16 jours</option><option value="17">17 jours</option><option value="18">18 jours</option><option value="19">19 jours</option><option value="20">20 jours</option><option value="21">21 jours</option><option value="22">22 jours</option><option value="23">23 jours</option><option value="24">24 jours</option><option value="25">25 jours</option><option value="26">26 jours</option><option value="27">27 jours</option><option value="28">28 jours</option><option value="29">29 jours</option></select><small class="field-hint">À partir du lendemain de la fin des 4 semaines de repos.</small></div>
   </div>
  </div>
@@ -1132,11 +1149,11 @@ function segmentHTML(s,i,label){
 
 /* Carte circulaire du remplacement, placée à côté de sa phase correspondante */
 function replacementOrbitHTML(key, segments=[]){
- const cfg={T:{enabled:"replacementTEnabled",days:"replacementTWeeks",title:"Remplacement T",label:"REMPLACEMENT TRAVAIL"},RSTART:{enabled:"replacementRStartEnabled",days:"replacementRStartWeeks",title:"Absence — début du premier travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",days:"replacementREndWeeks",title:"Absence — après repos",label:"ABSENCE INFOTYPE 2001"},R2:{enabled:"replacementRWeek2Enabled",days:"replacementRWeek2Days",title:"Absence — 2ème semaine",label:"ABSENCE INFOTYPE 2001"},R3:{enabled:"replacementRWeek3Enabled",days:"replacementRWeek3Days",title:"Absence — 3ème semaine",label:"ABSENCE INFOTYPE 2001"},R4:{enabled:"replacementRWeek4Enabled",days:"replacementRWeek4Days",title:"Absence — 4ème semaine",label:"ABSENCE INFOTYPE 2001"}}[key];
+ const cfg={T1:{enabled:"replacementTEnabled",days:"replacementTWeek1Days",title:"Remplacement T — 1ème semaine",label:"REMPLACEMENT TRAVAIL"},T2:{enabled:"replacementTEnabled",days:"replacementTWeek2Days",title:"Remplacement T — 2ème semaine",label:"REMPLACEMENT TRAVAIL"},T3:{enabled:"replacementTEnabled",days:"replacementTWeek3Days",title:"Remplacement T — 3ème semaine",label:"REMPLACEMENT TRAVAIL"},T4:{enabled:"replacementTEnabled",days:"replacementTWeek4Days",title:"Remplacement T — 4ème semaine",label:"REMPLACEMENT TRAVAIL"},RDURING:{enabled:"replacementRDuringWorkEnabled",days:"replacementRDuringWorkDays",title:"Absence durant le travail",label:"ABSENCE INFOTYPE 2001"},RSTART:{enabled:"replacementRStartEnabled",days:"replacementRStartWeeks",title:"Absence — début du premier travail",label:"ABSENCE INFOTYPE 2001"},REND:{enabled:"replacementREndEnabled",days:"replacementREndWeeks",title:"Absence — après repos",label:"ABSENCE INFOTYPE 2001"},R2:{enabled:"replacementRWeek2Enabled",days:"replacementRWeek2Days",title:"Absence — 2ème semaine",label:"ABSENCE INFOTYPE 2001"},R3:{enabled:"replacementRWeek3Enabled",days:"replacementRWeek3Days",title:"Absence — 3ème semaine",label:"ABSENCE INFOTYPE 2001"},R4:{enabled:"replacementRWeek4Enabled",days:"replacementRWeek4Days",title:"Absence — 4ème semaine",label:"ABSENCE INFOTYPE 2001"}}[key];
  if(!cfg||!document.getElementById(cfg.enabled)?.checked)return "";
- const days=Number(document.getElementById(cfg.days)?.value||0),seg=segments.find(x=>x.key===key),cls=key==="T"?"t":"r";
+ const days=Number(document.getElementById(cfg.days)?.value||0),seg=segments.find(x=>x.key===key),cls=key.startsWith("T")?"t":"r";
  const dates=seg?`<span>Du ${formatDate(parseDate(seg.start))}</span><span>Au ${formatDate(parseDate(seg.end))}</span>`:`<span>${days===0?"Aucune période (0 jour)":"Dates après calcul"}</span>`;
- return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key==="T"?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
+ return `<div class="replacement-orbit ${cls}"><div class="replacement-orbit-ring"><div class="replacement-orbit-core"><small>${cfg.title}</small><strong>${key.startsWith("T")?"T":"R"}</strong><b>${days}</b><small>jours</small></div></div><div class="replacement-orbit-details"><span class="replacement-orbit-label">${cfg.label}</span>${dates}</div></div>`;
 }
 
 /* Affiche les phases et remplacements dans l'ordre chronologique réel. */
@@ -1230,12 +1247,13 @@ function calculateEmployee(){
  const ps=[make(startDate,startGroup,ww,rw)];
  if(ps[0].error){out.innerHTML=`<div class="notice error">${escapeHTML(ps[0].error)}</div>`;lastEmployeePlan=null;return;}
  const tEnabled=document.getElementById("replacementTEnabled").checked;
+ const rDuringWorkEnabled=document.getElementById("replacementRDuringWorkEnabled").checked;
  const rStartEnabled=document.getElementById("replacementRStartEnabled").checked;
  const rEndEnabled=document.getElementById("replacementREndEnabled").checked;
  const rWeek2Enabled=document.getElementById("replacementRWeek2Enabled").checked;
  const rWeek3Enabled=document.getElementById("replacementRWeek3Enabled").checked;
  const rWeek4Enabled=document.getElementById("replacementRWeek4Enabled").checked;
- const replacementEnabled=tEnabled||rStartEnabled||rEndEnabled||rWeek2Enabled||rWeek3Enabled||rWeek4Enabled;
+ const replacementEnabled=tEnabled||rDuringWorkEnabled||rStartEnabled||rEndEnabled||rWeek2Enabled||rWeek3Enabled||rWeek4Enabled;
  if(replacementEnabled&&(ww!==4||rw!==4)){out.innerHTML='<div class="notice error">Les remplacements sont disponibles lorsque le programme de référence est réglé sur 4 semaines de travail et 4 semaines de repos.</div>';lastEmployeePlan=null;return;}
  const replacementSegments=[];
  if(zeroWorkTransition){
@@ -1249,7 +1267,16 @@ function calculateEmployee(){
     start:inputDate(date),end:inputDate(addDays(date,days-1)),days});
   }
  };
- if(tEnabled)addReplacement("T","T",addDays(ps[0].work.endDate,1),Number(document.getElementById("replacementTWeeks").value));
+ if(rDuringWorkEnabled){
+  const absenceDate=document.getElementById("replacementRDuringWorkDate").value;
+  const absenceDays=Number(document.getElementById("replacementRDuringWorkDays").value);
+  if(!absenceDate||!Number.isInteger(absenceDays)||absenceDays<1||absenceDays>29){out.innerHTML='<div class="notice error">Veuillez saisir une date valide et une durée d’absence comprise entre 1 et 29 jours.</div>';lastEmployeePlan=null;return;}
+  addReplacement("RDURING","Absence-2001",parseDate(absenceDate),absenceDays);
+ }
+ if(tEnabled){
+  const tBase=addDays(ps[0].work.endDate,1);
+  [1,2,3,4].forEach((week)=>{const days=Number(document.getElementById(`replacementTWeek${week}Days`).value);if(days>0)addReplacement(`T${week}`,"T",addDays(tBase,(week-1)*7),days);});
+ }
  if(rStartEnabled)addReplacement("RSTART","R",startDate,Number(document.getElementById("replacementRStartWeeks").value));
  if(rWeek2Enabled)addReplacement("R2","Absence-2001",addDays(startDate,7),Number(document.getElementById("replacementRWeek2Days").value));
  if(rWeek3Enabled)addReplacement("R3","Absence-2001",addDays(startDate,14),Number(document.getElementById("replacementRWeek3Days").value));
@@ -1284,8 +1311,8 @@ function calculateEmployee(){
   // T accompagne la période de repos du Programme 1.
   // REND commence le lendemain de la fin de ce repos : il accompagne donc
   // le groupe qui reprend effectivement le travail dans le Programme 2.
-  const workReplacementKeys=i===0?["RSTART","R2","R3","R4"]:(i===1?["REND"]:[]);
-  const restReplacementKeys=i===0?["T"]:[];
+  const workReplacementKeys=i===0?["RSTART","R2","R3","R4","RDURING"]:(i===1?["REND"]:[]);
+  const restReplacementKeys=i===0?["T1","T2","T3","T4"]:[];
   const hasWorkReplacement=workReplacementKeys.some(key=>replacementSegments.some(x=>x.key===key));
   const hasRestReplacement=restReplacementKeys.some(key=>replacementSegments.some(x=>x.key===key));
   return `<h3 style="color:var(--green);font-size:15px;margin-top:22px">${i?"Programme 2 — Continuer":"Programme 1"}</h3><h4>Travail</h4><div class="phase-pair">${p.work.segments.length||hasWorkReplacement?renderChronologicalOrbits(p.work.segments,workReplacementKeys,replacementSegments,"Phase de travail "):`<div class="phase-orbit"><div class="empty">Aucune période de travail sélectionnée (0 semaine).</div></div>`}</div><div class="notice info">Groupes : ${p.work.segments.map(x=>"R"+x.group).join(" ← ")||"Aucun"} — ${p.workDays} jours.</div><h4>Repos</h4><div class="phase-pair">${p.rest.segments.length||hasRestReplacement?renderChronologicalOrbits(p.rest.segments,restReplacementKeys,replacementSegments,"Phase de repos "):`<div class="phase-orbit"><div class="empty">Aucune période de repos sélectionnée (0 semaine).</div></div>`}</div><div class="notice success">Groupes : ${p.rest.matches.map(x=>"R"+x).join(" → ")||"Aucun"}<br>Du ${formatDate(p.restStart)} au ${formatDate(p.rest.endDate)} — ${p.restDays} jours.</div>`;
@@ -1300,7 +1327,7 @@ function calculateEmployee(){
  const replacementHTML=(replacementEnabled||showAbsence2001Card)?(
   '<h3 style="color:var(--blue);font-size:15px;margin-top:22px">'+(replacementEnabled?"Remplacements exceptionnels":"Codification de transition")+'</h3>'+
   (replacementSegments.length?replacementSegments.slice().sort((a,b)=>a.start.localeCompare(b.start)).map(x=>
-   '<div class="segment" style="border-color:'+(x.code==="T"?"var(--green2)":"var(--gold)")+'"><strong>'+(x.key==="RSTART"||x.key==="REND"?"Absence — Infotype 2001":(x.code==="Absence-2001"?"Absence — Infotype 2001":"Remplacement "+x.code))+'</strong> — '+(x.days??daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))+' jour(s)<br>Du '+formatDate(parseDate(x.start))+' au '+formatDate(parseDate(x.end))+'<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>'
+   '<div class="segment" style="border-color:'+(x.code==="T"?"var(--green2)":"var(--gold)")+'"><strong>'+(x.code==="Absence-2001"?"Absence — Infotype 2001":(x.key.startsWith("T")?`Remplacement T — ${x.key.slice(1)}ème semaine T`:`Remplacement ${x.code}`))+'</strong> — '+(x.days??daysBetween(parseDate(x.start),addDays(parseDate(x.end),1)))+' jour(s)<br>Du '+formatDate(parseDate(x.start))+' au '+formatDate(parseDate(x.end))+'<br><small>La période normale de repos / travail conserve ses dates initiales.</small></div>'
   ).join(""):'<div class="segment"><strong>Aucun remplacement supplémentaire</strong> — 0 semaine T / 0 semaine R.</div>')
  ):"";
  const zeroTransitionHTML=zeroWorkTransition?`<div class="segment rest-segment"><strong>Absence — Infotype 2001</strong><br>Du ${formatDate(startDate)} au ${formatDate(startDate)} (premier jour uniquement).<br>Le groupe opposé R${initialRestGroup} commence son calcul de repos le ${formatDate(initialRestDate)}.</div>`:"";
@@ -1532,7 +1559,8 @@ function syncOptionVisuals(){
   card.classList.toggle('is-selected',!!master?.checked);
  });
  [
-  ['replacementTEnabled','replacementTWeeks'],
+  ['replacementTEnabled','replacementTWeek1Days'],
+  ['replacementRDuringWorkEnabled','replacementRDuringWorkDate'],
   ['replacementRStartEnabled','replacementRStartWeeks'],
   ['replacementREndEnabled','replacementREndWeeks']
  ].forEach(([toggleId,selectId])=>{
@@ -1549,10 +1577,10 @@ const replacementOptions=document.getElementById("replacementOptions");
 replacementMaster.addEventListener("change",()=>{
  replacementOptions.style.display=replacementMaster.checked?"grid":"none";
  syncOptionVisuals();
- if(!replacementMaster.checked){["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled","replacementRWeek2Enabled","replacementRWeek3Enabled","replacementRWeek4Enabled"].forEach(id=>document.getElementById(id).checked=false);}
+ if(!replacementMaster.checked){["replacementTEnabled","replacementRDuringWorkEnabled","replacementRStartEnabled","replacementREndEnabled","replacementRWeek2Enabled","replacementRWeek3Enabled","replacementRWeek4Enabled"].forEach(id=>document.getElementById(id).checked=false);}
  if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);
 });
-["replacementTEnabled","replacementRStartEnabled","replacementREndEnabled","replacementRWeek2Enabled","replacementRWeek3Enabled","replacementRWeek4Enabled","replacementTWeeks","replacementRStartWeeks","replacementREndWeeks","replacementRWeek2Days","replacementRWeek3Days","replacementRWeek4Days"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);}));
+["replacementTEnabled","replacementRDuringWorkEnabled","replacementRStartEnabled","replacementREndEnabled","replacementRWeek2Enabled","replacementRWeek3Enabled","replacementRWeek4Enabled","replacementTWeek1Days","replacementTWeek2Days","replacementTWeek3Days","replacementTWeek4Days","replacementRDuringWorkDate","replacementRDuringWorkDays","replacementRStartWeeks","replacementREndWeeks","replacementRWeek2Days","replacementRWeek3Days","replacementRWeek4Days"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{if(currentGroups&&currentCheckDate)renderGroups(currentCheckDate);}));
 const continueToggle=document.getElementById("continueProgram");
 const continueFields=document.getElementById("continueFields");
 continueToggle.addEventListener("change",()=>{
