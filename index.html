@@ -617,7 +617,7 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
   .card > h2,.card > .notice.info{max-width:1120px;margin-left:auto;margin-right:auto}
   .card > .field:first-of-type{max-width:760px;margin-left:auto;margin-right:auto}
   .card > .cycle-option:not(:has(#replacementOptions)){max-width:1120px;margin-left:auto!important;margin-right:auto!important}
-  #replacementOptions{display:grid!important;grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);grid-template-areas:
+  #replacementOptions{grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);grid-template-areas:
     "absenceHead replaceHead"
     "abs1 replaceBlock"
     "abs2 replaceBlock"
@@ -626,7 +626,6 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
     "abs5 replaceBlock"
     "abs6 replaceDay";
     align-items:start;gap:12px 18px!important;}
-  #replacementOptions:not([style*="display: none"]){display:grid!important}
   #replacementOptions::before,#replacementOptions::after{font-size:13px;font-weight:900;letter-spacing:.35px;padding:10px 13px;border-radius:10px;align-self:stretch;display:flex;align-items:center}
   #replacementOptions::before{content:"ABSENCES · INFOTYPE 2001";grid-area:absenceHead;background:#fff0f0;color:#a52a2a;border:1px solid #f0cccc}
   #replacementOptions::after{content:"REMPLACEMENTS";grid-area:replaceHead;background:#eaf4ff;color:#175a91;border:1px solid #cbdff2}
