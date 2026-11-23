@@ -608,6 +608,48 @@ footer strong{color:var(--brand-burgundy);font-weight:900;letter-spacing:.35px}
 
 /* Numéros indicatifs des semaines pour les champs Absence */
 .week-guide-number{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;margin:0 5px;color:#c62828;font-size:14px;font-weight:950;line-height:1;vertical-align:middle}
+
+/* Organisation grand écran : paramètres au centre, absences à gauche,
+   remplacements à droite. Les écrans mobiles conservent le flux normal. */
+@media (min-width: 1180px){
+  .container{max-width:1680px!important;width:calc(100% - 48px)!important}
+  .card{padding:24px 26px}
+  .card > h2,.card > .notice.info{max-width:1120px;margin-left:auto;margin-right:auto}
+  .card > .field:first-of-type{max-width:760px;margin-left:auto;margin-right:auto}
+  .card > .cycle-option:not(:has(#replacementOptions)){max-width:1120px;margin-left:auto!important;margin-right:auto!important}
+  #replacementOptions{display:grid!important;grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);grid-template-areas:
+    "absenceHead replaceHead"
+    "abs1 replaceBlock"
+    "abs2 replaceBlock"
+    "abs3 replaceBlock"
+    "abs4 replaceBlock"
+    "abs5 replaceBlock"
+    "abs6 replaceDay";
+    align-items:start;gap:12px 18px!important;}
+  #replacementOptions:not([style*="display: none"]){display:grid!important}
+  #replacementOptions::before,#replacementOptions::after{font-size:13px;font-weight:900;letter-spacing:.35px;padding:10px 13px;border-radius:10px;align-self:stretch;display:flex;align-items:center}
+  #replacementOptions::before{content:"ABSENCES · INFOTYPE 2001";grid-area:absenceHead;background:#fff0f0;color:#a52a2a;border:1px solid #f0cccc}
+  #replacementOptions::after{content:"REMPLACEMENTS";grid-area:replaceHead;background:#eaf4ff;color:#175a91;border:1px solid #cbdff2}
+  #replacementOptions>.field:nth-child(1){grid-area:abs1}
+  #replacementOptions>.field:nth-child(2){grid-area:abs2}
+  #replacementOptions>.field:nth-child(3){grid-area:abs3}
+  #replacementOptions>.field:nth-child(4){grid-area:abs4}
+  #replacementOptions>.field:nth-child(5){grid-area:abs5}
+  #replacementOptions>.field:nth-child(7){grid-area:abs6}
+  #replacementOptions>.replacement-t-field{grid-area:replaceBlock}
+  #replacementOptions>.replacement-t-day-field{grid-area:replaceDay}
+  #replacementOptions>.field{min-width:0;padding:13px;border:1px solid #e4eae6;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(20,50,35,.035)}
+  #replacementOptions>.replacement-t-field{background:#f8fbff;border-color:#dce8f3}
+  #replacementOptions .replacement-t-field>.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #replacementOptions .replacement-t-week{padding:10px;border:1px solid #e2eaf1;border-radius:9px;background:#fff}
+  #replacementOptions .replacement-t-day-field{background:#f8fbff;border-color:#dce8f3}
+  .card>.actions,.card>#referenceMessage{max-width:1120px;margin-left:auto;margin-right:auto}
+}
+@media (min-width: 761px) and (max-width:1179px){
+  #replacementOptions{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  #replacementOptions>.replacement-t-field{grid-column:span 2}
+}
+
 </style>
 
 <style id="shone-green-3d-fields-and-executive-footer">
