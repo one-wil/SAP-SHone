@@ -1723,3 +1723,64 @@ updateReferenceDisplay();
 .automatic-field:has(input[readonly]) small{margin-top:10px!important;color:#557966!important;font-weight:750!important}
 @media(max-width:600px){.automatic-field:has(input[readonly]){padding:13px!important;border-radius:16px!important}.automatic-field:has(input[readonly]) input[readonly]{min-height:60px!important;border-radius:16px!important}.automatic-field:has(input[readonly])>label:after{font-size:8px;padding:3px 6px}}
 </style>
+
+<style id="shone-desktop-layout">
+/* SH-ONE — organisation optimisée pour les écrans d'ordinateur */
+@media screen and (min-width: 1100px){
+  .container{
+    width:min(96vw,1540px)!important;
+    max-width:1540px!important;
+    margin:28px auto 38px!important;
+    padding:0 26px!important;
+    display:grid!important;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:22px;
+    align-items:start;
+  }
+  .container>.card{
+    min-width:0;
+    margin:0!important;
+    padding:24px 26px!important;
+  }
+  /* Paramètres de référence : pleine largeur et champs bien répartis */
+  .container>.card:nth-child(1){grid-column:1/-1}
+  .container>.card:nth-child(1)>.grid:not(.option-children){
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:18px 20px;
+  }
+  .container>.card:nth-child(1)>.field:first-of-type{max-width:520px}
+  .container>.card:nth-child(1)>.cycle-option{margin-top:18px!important}
+  .container>.card:nth-child(1) .option-children{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px 18px!important;
+  }
+  .container>.card:nth-child(1) .cycle-option{padding:18px 20px}
+  .container>.card:nth-child(1) .actions{justify-content:flex-start;gap:12px;margin-top:22px}
+  /* Résultats : deux panneaux côte à côte, puis tableaux pleine largeur */
+  .container>.card:nth-child(2){grid-column:span 6}
+  .container>.card:nth-child(3){grid-column:span 6}
+  .container>.card:nth-child(4){grid-column:1/-1}
+  .container>.card:nth-child(5){grid-column:1/-1}
+  .container>.card h2{font-size:17px;margin-bottom:20px}
+  .container>.card .table-wrap{max-width:100%}
+  .container>.card table{width:100%}
+  .brand-header{padding-top:28px;padding-bottom:24px}
+  .product-box{max-width:820px}
+}
+@media screen and (min-width:1100px) and (max-width:1350px){
+  .container{padding:0 18px!important;gap:17px}
+  .container>.card{padding:20px!important}
+  .container>.card:nth-child(1)>.grid:not(.option-children){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .container>.card:nth-child(1) .option-children{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media screen and (min-width:701px) and (max-width:1099px){
+  .container{max-width:1000px;padding:0 18px}
+  .container>.card{padding:19px}
+  .container>.card:nth-child(1)>.grid:not(.option-children){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .container>.card:nth-child(1) .option-children{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media screen and (max-width:700px){
+  .container{display:block!important}
+  .container>.card{margin-bottom:14px!important}
+}
+</style>
