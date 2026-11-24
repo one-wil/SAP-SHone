@@ -1765,6 +1765,39 @@ updateReferenceDisplay();
    Purement visuelle : aucune donnée de rotation ni aucun calcul n'est modifié. */
 let nrAnimationRunning=false;
 const nrSleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+// Les groupes supprimés visuellement sont conservés pour pouvoir restaurer
+// la roue au prochain lancement, sans toucher aux données ni aux calculs.
+const nrRemovedNodes=new WeakMap();
+function nrRestoreRemovedNodes(svg){
+ const saved=nrRemovedNodes.get(svg);
+ if(!saved||!saved.length)return;
+ saved.forEach(({clone,nextSibling})=>{
+  if(!svg.querySelector(`.wheel-node[aria-label^="R${Number((clone.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1])}"]`)){
+   svg.insertBefore(clone,nextSibling&&nextSibling.parentNode===svg?nextSibling:null);
+  }
+ });
+ nrRemovedNodes.delete(svg);
+}
+async function nrRemoveUnvisitedNodes(svg,sequence,nodes){
+ const visited=new Set(sequence);
+ const removed=[];
+ for(let group=1;group<=8;group++){
+  if(visited.has(group))continue;
+  const node=nodes.get(group);
+  if(!node||!node.parentNode)continue;
+  const clone=node.cloneNode(true),nextSibling=node.nextSibling;
+  removed.push({clone,nextSibling});
+  node.style.transition="opacity .48s ease, transform .58s cubic-bezier(.2,.75,.25,1), filter .48s ease";
+  node.style.transformBox="fill-box";
+  node.style.transformOrigin="center";
+  node.style.opacity="0";
+  node.style.transform="scale(.08) translateY(12px)";
+  node.style.filter="blur(5px)";
+  await nrSleep(560);
+  node.remove();
+ }
+ if(removed.length)nrRemovedNodes.set(svg,removed);
+}
 function nrGroupCenter(group){
  const angle=(-90+(group-1)*45)*Math.PI/180;
  return{x:210+143*Math.cos(angle),y:210+143*Math.sin(angle)};
@@ -1787,12 +1820,6 @@ function nrCreateRunner(svg){
  // Tête et cou
  person.appendChild(el("circle",{cx:"0",cy:"-29",r:"7.2",class:"nr-runner-skin"}));
  person.appendChild(el("path",{d:"M-5 -36 Q-1 -42 6 -36 L7 -32 Q1 -35 -5 -32Z",class:"nr-runner-hair"}));
- // Visage expressif et casquette rigolote.
- person.appendChild(el("path",{d:"M-4 -30 Q-2 -32 0 -30 M2 -30 Q4 -32 6 -30",class:"nr-runner-brows"}));
- person.appendChild(el("circle",{cx:"-2.5",cy:"-27",r:"1.15",class:"nr-runner-eye"}));
- person.appendChild(el("circle",{cx:"3.5",cy:"-27",r:"1.15",class:"nr-runner-eye"}));
- person.appendChild(el("path",{d:"M-3 -23 Q1 -19 5 -23",class:"nr-runner-smile"}));
- person.appendChild(el("path",{d:"M-7 -34 Q-2 -43 7 -37 L8 -34 Q0 -38 -7 -34Z",class:"nr-runner-cap"}));
  // Torse sportif et short
  person.appendChild(el("path",{d:"M-7 -20 Q0 -24 7 -20 L9 -2 Q0 3 -9 -2Z",class:"nr-runner-shirt"}));
  person.appendChild(el("path",{d:"M-8 -3 Q0 1 9 -3 L7 7 L1 9 L-7 6Z",class:"nr-runner-shorts"}));
@@ -1816,31 +1843,23 @@ function nrCreateRunner(svg){
 }
 function nrMoveX(svg,x1,y1,x2,y2,duration){
  return new Promise(resolve=>{
-  const runner=nrCreateRunner(svg),start=performance.now(),dx=x2-x1,dy=y2-y1,ns="http://www.w3.org/2000/svg";
-  const cheer=document.createElementNS(ns,"text");
-  cheer.setAttribute("class","nr-runner-cheer");cheer.setAttribute("text-anchor","middle");cheer.textContent="ياااي! 😂";svg.appendChild(cheer);
-  const sparkles=[];
-  for(let i=0;i<5;i++){const star=document.createElementNS(ns,"text");star.setAttribute("class","nr-runner-spark");star.textContent=i%2?"✦":"★";svg.appendChild(star);sparkles.push(star);}
+  const runner=nrCreateRunner(svg),start=performance.now();
+  const dx=x2-x1,dy=y2-y1;
   function frame(now){
-   const t=Math.min(1,(now-start)/duration),ease=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-   // قفزة بهلوانية مع شقلبة وارتداد مرح عند الهبوط.
-   const hop=Math.sin(Math.PI*t)*Math.min(66,Math.hypot(dx,dy)*.31);
-   const landing=t>.78?Math.sin((t-.78)*Math.PI*5)*8*(1-t):0;
-   const x=x1+dx*ease,y=y1+dy*ease-hop+landing,spin=t<.82?540*(t/.82):540;
-   const squash=t<.12?1-.22*Math.sin(Math.PI*t/.12):t>.82?1+.18*Math.sin(Math.min(1,(t-.82)/.18)*Math.PI):1;
-   const scale=(.88+Math.sin(Math.PI*t)*.2)*squash;
-   runner.setAttribute("transform",`translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${spin.toFixed(1)}) scale(${scale.toFixed(3)})`);
-   runner.style.opacity=String(t<.93?1:Math.max(0,(1-t)/.07));
-   runner.querySelector(".nr-runner-body").style.transform=`rotate(${Math.sin(t*Math.PI*10)*17}deg)`;
-   runner.querySelector(".nr-runner-arm-a").style.transform=`rotate(${Math.sin(t*Math.PI*10)*105-20}deg)`;
-   runner.querySelector(".nr-runner-arm-b").style.transform=`rotate(${-Math.sin(t*Math.PI*10)*105+20}deg)`;
-   runner.querySelector(".nr-runner-leg-a").style.transform=`rotate(${Math.sin(t*Math.PI*8)*105}deg)`;
-   runner.querySelector(".nr-runner-leg-b").style.transform=`rotate(${-Math.sin(t*Math.PI*8)*105}deg)`;
-   cheer.setAttribute("x",x);cheer.setAttribute("y",y-48-Math.sin(t*Math.PI)*15);
-   cheer.style.opacity=String(t<.78?1:Math.max(0,(1-t)/.22));
-   cheer.setAttribute("transform",`rotate(${Math.sin(t*Math.PI*8)*12} ${x} ${y-48})`);
-   sparkles.forEach((star,i)=>{const a=t*Math.PI*5+i*Math.PI*2/5;star.setAttribute("x",x+Math.cos(a)*(19+i*3));star.setAttribute("y",y-15+Math.sin(a)*(15+i*2));star.style.opacity=String(.35+.65*Math.abs(Math.sin(a*2)));});
-   if(t<1)requestAnimationFrame(frame);else{runner.remove();cheer.remove();sparkles.forEach(star=>star.remove());resolve();}
+   const t=Math.min(1,(now-start)/duration);
+   const ease=t*t*(3-2*t);
+   // Trajectoire de saut en arc, avec accélération douce.
+   const x=x1+dx*ease;
+   const y=y1+dy*ease- Math.sin(Math.PI*t)*Math.min(48,Math.hypot(dx,dy)*.24);
+   const scale=.88+Math.sin(Math.PI*t)*.18;
+   runner.setAttribute("transform",`translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${scale.toFixed(3)})`);
+   runner.style.opacity=String(t<.88?1:Math.max(0,(1-t)/.12));
+   runner.querySelector(".nr-runner-body").style.transform=`rotate(${Math.sin(t*Math.PI*4)*5}deg)`;
+   runner.querySelector(".nr-runner-arm-a").style.transform=`rotate(${Math.sin(t*Math.PI*6)*34}deg)`;
+   runner.querySelector(".nr-runner-arm-b").style.transform=`rotate(${-Math.sin(t*Math.PI*6)*34}deg)`;
+   runner.querySelector(".nr-runner-leg-a").style.transform=`rotate(${Math.sin(t*Math.PI*6)*38}deg)`;
+   runner.querySelector(".nr-runner-leg-b").style.transform=`rotate(${-Math.sin(t*Math.PI*6)*38}deg)`;
+   if(t<1)requestAnimationFrame(frame);else{runner.remove();resolve();}
   }
   requestAnimationFrame(frame);
  });
@@ -1880,6 +1899,8 @@ async function startNRAnimation(triggerButton){
   if(msg)msg.scrollIntoView({behavior:"smooth",block:"center"});
   return;
  }
+ // Réafficher les groupes de la précédente animation avant de recommencer.
+ nrRestoreRemovedNodes(svg);
  const button=triggerButton||document.getElementById("nrAnimationButton");
  // Construire le parcours uniquement avec les groupes réellement calculés
  // pour l’agent, en suivant l’ordre chronologique travail/repos.
@@ -1909,7 +1930,7 @@ async function startNRAnimation(triggerButton){
    const previous=nodes.get(sequence[i-1]),next=nodes.get(sequence[i]);
    previous.classList.add("nr-node-open");
    const a=nrGroupCenter(sequence[i-1]),b=nrGroupCenter(sequence[i]);
-   await nrMoveX(svg,a.x,a.y,b.x,b.y,1250);
+   await nrMoveX(svg,a.x,a.y,b.x,b.y,850);
    nrSetNodePhase(next,"nr-node-open");
    await nrSleep(420);
    if(i===sequence.length-1){
@@ -1928,6 +1949,9 @@ async function startNRAnimation(triggerButton){
    nrHeartBurst(svg,point);
    await nrSleep(3000);
   }
+  // Après l'arrivée à la dernière station, les groupes non visités
+  // disparaissent successivement dans le sens R1 → R8.
+  await nrRemoveUnvisitedNodes(svg,sequence,nodes);
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
@@ -2080,12 +2104,6 @@ window.startNRAnimation=startNRAnimation;
 .nr-runner-limb{fill:none;stroke:#d99b70;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round}
 .nr-runner-legline{fill:none;stroke:#d99b70;stroke-width:5;stroke-linecap:round}
 .nr-runner-shoe{fill:#f4f7fa;stroke:#07549a;stroke-width:1.2}
- .nr-runner-brows{fill:none;stroke:#493026;stroke-width:1.1;stroke-linecap:round}
- .nr-runner-eye{fill:#29232a;stroke:#fff;stroke-width:.35}
- .nr-runner-smile{fill:none;stroke:#7c302b;stroke-width:1.4;stroke-linecap:round}
- .nr-runner-cap{fill:#f6bd45;stroke:#8c5b16;stroke-width:.9}
- .nr-runner-cheer{font:900 13px Arial,sans-serif;fill:#fff;stroke:#07549a;stroke-width:2.4px;paint-order:stroke;filter:drop-shadow(0 2px 4px #0009);pointer-events:none}
- .nr-runner-spark{font:900 12px Arial,sans-serif;fill:#ffd65a;stroke:#fff;stroke-width:1px;paint-order:stroke;filter:drop-shadow(0 0 5px #ffcf4b);pointer-events:none}
 .nr-runner-arm,.nr-runner-leg{transform-box:fill-box;transform-origin:50% 15%}
 .nr-runner-body{transform-box:fill-box;transform-origin:center}
 .nr-flying-x{display:none}
