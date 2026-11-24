@@ -753,6 +753,20 @@ textarea:focus{
  .developer-photo-frame{box-shadow:none!important}
 }
 </style>
+<style id="nr-auto-toggle-style">
+.calculate-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nr-auto-toggle{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;padding:8px 12px;border:1px solid #dce8e1;border-radius:12px;background:#f7faf8;color:#29483a;font-size:11px;font-weight:800}
+.nr-auto-toggle input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.nr-auto-switch{position:relative;display:inline-block;width:38px;height:21px;flex:0 0 38px;border-radius:20px;background:#aab6af;transition:background .2s ease}
+.nr-auto-switch:after{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0003;transition:transform .2s ease}
+.nr-auto-toggle input:checked+.nr-auto-switch{background:#13845d}
+.nr-auto-toggle input:checked+.nr-auto-switch:after{transform:translateX(17px)}
+.nr-auto-toggle input:focus-visible+.nr-auto-switch{outline:3px solid #19765355;outline-offset:3px}
+.nr-auto-label strong{margin-inline-start:4px;font-size:10px;letter-spacing:.4px}
+.nr-auto-label strong.is-enabled{color:#087344}
+.nr-auto-label strong.is-disabled{color:#a52e2e}
+@media(max-width:600px){.calculate-actions{align-items:stretch}.nr-auto-toggle{justify-content:center;width:100%}.calculate-actions #calculatePlanButton{width:100%}}
+</style>
 </head>
 <body>
 <header class="brand-header">
@@ -842,7 +856,14 @@ textarea:focus{
    </div>
   </div>
  </div>
- <div class="actions no-print"><button type="button" id="calculatePlanButton" class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
+ <div class="actions no-print calculate-actions">
+  <label class="nr-auto-toggle" for="nrAutoEnabled">
+   <input type="checkbox" id="nrAutoEnabled" checked onchange="updateNRAutoStatus()">
+   <span class="nr-auto-switch" aria-hidden="true"></span>
+   <span class="nr-auto-label">NR automatique : <strong id="nrAutoStatus" class="is-enabled">ACTIVÉ</strong></span>
+  </label>
+  <button type="button" id="calculatePlanButton" class="primary" onclick="calculateAll()">Calculer le plan complet</button>
+ </div>
  <div id="referenceMessage"></div>
 </section>
 <section class="card post-calc-section">
@@ -985,6 +1006,14 @@ function validateReference(){
  const resolved=resolveReference(referenceDate);
  return{referenceGroup:resolved.group,referenceDate,cycleWeekStart:resolved.weekStart,selectedDay:resolved.selectedDay};
 }
+function updateNRAutoStatus(){
+ const toggle=document.getElementById("nrAutoEnabled");
+ const status=document.getElementById("nrAutoStatus");
+ if(!toggle||!status)return;
+ status.textContent=toggle.checked?"ACTIVÉ":"DÉSACTIVÉ";
+ status.classList.toggle("is-enabled",toggle.checked);
+ status.classList.toggle("is-disabled",!toggle.checked);
+}
 async function calculateAll(){
  const calculateButton=document.getElementById("calculatePlanButton");
  if(nrAnimationRunning)return;
@@ -1010,9 +1039,12 @@ async function calculateAll(){
   } else {
    const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
    if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
-   // Après le calcul réussi, lancer automatiquement le même parcours animé que le bouton NR.
-   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-   await startNRAnimation(calculateButton);
+   // L’animation NR automatique dépend de l’interrupteur ACTIVÉ / DÉSACTIVÉ.
+   const autoNR=document.getElementById("nrAutoEnabled");
+   if(!autoNR || autoNR.checked){
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    await startNRAnimation(calculateButton);
+   }
   }
  }catch(error){
   console.error("SH-ONE calculation error:",error);
@@ -1692,7 +1724,28 @@ document.getElementById("cycle2927").addEventListener("change",()=>{
  document.getElementById("codingSummary").innerHTML='<div class="empty">Veuillez générer à nouveau le plan de l’agent avec le cycle sélectionné.</div>';
  document.getElementById("referenceMessage").innerHTML='<div class="notice info">Le cycle a été modifié. Cliquez sur « Calculer la situation des groupes » pour appliquer le nouveau cycle aux huit groupes.</div>';
 });
-document.getElementById("checkDate").addEventListener("change",()=>{if(!currentGroups)return;const date=parseDate(document.getElementById("checkDate").value);if(date)renderGroups(date);});
+function refreshGroupsForCheckDate(){
+ const date=parseDate(document.getElementById("checkDate").value);
+ if(!date)return;
+ // Afficher immédiatement le groupe correspondant à la date choisie,
+ // même avant le lancement de « Calculer le plan complet ».
+ const reference=validateReference();
+ if(reference.error)return;
+ applyCycleSelection();
+ currentGroups=buildGroups(reference.referenceGroup,reference.referenceDate);
+ document.querySelectorAll(".post-calc-section").forEach(section=>{
+  if(section.querySelector("#groupsResult"))section.classList.add("is-visible");
+ });
+ renderGroups(date);
+ localStorage.setItem("rotation_reference",JSON.stringify({
+  referenceGroup:reference.referenceGroup,
+  referenceDate:inputDate(reference.referenceDate),
+  referenceDay:reference.selectedDay,
+  checkDate:inputDate(date)
+ }));
+}
+document.getElementById("checkDate").addEventListener("input",refreshGroupsForCheckDate);
+document.getElementById("checkDate").addEventListener("change",refreshGroupsForCheckDate);
 
 document.getElementById("workWeeks").addEventListener("change",updateDurationHints);
 document.getElementById("restWeeks").addEventListener("change",updateDurationHints);
