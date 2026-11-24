@@ -1737,22 +1737,6 @@ function nrHeartBurst(svg,center){
  }
  setTimeout(()=>hearts.forEach(h=>h.remove()),3400);
 }
-function nrCenterWheelOnScreen(){
- const dashboard=document.querySelector("#groupsResult .rotation-dashboard");
- if(!dashboard||dashboard.dataset.nrCentered==="1")return null;
- const parent=dashboard.parentNode,next=dashboard.nextSibling;
- const overlay=document.createElement("div");overlay.className="nr-focus-overlay";overlay.setAttribute("role","presentation");
- overlay.appendChild(dashboard);document.body.appendChild(overlay);
- dashboard.classList.add("nr-focused-dashboard");dashboard.dataset.nrCentered="1";
- return {dashboard,parent,next,overlay};
-}
-function nrRestoreWheelPosition(state){
- if(!state)return;
- const {dashboard,parent,next,overlay}=state;
- dashboard.classList.remove("nr-focused-dashboard");delete dashboard.dataset.nrCentered;
- if(parent)parent.insertBefore(dashboard,next&&next.parentNode===parent?next:null);
- overlay.remove();
-}
 async function startNRAnimation(){
  if(nrAnimationRunning)return;
  const svg=document.querySelector("#groupsResult .rotation-wheel");
@@ -1767,10 +1751,7 @@ async function startNRAnimation(){
  const nodes=new Map([...svg.querySelectorAll(".wheel-node")].map(node=>[Number((node.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1]),node]));
  if(sequence.some(n=>!nodes.has(n)))return;
  nrAnimationRunning=true;if(button){button.disabled=true;button.classList.add("is-running");button.querySelector("span").textContent="…";}
- let nrFocusState=null;
  try{
-  // Centrer la vue circulaire au milieu de l’écran pendant toute l’animation.
-  nrFocusState=nrCenterWheelOnScreen();
   // 1) Le groupe de départ pulse pendant cinq secondes.
   const first=nodes.get(sequence[0]);nrSetNodePhase(first,"nr-source-pulse");
   await nrSleep(5000);nrSetNodePhase(first,"nr-node-open");
@@ -1792,7 +1773,6 @@ async function startNRAnimation(){
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-flying-x").forEach(node=>node.remove());
-  nrRestoreWheelPosition(nrFocusState);
   nrAnimationRunning=false;if(button){button.disabled=false;button.classList.remove("is-running");button.querySelector("span").textContent="•";}
  }
 }
@@ -1946,26 +1926,4 @@ window.startNRAnimation=startNRAnimation;
 @media(max-width:600px){.nr-action-row{align-items:stretch;gap:8px}.nr-animation-button{width:100%}.nr-action-row small{text-align:center;width:100%}}
 @media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}.nr-flying-x{display:none}}
 
-
-/* NR — Vue circulaire centrée au milieu de l’écran pendant l’animation */
-.nr-focus-overlay{
- position:fixed;inset:0;z-index:99990;display:grid;place-items:center;
- padding:clamp(10px,3vw,28px);box-sizing:border-box;overflow:auto;
- background:radial-gradient(ellipse at center,rgba(15,43,61,.78),rgba(2,9,16,.94));
- backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
- animation:nrOverlayIn .35s ease both;
-}
-.nr-focused-dashboard{
- position:relative!important;inset:auto!important;z-index:99991!important;
- width:min( min(790px, calc(100vw - 28px)), calc(100vw - 28px))!important;
- max-width:790px!important;max-height:calc(100dvh - 28px);margin:0 auto!important;
- overflow:auto!important;box-shadow:0 28px 90px rgba(0,0,0,.62),0 0 0 1px rgba(132,205,229,.3)!important;
- transform:translateZ(0);animation:nrDashboardIn .4s cubic-bezier(.2,.8,.2,1) both;
-}
-.nr-focused-dashboard .industrial-wheel-layout{max-width:620px!important}
-.nr-focused-dashboard .rotation-wheel-wrap{width:min(100%,470px)!important}
-@keyframes nrOverlayIn{from{opacity:0}to{opacity:1}}
-@keyframes nrDashboardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(max-width:600px){.nr-focus-overlay{padding:8px}.nr-focused-dashboard{width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px);padding:12px!important}.nr-focused-dashboard .rotation-wheel-wrap{max-width:min(470px,calc(100vw - 44px))!important}}
-@media(prefers-reduced-motion:reduce){.nr-focus-overlay,.nr-focused-dashboard{animation:none!important}}
 </style>
