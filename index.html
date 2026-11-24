@@ -1834,9 +1834,9 @@ async function startNRAnimation(triggerButton){
  try{
   // Centrer la vue circulaire au milieu de l’écran pendant toute l’animation.
   nrFocusState=nrCenterWheelOnScreen();
-  // Le groupe initial clignote pendant cinq secondes.
+  // Le groupe initial clignote pendant deux secondes.
   const first=nodes.get(sequence[0]);nrSetNodePhase(first,"nr-source-pulse");
-  await nrSleep(5000);nrSetNodePhase(first,"nr-node-open");
+  await nrSleep(2000);nrSetNodePhase(first,"nr-node-open");
   // Le X se déplace uniquement vers les groupes réellement calculés.
   for(let i=1;i<sequence.length;i++){
    const previous=nodes.get(sequence[i-1]),next=nodes.get(sequence[i]);
