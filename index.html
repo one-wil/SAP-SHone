@@ -1842,96 +1842,6 @@ function nrHeartBurst(svg,center){
  }
  setTimeout(()=>hearts.forEach(h=>h.remove()),3000);
 }
-
-// Restauration des groupes masqués pour permettre de relancer l'animation.
-const nrRemovedNodes=new WeakMap();
-function nrRestoreRemovedNodes(svg){
- const saved=nrRemovedNodes.get(svg)||[];
- saved.forEach(item=>{if(!item.node.isConnected)item.parent.insertBefore(item.node,item.next&&item.next.parentNode===item.parent?item.next:null);});
- nrRemovedNodes.delete(svg);
-}
-function nrAcrobaticFade(node){
- return new Promise(resolve=>{
-  const start=performance.now(),duration=760;
-  node.style.transformBox="fill-box";node.style.transformOrigin="center";
-  function frame(now){
-   const t=Math.min(1,(now-start)/duration),e=1-Math.pow(1-t,3);
-   node.style.transform=`rotate(${720*e}deg) scale(${Math.max(.015,1-.985*e)})`;
-   node.style.opacity=String(1-e);node.style.filter=`blur(${e*8}px)`;
-   if(t<1)requestAnimationFrame(frame);
-   else{const parent=node.parentNode,next=node.nextSibling,clone=node.cloneNode(true);node.remove();resolve({node:clone,parent,next});}
-  }
-  requestAnimationFrame(frame);
- });
-}
-async function nrFadeUnvisitedGroups(svg,sequence,nodes){
- const visited=new Set(sequence),saved=[];
- for(let group=1;group<=8;group++){
-  if(visited.has(group))continue;
-  const node=nodes.get(group);if(!node||!node.isConnected)continue;
-  saved.push(await nrAcrobaticFade(node));await nrSleep(170);
- }
- nrRemovedNodes.set(svg,saved);
-}
-// Présentation finale : les groupes visités se rangent sur une ligne,
-// du groupe de départ au groupe final, avec une taille progressivement croissante.
-async function nrShowVisitedLine(svg,sequence,nodes){
- const wrap=svg.closest('.rotation-wheel-wrap');
- const visited=sequence.map(group=>nodes.get(group)).filter(Boolean);
- const otherArtwork=[...svg.children].filter(el=>el.tagName.toLowerCase()!=='defs'&&!el.classList.contains('wheel-node'));
- otherArtwork.forEach(el=>{el.style.transition='opacity .55s ease';el.style.opacity='0';});
- const count=visited.length;
- // Les centres sont répartis sur une seule coordonnée Y : aucune orbite ni décalage vertical.
- const left=count<=1?210:34, right=count<=1?210:386;
- visited.forEach((node,index)=>{
-  // نأخذ مركز الدائرة الرئيسية نفسها، وليس دائرة الظل أو الهالة.
-  const circle=node.querySelector('circle[filter="url(#nodeShadow)"]')||node.querySelector('circle:not(.node-halo)');
-  const cx=Number(circle?.getAttribute('cx')||210),cy=Number(circle?.getAttribute('cy')||210);
-  const x=count===1?210:left+(right-left)*index/(count-1);
-  const scale=count===1?1:(.48+.52*index/Math.max(1,count-1));
-  node.classList.remove('nr-source-pulse','nr-node-open','nr-node-final');
-  // إزالة أي transform من CSS حتى لا يلغي خاصية transform الخاصة بعنصر SVG.
-  node.style.removeProperty('transform');
-  node.style.transformOrigin='0 0';
-  node.style.transition='filter .6s ease';
-  // التحويل يضع مركز كل دائرة عند y=210 بالضبط مهما كان حجمها.
-  node.setAttribute('transform',`translate(${x.toFixed(2)} 210) scale(${scale.toFixed(4)}) translate(${-cx.toFixed(2)} ${-cy.toFixed(2)})`);
- });
- await nrSleep(1050);
- const message=document.createElement('div');message.className='nr-thank-you';message.textContent='Thank you for your attention.';
- wrap.appendChild(message);
- // Le personnage sort devant la ligne, salue avec les deux mains,
- // puis rentre avant la disparition finale de toute la présentation.
- await nrSleep(500);
- const farewell=document.createElement('div');farewell.className='nr-farewell-person nr-farewell-enter';
- farewell.setAttribute('aria-hidden','true');
- // تحديد موضع المجموعة الأخيرة بعد اصطفافها، ليخرج الرجل منها مباشرة.
- const lastNode=nodes.get(sequence[sequence.length-1]);
- const wrapRect=wrap.getBoundingClientRect(),lastRect=lastNode.getBoundingClientRect();
- farewell.style.left=`${lastRect.left+lastRect.width/2-wrapRect.left}px`;
- farewell.style.top=`${lastRect.top+lastRect.height/2-wrapRect.top}px`;
- farewell.style.bottom='auto';
- farewell.innerHTML=`<svg viewBox="0 0 120 150" role="presentation">
-  <ellipse cx="60" cy="143" rx="25" ry="5" fill="rgba(0,0,0,.35)"/>
-  <g class="farewell-left-arm"><path d="M43 59 Q28 48 22 25" fill="none" stroke="#d99b70" stroke-width="8" stroke-linecap="round"/><circle cx="21" cy="20" r="7" fill="#d99b70"/></g>
-  <g class="farewell-right-arm"><path d="M77 59 Q92 48 98 25" fill="none" stroke="#d99b70" stroke-width="8" stroke-linecap="round"/><circle cx="99" cy="20" r="7" fill="#d99b70"/></g>
-  <path d="M43 55 Q60 47 77 55 L82 101 Q60 111 38 101Z" fill="#12a99a" stroke="#b8fff0" stroke-width="2"/>
-  <path d="M43 100 L77 100 L82 130 L63 130 L60 111 L55 130 L37 130Z" fill="#203957" stroke="#9dc7e8" stroke-width="1.5"/>
-  <path d="M37 129 L56 129 L53 139 L31 139Z M64 129 L82 129 L91 139 L67 139Z" fill="#f4f7fa" stroke="#07549a" stroke-width="1.5"/>
-  <circle cx="60" cy="35" r="19" fill="#d99b70" stroke="#704b3a" stroke-width="1.5"/>
-  <path d="M42 32 Q43 10 62 13 Q80 13 79 33 Q69 22 57 24 Q49 25 42 32Z" fill="#263342"/>
-  <circle cx="53" cy="36" r="1.8" fill="#20232a"/><circle cx="67" cy="36" r="1.8" fill="#20232a"/>
-  <path d="M54 44 Q60 50 67 44" fill="none" stroke="#713e35" stroke-width="2" stroke-linecap="round"/>
- </svg>`;
- wrap.appendChild(farewell);
- await nrSleep(1750);
- farewell.classList.remove('nr-farewell-enter');farewell.classList.add('nr-farewell-exit');
- await nrSleep(720);
- farewell.remove();
- await nrSleep(3000);
- const overlay=document.querySelector('.nr-focus-overlay');
- if(overlay){overlay.style.transition='opacity .65s ease,filter .65s ease';overlay.style.opacity='0';overlay.style.filter='blur(8px)';await nrSleep(680);}
-}
 function nrCenterWheelOnScreen(){
  const dashboard=document.querySelector("#groupsResult .rotation-dashboard");
  if(!dashboard||dashboard.dataset.nrCentered==="1")return null;
@@ -1957,7 +1867,6 @@ async function startNRAnimation(triggerButton){
   return;
  }
  const button=triggerButton||document.getElementById("nrAnimationButton");
- nrRestoreRemovedNodes(svg);
  // Construire le parcours uniquement avec les groupes réellement calculés
  // pour l’agent, en suivant l’ordre chronologique travail/repos.
  const source=Number(lastEmployeePlan?.startGroup||document.getElementById("referenceGroup").value||1);
@@ -2005,9 +1914,6 @@ async function startNRAnimation(triggerButton){
    nrHeartBurst(svg,point);
    await nrSleep(3000);
   }
-  // Après la célébration de trois secondes à la dernière station.
-  await nrFadeUnvisitedGroups(svg,sequence,nodes);
-  await nrShowVisitedLine(svg,sequence,nodes);
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
@@ -2199,16 +2105,4 @@ window.startNRAnimation=startNRAnimation;
 @keyframes nrDashboardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:600px){.nr-focus-overlay{padding:8px}.nr-focused-dashboard{width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px);padding:12px!important}.nr-focused-dashboard .rotation-wheel-wrap{max-width:min(470px,calc(100vw - 44px))!important}}
 @media(prefers-reduced-motion:reduce){.nr-focus-overlay,.nr-focused-dashboard{animation:none!important}}
-.nr-thank-you{position:relative;z-index:5;margin:18px auto 4px;text-align:center;color:#f2d38b;font-size:clamp(15px,3vw,21px);font-weight:900;letter-spacing:1.1px;text-shadow:0 2px 12px rgba(0,0,0,.45);animation:nrThanksIn .65s cubic-bezier(.2,.8,.2,1) both}
-@keyframes nrThanksIn{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-.nr-farewell-person{position:absolute;z-index:8;left:50%;top:50%;bottom:auto;width:clamp(72px,15vw,112px);height:auto;transform:translate(-50%,-82%);pointer-events:none;filter:drop-shadow(0 5px 9px rgba(0,0,0,.38))}
-.nr-farewell-person svg{display:block;width:100%;height:auto;overflow:visible}
-.nr-farewell-person.nr-farewell-enter{animation:nrFarewellEnter .65s cubic-bezier(.2,.85,.25,1) both}
-.nr-farewell-person.nr-farewell-enter .farewell-left-arm{transform-box:fill-box;transform-origin:90% 90%;animation:nrBothHandsWave .38s ease-in-out .55s 5 alternate}
-.nr-farewell-person.nr-farewell-enter .farewell-right-arm{transform-box:fill-box;transform-origin:10% 90%;animation:nrBothHandsWave .38s ease-in-out .55s 5 alternate-reverse}
-.nr-farewell-person.nr-farewell-exit{animation:nrFarewellExit .68s cubic-bezier(.6,0,.8,.25) both}
-@keyframes nrFarewellEnter{from{opacity:0;transform:translate(-50%,-12%) scale(.48)}to{opacity:1;transform:translate(-50%,-82%) scale(1)}}
-@keyframes nrFarewellExit{from{opacity:1;transform:translate(-50%,-82%) scale(1)}to{opacity:0;transform:translate(-50%,-12%) scale(.48)}}
-@keyframes nrBothHandsWave{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
 </style>
