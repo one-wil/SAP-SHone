@@ -842,7 +842,7 @@ textarea:focus{
    </div>
   </div>
  </div>
- <div class="actions no-print"><button class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
+ <div class="actions no-print"><button type="button" id="calculatePlanButton" class="primary" onclick="calculateAll()">Calculer le plan complet</button></div>
  <div id="referenceMessage"></div>
 </section>
 <section class="card post-calc-section">
@@ -985,7 +985,10 @@ function validateReference(){
  const resolved=resolveReference(referenceDate);
  return{referenceGroup:resolved.group,referenceDate,cycleWeekStart:resolved.weekStart,selectedDay:resolved.selectedDay};
 }
-function calculateAll(){
+async function calculateAll(){
+ const calculateButton=document.getElementById("calculatePlanButton");
+ if(nrAnimationRunning)return;
+ if(calculateButton){calculateButton.disabled=true;calculateButton.classList.add("is-running");}
  const message=document.getElementById("referenceMessage");
  try{
   const v=validateReference();
@@ -1007,10 +1010,15 @@ function calculateAll(){
   } else {
    const employeeCard=document.getElementById("employeeResult").closest(".post-calc-section");
    if(employeeCard) employeeCard.scrollIntoView({behavior:"smooth",block:"start"});
+   // Après le calcul réussi, lancer automatiquement le même parcours animé que le bouton NR.
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   await startNRAnimation(calculateButton);
   }
  }catch(error){
   console.error("SH-ONE calculation error:",error);
   message.innerHTML=`<div class="notice error">حدث خطأ أثناء الحساب: ${escapeHTML(error&&error.message?error.message:"خطأ غير محدد")}.</div>`;
+ }finally{
+  if(calculateButton){calculateButton.disabled=false;calculateButton.classList.remove("is-running");}
  }
 }
 function calculateGroups(){
@@ -1797,7 +1805,7 @@ function nrRestoreWheelPosition(state){
  if(parent)parent.insertBefore(dashboard,next&&next.parentNode===parent?next:null);
  overlay.remove();
 }
-async function startNRAnimation(){
+async function startNRAnimation(triggerButton){
  if(nrAnimationRunning)return;
  const svg=document.querySelector("#groupsResult .rotation-wheel");
  if(!svg||!currentGroups){
@@ -1805,7 +1813,7 @@ async function startNRAnimation(){
   if(msg)msg.scrollIntoView({behavior:"smooth",block:"center"});
   return;
  }
- const button=document.getElementById("nrAnimationButton");
+ const button=triggerButton||document.getElementById("nrAnimationButton");
  // Construire le parcours uniquement avec les groupes réellement calculés
  // pour l’agent, en suivant l’ordre chronologique travail/repos.
  const source=Number(lastEmployeePlan?.startGroup||document.getElementById("referenceGroup").value||1);
@@ -1821,7 +1829,7 @@ async function startNRAnimation(){
  }
  const nodes=new Map([...svg.querySelectorAll(".wheel-node")].map(node=>[Number((node.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1]),node]));
  if(sequence.some(n=>!nodes.has(n)))return;
- nrAnimationRunning=true;if(button){button.disabled=true;button.classList.add("is-running");button.querySelector("span").textContent="…";}
+ nrAnimationRunning=true;if(button){button.disabled=true;button.classList.add("is-running");const indicator=button.querySelector("span");if(indicator)indicator.textContent="…";}
  let nrFocusState=null;
  try{
   // Centrer la vue circulaire au milieu de l’écran pendant toute l’animation.
@@ -1857,7 +1865,7 @@ async function startNRAnimation(){
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
   nrRestoreWheelPosition(nrFocusState);
-  nrAnimationRunning=false;if(button){button.disabled=false;button.classList.remove("is-running");button.querySelector("span").textContent="•";}
+  nrAnimationRunning=false;if(button){button.disabled=false;button.classList.remove("is-running");const indicator=button.querySelector("span");if(indicator)indicator.textContent="•";}
  }
 }
 window.startNRAnimation=startNRAnimation;
