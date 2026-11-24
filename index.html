@@ -854,7 +854,7 @@ textarea:focus{
  <div class="notice info">Ce tableau présente les groupes successifs d’affectation de l’agent, avec les dates de début et de fin de chaque codification. La dernière codification reste ouverte jusqu’au 31/12/9999.</div>
  <div id="codingSummary"><div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications.</div></div>
 </section>
-<section class="card post-calc-section"><h2>3. Tableau de situation de ma rotation par date</h2><div class="nr-action-row no-print"><button type="button" id="nrAnimationButton" class="nr-animation-button" onclick="startNRAnimation()" aria-label="Lancer l’animation de rotation">NR <span>•</span> Lancer la rotation</button><small>Animation du passage successif entre les huit groupes</small></div><div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div><div id="groupsResult" class="empty">Renseignez les paramètres de référence puis cliquez sur « Calculer le plan complet ».</div></section>
+<section class="card post-calc-section"><h2>3. Tableau de situation de ma rotation par date</h2><div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div><div id="groupsResult" class="empty">Renseignez les paramètres de référence puis cliquez sur « Calculer le plan complet ».</div></section>
 <section class="card post-calc-section">
  <h2>5. Historique des codifications enregistrées</h2>
  <div class="hint">Lorsqu’une nouvelle codification est enregistrée, la précédente prend fin la veille de la nouvelle date de début. La dernière codification ouverte est fixée au 31/12/9999.</div>
@@ -1697,87 +1697,6 @@ updateDurationHints();
 if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
 updateReferenceDisplay();
 
-
-/* NR — animation scénarisée du passage circulaire entre les huit groupes.
-   Purement visuelle : aucune donnée de rotation ni aucun calcul n'est modifié. */
-let nrAnimationRunning=false;
-const nrSleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-function nrGroupCenter(group){
- const angle=(-90+(group-1)*45)*Math.PI/180;
- return{x:210+143*Math.cos(angle),y:210+143*Math.sin(angle)};
-}
-function nrSetNodePhase(node,phase){
- node.classList.remove("nr-source-pulse","nr-node-open","nr-node-final");
- if(phase)node.classList.add(phase);
-}
-function nrMoveX(svg,x1,y1,x2,y2,duration){
- return new Promise(resolve=>{
-  const mark=document.createElementNS("http://www.w3.org/2000/svg","text");
-  mark.setAttribute("class","nr-flying-x");mark.setAttribute("x",x1);mark.setAttribute("y",y1+8);
-  mark.textContent="X";svg.appendChild(mark);
-  const start=performance.now();
-  function frame(now){
-   const t=Math.min(1,(now-start)/duration),ease=1-Math.pow(1-t,3);
-   mark.setAttribute("x",(x1+(x2-x1)*ease).toFixed(2));
-   mark.setAttribute("y",(y1+(y2-y1)*ease+8).toFixed(2));
-   mark.style.opacity=String(t<.88?1:Math.max(0,(1-t)/.12));
-   if(t<1)requestAnimationFrame(frame);else{mark.remove();resolve();}
-  }
-  requestAnimationFrame(frame);
- });
-}
-function nrHeartBurst(svg,center){
- const hearts=[];
- for(let i=0;i<12;i++){
-  const heart=document.createElementNS("http://www.w3.org/2000/svg","text");
-  heart.setAttribute("class","nr-heart-particle");heart.setAttribute("x",center.x);heart.setAttribute("y",center.y);
-  heart.textContent="♥";heart.style.setProperty("--dx",`${Math.cos(i*Math.PI/6)*48}px`);
-  heart.style.setProperty("--dy",`${-35-Math.sin(i*Math.PI/6)*38}px`);
-  heart.style.animationDelay=`${(i%4)*.12}s`;svg.appendChild(heart);hearts.push(heart);
- }
- setTimeout(()=>hearts.forEach(h=>h.remove()),3400);
-}
-async function startNRAnimation(){
- if(nrAnimationRunning)return;
- const svg=document.querySelector("#groupsResult .rotation-wheel");
- if(!svg||!currentGroups){
-  const msg=document.getElementById("groupsResult");
-  if(msg)msg.scrollIntoView({behavior:"smooth",block:"center"});
-  return;
- }
- const button=document.getElementById("nrAnimationButton");
- const source=Number(document.getElementById("referenceGroup").value||1);
- const sequence=Array.from({length:8},(_,i)=>((source-1+i)%8)+1);
- const nodes=new Map([...svg.querySelectorAll(".wheel-node")].map(node=>[Number((node.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1]),node]));
- if(sequence.some(n=>!nodes.has(n)))return;
- nrAnimationRunning=true;if(button){button.disabled=true;button.classList.add("is-running");button.querySelector("span").textContent="…";}
- try{
-  // 1) Le groupe de départ pulse pendant cinq secondes.
-  const first=nodes.get(sequence[0]);nrSetNodePhase(first,"nr-source-pulse");
-  await nrSleep(5000);nrSetNodePhase(first,"nr-node-open");
-  const firstPoint=nrGroupCenter(sequence[0]);
-  // Le X quitte le premier cercle, puis parcourt les groupes dans l'ordre R1…R8 circulaire.
-  for(let i=1;i<sequence.length;i++){
-   const previous=nodes.get(sequence[i-1]),next=nodes.get(sequence[i]);
-   previous.classList.add("nr-node-open");
-   const a=nrGroupCenter(sequence[i-1]),b=nrGroupCenter(sequence[i]);
-   await nrMoveX(svg,a.x,a.y,b.x,b.y,850);
-   nrSetNodePhase(next,"nr-node-open");
-   await nrSleep(420);
-   if(i===sequence.length-1){
-    nrSetNodePhase(next,"nr-node-final");nrHeartBurst(svg,b);await nrSleep(5000);
-   }else{
-    await nrSleep(220);nrSetNodePhase(next,"");
-   }
-  }
- }finally{
-  svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
-  svg.querySelectorAll(".nr-flying-x").forEach(node=>node.remove());
-  nrAnimationRunning=false;if(button){button.disabled=false;button.classList.remove("is-running");button.querySelector("span").textContent="•";}
- }
-}
-window.startNRAnimation=startNRAnimation;
-
 </script>
 </body>
 </html>
@@ -1905,25 +1824,4 @@ window.startNRAnimation=startNRAnimation;
   .container{display:block!important}
   .container>.card{margin-bottom:14px!important}
 }
-
-/* NR — cinematic transition between rotation groups */
-.nr-action-row{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 16px;padding:12px 14px;border:1px solid #dce8e2;border-radius:14px;background:linear-gradient(110deg,#f8fbf9,#edf5f0)}
-.nr-action-row small{color:#718078;font-size:11px;font-weight:700}
-.nr-animation-button{min-width:178px;color:#fff!important;background:linear-gradient(125deg,#451124,#76213f 55%,#07549a)!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 7px 18px rgba(76,22,47,.22),inset 0 1px 0 rgba(255,255,255,.25)!important;letter-spacing:1.1px!important}
-.nr-animation-button span{color:#72e5d3;padding:0 4px}.nr-animation-button:disabled{opacity:.75;cursor:wait;transform:none!important}
-.nr-flying-x{font:900 22px Arial,sans-serif;fill:#fff;stroke:#061522;stroke-width:2px;paint-order:stroke;filter:drop-shadow(0 0 7px #64f4e1) drop-shadow(0 3px 4px #000b);pointer-events:none}
-.wheel-node.nr-source-pulse .node-halo{animation:nrSourcePulse .72s ease-in-out infinite!important;stroke:#fff!important;stroke-width:6!important;opacity:1!important}
-.wheel-node.nr-source-pulse>circle:nth-of-type(2){animation:nrSourceCore .72s ease-in-out infinite!important}
-.wheel-node.nr-node-open>circle:nth-of-type(2){animation:nrCircleOpen .72s cubic-bezier(.2,.8,.2,1) both!important;transform-box:fill-box;transform-origin:center}
-.wheel-node.nr-node-final .node-halo{stroke:#ff7fc2!important;stroke-width:7!important;opacity:1!important;animation:nrFinalGlow .8s ease-in-out infinite!important}
-.wheel-node.nr-node-final>circle:nth-of-type(2){filter:drop-shadow(0 0 12px #ff6eb5)!important}
-.nr-heart-particle{font:900 17px Arial,sans-serif;fill:#ff6eb5;stroke:#fff;stroke-width:.6px;paint-order:stroke;pointer-events:none;filter:drop-shadow(0 0 7px #ff75bd);animation:nrHeartFloat 2.8s cubic-bezier(.16,.72,.3,1) both}
-@keyframes nrSourcePulse{0%,100%{r:34;opacity:.5;filter:drop-shadow(0 0 3px #fff)}50%{r:43;opacity:1;filter:drop-shadow(0 0 16px #fff) drop-shadow(0 0 24px #35e8d2)}}
-@keyframes nrSourceCore{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8) drop-shadow(0 0 12px #fff)}}
-@keyframes nrCircleOpen{0%{transform:scale(1)}55%{transform:scale(1.48);filter:brightness(1.7)}100%{transform:scale(1.12)}}
-@keyframes nrFinalGlow{0%,100%{opacity:.72;filter:drop-shadow(0 0 7px #ff75bd)}50%{opacity:1;filter:drop-shadow(0 0 17px #ff75bd) drop-shadow(0 0 27px #ffd1e7)}}
-@keyframes nrHeartFloat{0%{opacity:0;transform:translate(0,0) scale(.35) rotate(-15deg)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.35) rotate(18deg)}}
-@media(max-width:600px){.nr-action-row{align-items:stretch;gap:8px}.nr-animation-button{width:100%}.nr-action-row small{text-align:center;width:100%}}
-@media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}.nr-flying-x{display:none}}
-
 </style>
