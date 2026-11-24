@@ -1873,6 +1873,30 @@ async function nrFadeUnvisitedGroups(svg,sequence,nodes){
  }
  nrRemovedNodes.set(svg,saved);
 }
+// Présentation finale : les groupes visités se rangent sur une ligne,
+// du groupe de départ au groupe final, avec une taille progressivement croissante.
+async function nrShowVisitedLine(svg,sequence,nodes){
+ const wrap=svg.closest('.rotation-wheel-wrap');
+ const visited=sequence.map(group=>nodes.get(group)).filter(Boolean);
+ const otherArtwork=[...svg.children].filter(el=>el.tagName.toLowerCase()!=='defs'&&!el.classList.contains('wheel-node'));
+ otherArtwork.forEach(el=>{el.style.transition='opacity .55s ease';el.style.opacity='0';});
+ const count=visited.length, startX=count===1?210:Math.max(42,210-(count-1)*24), endX=count===1?210:Math.min(378,210+(count-1)*24);
+ visited.forEach((node,index)=>{
+  const circle=node.querySelector('circle:not(.node-halo)');
+  const cx=Number(circle?.getAttribute('cx')||210),cy=Number(circle?.getAttribute('cy')||210);
+  const x=count===1?210:startX+(endX-startX)*index/(count-1);
+  const scale=count===1?1:(.48+.52*index/Math.max(1,count-1));
+  node.classList.remove('nr-source-pulse','nr-node-open','nr-node-final');
+  node.style.transition='transform 1s cubic-bezier(.2,.85,.25,1),filter .6s ease';
+  node.setAttribute('transform',`translate(${(x-cx).toFixed(2)} ${(210-cy).toFixed(2)}) translate(${cx} ${cy}) scale(${scale.toFixed(3)}) translate(${-cx} ${-cy})`);
+ });
+ await nrSleep(1050);
+ const message=document.createElement('div');message.className='nr-thank-you';message.textContent='Thank you for your attention.';
+ wrap.appendChild(message);
+ await nrSleep(2000);
+ const overlay=document.querySelector('.nr-focus-overlay');
+ if(overlay){overlay.style.transition='opacity .65s ease,filter .65s ease';overlay.style.opacity='0';overlay.style.filter='blur(8px)';await nrSleep(680);}
+}
 function nrCenterWheelOnScreen(){
  const dashboard=document.querySelector("#groupsResult .rotation-dashboard");
  if(!dashboard||dashboard.dataset.nrCentered==="1")return null;
@@ -1948,6 +1972,7 @@ async function startNRAnimation(triggerButton){
   }
   // Après la célébration de trois secondes à la dernière station.
   await nrFadeUnvisitedGroups(svg,sequence,nodes);
+  await nrShowVisitedLine(svg,sequence,nodes);
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
@@ -2139,4 +2164,6 @@ window.startNRAnimation=startNRAnimation;
 @keyframes nrDashboardIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:600px){.nr-focus-overlay{padding:8px}.nr-focused-dashboard{width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px);padding:12px!important}.nr-focused-dashboard .rotation-wheel-wrap{max-width:min(470px,calc(100vw - 44px))!important}}
 @media(prefers-reduced-motion:reduce){.nr-focus-overlay,.nr-focused-dashboard{animation:none!important}}
+.nr-thank-you{position:relative;z-index:5;margin:18px auto 4px;text-align:center;color:#f2d38b;font-size:clamp(15px,3vw,21px);font-weight:900;letter-spacing:1.1px;text-shadow:0 2px 12px rgba(0,0,0,.45);animation:nrThanksIn .65s cubic-bezier(.2,.8,.2,1) both}
+@keyframes nrThanksIn{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
