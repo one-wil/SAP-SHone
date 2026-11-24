@@ -854,7 +854,7 @@ textarea:focus{
  <div class="notice info">Ce tableau présente les groupes successifs d’affectation de l’agent, avec les dates de début et de fin de chaque codification. La dernière codification reste ouverte jusqu’au 31/12/9999.</div>
  <div id="codingSummary"><div class="empty">Veuillez générer le plan de l’agent pour afficher les codifications.</div></div>
 </section>
-<section class="card post-calc-section"><h2>3. Tableau de situation de ma rotation par date</h2><div class="nr-action-row no-print"><button type="button" id="nrAnimationButton" class="nr-animation-button" onclick="startNRAnimation()" aria-label="Lancer l’animation de rotation">NR <span>•</span> Lancer la rotation</button><small>Animation du passage successif entre les huit groupes</small></div><div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div><div id="groupsResult" class="empty">Renseignez les paramètres de référence puis cliquez sur « Calculer le plan complet ».</div></section>
+<section class="card post-calc-section"><h2>3. Tableau de situation de ma rotation par date</h2><div class="nr-action-row no-print"><button type="button" id="nrAnimationButton" class="nr-animation-button" onclick="startNRAnimation()" aria-label="Lancer l’animation de rotation">NR <span>•</span> Lancer la rotation</button><small>Animation du parcours des groupes calculés pour cet agent</small></div><div class="field"><label>Date de consultation</label><input type="date" id="checkDate"></div><div id="groupsResult" class="empty">Renseignez les paramètres de référence puis cliquez sur « Calculer le plan complet ».</div></section>
 <section class="card post-calc-section">
  <h2>5. Historique des codifications enregistrées</h2>
  <div class="hint">Lorsqu’une nouvelle codification est enregistrée, la précédente prend fin la veille de la nouvelle date de début. La dernière codification ouverte est fixée au 31/12/9999.</div>
@@ -1758,8 +1758,19 @@ async function startNRAnimation(){
   return;
  }
  const button=document.getElementById("nrAnimationButton");
- const source=Number(document.getElementById("referenceGroup").value||1);
- const sequence=Array.from({length:8},(_,i)=>((source-1+i)%8)+1);
+ // Construire le parcours uniquement avec les groupes réellement calculés
+ // pour l’agent, en suivant l’ordre chronologique travail/repos.
+ const source=Number(lastEmployeePlan?.startGroup||document.getElementById("referenceGroup").value||1);
+ if(!lastEmployeePlan)return;
+ const plannedSegments=[
+  ...(lastEmployeePlan.workSegments||[]),
+  ...(lastEmployeePlan.restSegments||[])
+ ].sort((a,b)=>String(a.start).localeCompare(String(b.start)));
+ const sequence=[source];
+ for(const segment of plannedSegments){
+  const group=Number(segment.group);
+  if(Number.isInteger(group)&&group>=1&&group<=8&&sequence[sequence.length-1]!==group)sequence.push(group);
+ }
  const nodes=new Map([...svg.querySelectorAll(".wheel-node")].map(node=>[Number((node.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1]),node]));
  if(sequence.some(n=>!nodes.has(n)))return;
  nrAnimationRunning=true;if(button){button.disabled=true;button.classList.add("is-running");button.querySelector("span").textContent="…";}
@@ -1767,11 +1778,10 @@ async function startNRAnimation(){
  try{
   // Centrer la vue circulaire au milieu de l’écran pendant toute l’animation.
   nrFocusState=nrCenterWheelOnScreen();
-  // 1) Le groupe de départ pulse pendant cinq secondes.
+  // Le groupe initial clignote pendant cinq secondes.
   const first=nodes.get(sequence[0]);nrSetNodePhase(first,"nr-source-pulse");
   await nrSleep(5000);nrSetNodePhase(first,"nr-node-open");
-  const firstPoint=nrGroupCenter(sequence[0]);
-  // Le X quitte le premier cercle, puis parcourt les groupes dans l'ordre R1…R8 circulaire.
+  // Le X se déplace uniquement vers les groupes réellement calculés.
   for(let i=1;i<sequence.length;i++){
    const previous=nodes.get(sequence[i-1]),next=nodes.get(sequence[i]);
    previous.classList.add("nr-node-open");
@@ -1780,10 +1790,20 @@ async function startNRAnimation(){
    nrSetNodePhase(next,"nr-node-open");
    await nrSleep(420);
    if(i===sequence.length-1){
-    nrSetNodePhase(next,"nr-node-final");nrHeartBurst(svg,b);await nrSleep(5000);
+    nrSetNodePhase(next,"nr-node-final");
+    nrHeartBurst(svg,b);
+    await nrSleep(5000);
    }else{
-    await nrSleep(220);nrSetNodePhase(next,"");
+    await nrSleep(220);
+    nrSetNodePhase(next,"");
    }
+  }
+  // Si le plan calculé ne contient qu’un seul groupe, il est le groupe final.
+  if(sequence.length===1){
+   const point=nrGroupCenter(sequence[0]);
+   nrSetNodePhase(first,"nr-node-final");
+   nrHeartBurst(svg,point);
+   await nrSleep(5000);
   }
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
