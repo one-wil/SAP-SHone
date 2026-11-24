@@ -1051,6 +1051,8 @@ function renderGroups(date){
    <linearGradient id="orbitRest3D" x1="0" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#fff0bd"/><stop offset=".18" stop-color="#ffd477"/><stop offset=".5" stop-color="#e5a83f"/><stop offset=".8" stop-color="#a96825"/><stop offset="1" stop-color="#75431e"/></linearGradient>
    <radialGradient id="orbitCore" cx="48%" cy="35%" r="70%"><stop offset="0" stop-color="#315c76"/><stop offset=".52" stop-color="#17384f"/><stop offset="1" stop-color="#071522"/></radialGradient>
    <linearGradient id="orbitMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0fa"/><stop offset=".48" stop-color="#66869b"/><stop offset="1" stop-color="#203c50"/></linearGradient>
+   <linearGradient id="nrRunnerShirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8fff0"/><stop offset=".48" stop-color="#13bca9"/><stop offset="1" stop-color="#075b70"/></linearGradient>
+   <radialGradient id="nrRunnerSkin" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#ffe2c4"/><stop offset="1" stop-color="#b96f49"/></radialGradient>
    <filter id="orbitGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
    <filter id="nodeShadow" x="-80%" y="-80%" width="260%" height="280%"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/><feOffset dy="4" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
@@ -1706,18 +1708,44 @@ function nrSetNodePhase(node,phase){
  node.classList.remove("nr-source-pulse","nr-node-open","nr-node-final");
  if(phase)node.classList.add(phase);
 }
+function nrSvgEl(name,attrs={}){
+ const el=document.createElementNS("http://www.w3.org/2000/svg",name);
+ Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,String(value)));
+ return el;
+}
+function nrCreateRunner(svg){
+ const runner=nrSvgEl("g",{"class":"nr-running-person","aria-label":"Personnage qui court et saute"});
+ // Ombre au sol, silhouette sportive et détails lumineux pour un rendu 3D léger.
+ const shadow=nrSvgEl("ellipse",{cx:0,cy:15,rx:12,ry:3.2,class:"nr-runner-shadow"});runner.appendChild(shadow);
+ const body=nrSvgEl("g",{class:"nr-runner-body"});runner.appendChild(body);
+ body.appendChild(nrSvgEl("circle",{cx:0,cy:-18,r:5.2,fill:"url(#nrRunnerSkin)",stroke:"#fff", "stroke-width":.8}));
+ body.appendChild(nrSvgEl("path",{d:"M-5 -11 Q0 -14 5 -10 L4 2 Q0 5 -5 1 Z",fill:"url(#nrRunnerShirt)",stroke:"#d9f7ff","stroke-width":.8}));
+ const limb=(d,cls)=>nrSvgEl("path",{d,fill:"none",class:cls,"stroke-linecap":"round","stroke-linejoin":"round"});
+ const backArm=nrSvgEl("g",{class:"nr-runner-arm nr-runner-arm-back"});backArm.appendChild(limb("M-3 -9 L-9 -3 L-11 3","nr-runner-limb"));body.appendChild(backArm);
+ const frontArm=nrSvgEl("g",{class:"nr-runner-arm nr-runner-arm-front"});frontArm.appendChild(limb("M3 -9 L9 -14 L12 -19","nr-runner-limb"));body.appendChild(frontArm);
+ const backLeg=nrSvgEl("g",{class:"nr-runner-leg nr-runner-leg-back"});backLeg.appendChild(limb("M-2 2 L-8 9 L-13 13","nr-runner-legline"));backLeg.appendChild(nrSvgEl("path",{d:"M-13 13 l-4 1",class:"nr-runner-shoe"}));body.appendChild(backLeg);
+ const frontLeg=nrSvgEl("g",{class:"nr-runner-leg nr-runner-leg-front"});frontLeg.appendChild(limb("M2 2 L8 8 L13 3","nr-runner-legline"));frontLeg.appendChild(nrSvgEl("path",{d:"M13 3 l5 -1",class:"nr-runner-shoe"}));body.appendChild(frontLeg);
+ svg.appendChild(runner);return{runner,body,shadow,backArm,frontArm,backLeg,frontLeg};
+}
 function nrMoveX(svg,x1,y1,x2,y2,duration){
  return new Promise(resolve=>{
-  const mark=document.createElementNS("http://www.w3.org/2000/svg","text");
-  mark.setAttribute("class","nr-flying-x");mark.setAttribute("x",x1);mark.setAttribute("y",y1+8);
-  mark.textContent="X";svg.appendChild(mark);
-  const start=performance.now();
+  const person=nrCreateRunner(svg),start=performance.now();
   function frame(now){
    const t=Math.min(1,(now-start)/duration),ease=1-Math.pow(1-t,3);
-   mark.setAttribute("x",(x1+(x2-x1)*ease).toFixed(2));
-   mark.setAttribute("y",(y1+(y2-y1)*ease+8).toFixed(2));
-   mark.style.opacity=String(t<.88?1:Math.max(0,(1-t)/.12));
-   if(t<1)requestAnimationFrame(frame);else{mark.remove();resolve();}
+   const x=x1+(x2-x1)*ease;
+   // مسار قفزة مقوّس: يركض أولاً، يرتفع في الوسط، ثم يهبط داخل الدائرة التالية.
+   const jump=Math.sin(Math.PI*t)*34;
+   const y=y1+(y2-y1)*ease-jump;
+   const run=Math.sin(t*Math.PI*10);
+   person.runner.setAttribute("transform",`translate(${x.toFixed(2)} ${(y+5).toFixed(2)}) rotate(${(Math.sin(Math.PI*t)*-7).toFixed(2)}) scale(${(1+jump/260).toFixed(3)})`);
+   person.backArm.setAttribute("transform",`rotate(${run*27} -3 -9)`);
+   person.frontArm.setAttribute("transform",`rotate(${-run*27} 3 -9)`);
+   person.backLeg.setAttribute("transform",`rotate(${-run*34} -2 2)`);
+   person.frontLeg.setAttribute("transform",`rotate(${run*34} 2 2)`);
+   person.shadow.setAttribute("rx",(12-jump*.12).toFixed(2));
+   person.shadow.style.opacity=String(.5-jump/100);
+   person.runner.style.opacity=String(t<.9?1:Math.max(0,(1-t)/.1));
+   if(t<1)requestAnimationFrame(frame);else{person.runner.remove();resolve();}
   }
   requestAnimationFrame(frame);
  });
@@ -1947,7 +1975,10 @@ window.startNRAnimation=startNRAnimation;
 .nr-action-row small{color:#718078;font-size:11px;font-weight:700}
 .nr-animation-button{min-width:178px;color:#fff!important;background:linear-gradient(125deg,#451124,#76213f 55%,#07549a)!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 7px 18px rgba(76,22,47,.22),inset 0 1px 0 rgba(255,255,255,.25)!important;letter-spacing:1.1px!important}
 .nr-animation-button span{color:#72e5d3;padding:0 4px}.nr-animation-button:disabled{opacity:.75;cursor:wait;transform:none!important}
-.nr-flying-x{font:900 22px Arial,sans-serif;fill:#fff;stroke:#061522;stroke-width:2px;paint-order:stroke;filter:drop-shadow(0 0 7px #64f4e1) drop-shadow(0 3px 4px #000b);pointer-events:none}
+.nr-running-person{pointer-events:none;filter:drop-shadow(0 3px 3px #0008) drop-shadow(0 0 7px #48e8d4)}
+.nr-runner-limb{stroke:#f3c9a8;stroke-width:3.1}.nr-runner-legline{stroke:#d8f2f0;stroke-width:3.8}
+.nr-runner-arm,.nr-runner-leg{transform-box:view-box}.nr-runner-shoe{fill:none;stroke:#ffd36d;stroke-width:3.2;stroke-linecap:round}
+.nr-runner-shadow{fill:#000;opacity:.4;filter:blur(1.4px)}
 .wheel-node.nr-source-pulse .node-halo{animation:nrSourcePulse .72s ease-in-out infinite!important;stroke:#fff!important;stroke-width:6!important;opacity:1!important}
 .wheel-node.nr-source-pulse>circle:nth-of-type(2){animation:nrSourceCore .72s ease-in-out infinite!important}
 .wheel-node.nr-node-open>circle:nth-of-type(2){animation:nrCircleOpen .72s cubic-bezier(.2,.8,.2,1) both!important;transform-box:fill-box;transform-origin:center}
@@ -1960,7 +1991,7 @@ window.startNRAnimation=startNRAnimation;
 @keyframes nrFinalGlow{0%,100%{opacity:.72;filter:drop-shadow(0 0 7px #ff75bd)}50%{opacity:1;filter:drop-shadow(0 0 17px #ff75bd) drop-shadow(0 0 27px #ffd1e7)}}
 @keyframes nrHeartFloat{0%{opacity:0;transform:translate(0,0) scale(.35) rotate(-15deg)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.35) rotate(18deg)}}
 @media(max-width:600px){.nr-action-row{align-items:stretch;gap:8px}.nr-animation-button{width:100%}.nr-action-row small{text-align:center;width:100%}}
-@media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}.nr-flying-x{display:none}}
+@media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}}
 
 
 /* NR — Vue circulaire centrée au milieu de l’écran pendant l’animation */
