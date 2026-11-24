@@ -1051,8 +1051,6 @@ function renderGroups(date){
    <linearGradient id="orbitRest3D" x1="0" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#fff0bd"/><stop offset=".18" stop-color="#ffd477"/><stop offset=".5" stop-color="#e5a83f"/><stop offset=".8" stop-color="#a96825"/><stop offset="1" stop-color="#75431e"/></linearGradient>
    <radialGradient id="orbitCore" cx="48%" cy="35%" r="70%"><stop offset="0" stop-color="#315c76"/><stop offset=".52" stop-color="#17384f"/><stop offset="1" stop-color="#071522"/></radialGradient>
    <linearGradient id="orbitMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0fa"/><stop offset=".48" stop-color="#66869b"/><stop offset="1" stop-color="#203c50"/></linearGradient>
-   <linearGradient id="nrRunnerShirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8fff0"/><stop offset=".48" stop-color="#13bca9"/><stop offset="1" stop-color="#075b70"/></linearGradient>
-   <radialGradient id="nrRunnerSkin" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#ffe2c4"/><stop offset="1" stop-color="#b96f49"/></radialGradient>
    <filter id="orbitGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
    <filter id="nodeShadow" x="-80%" y="-80%" width="260%" height="280%"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/><feOffset dy="4" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
@@ -1139,8 +1137,14 @@ function calculateWorkPlan(startDate,startGroup,requiredDays){
     if(status&&status.status==="work")candidates.push(status);
    }
   }
-  candidates.sort((a,b)=>b.daysRemaining-a.daysRemaining||
-   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup));
+  // À partir de la deuxième phase, choisir le groupe dont le travail restant
+  // correspond le mieux aux jours qu'il reste à l'agent.
+  // Exemple : après 29 jours sur R5, s'il reste 7 jours, R6 (7 jours disponibles)
+  // doit être choisi avant R1 (28 jours disponibles).
+  candidates.sort((a,b)=>
+   Math.abs(a.daysRemaining-remaining)-Math.abs(b.daysRemaining-remaining)||
+   circularDistance(a.group,previousGroup)-circularDistance(b.group,previousGroup)
+  );
   for(const candidate of candidates){
    const duration=Math.min(remaining,candidate.daysRemaining);
    const end=addDays(date,duration-1),nextDate=addDays(end,1);
@@ -1708,44 +1712,60 @@ function nrSetNodePhase(node,phase){
  node.classList.remove("nr-source-pulse","nr-node-open","nr-node-final");
  if(phase)node.classList.add(phase);
 }
-function nrSvgEl(name,attrs={}){
- const el=document.createElementNS("http://www.w3.org/2000/svg",name);
- Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,String(value)));
- return el;
-}
 function nrCreateRunner(svg){
- const runner=nrSvgEl("g",{"class":"nr-running-person","aria-label":"Personnage qui court et saute"});
- // Ombre au sol, silhouette sportive et détails lumineux pour un rendu 3D léger.
- const shadow=nrSvgEl("ellipse",{cx:0,cy:15,rx:12,ry:3.2,class:"nr-runner-shadow"});runner.appendChild(shadow);
- const body=nrSvgEl("g",{class:"nr-runner-body"});runner.appendChild(body);
- body.appendChild(nrSvgEl("circle",{cx:0,cy:-18,r:5.2,fill:"url(#nrRunnerSkin)",stroke:"#fff", "stroke-width":.8}));
- body.appendChild(nrSvgEl("path",{d:"M-5 -11 Q0 -14 5 -10 L4 2 Q0 5 -5 1 Z",fill:"url(#nrRunnerShirt)",stroke:"#d9f7ff","stroke-width":.8}));
- const limb=(d,cls)=>nrSvgEl("path",{d,fill:"none",class:cls,"stroke-linecap":"round","stroke-linejoin":"round"});
- const backArm=nrSvgEl("g",{class:"nr-runner-arm nr-runner-arm-back"});backArm.appendChild(limb("M-3 -9 L-9 -3 L-11 3","nr-runner-limb"));body.appendChild(backArm);
- const frontArm=nrSvgEl("g",{class:"nr-runner-arm nr-runner-arm-front"});frontArm.appendChild(limb("M3 -9 L9 -14 L12 -19","nr-runner-limb"));body.appendChild(frontArm);
- const backLeg=nrSvgEl("g",{class:"nr-runner-leg nr-runner-leg-back"});backLeg.appendChild(limb("M-2 2 L-8 9 L-13 13","nr-runner-legline"));backLeg.appendChild(nrSvgEl("path",{d:"M-13 13 l-4 1",class:"nr-runner-shoe"}));body.appendChild(backLeg);
- const frontLeg=nrSvgEl("g",{class:"nr-runner-leg nr-runner-leg-front"});frontLeg.appendChild(limb("M2 2 L8 8 L13 3","nr-runner-legline"));frontLeg.appendChild(nrSvgEl("path",{d:"M13 3 l5 -1",class:"nr-runner-shoe"}));body.appendChild(frontLeg);
- svg.appendChild(runner);return{runner,body,shadow,backArm,frontArm,backLeg,frontLeg};
+ const ns="http://www.w3.org/2000/svg";
+ const el=(tag,attrs={})=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));return n;};
+ if(!svg.querySelector("#nrRunnerShirt")){
+  let defs=svg.querySelector("defs");if(!defs){defs=document.createElementNS(ns,"defs");svg.insertBefore(defs,svg.firstChild);}
+  const grad=el("linearGradient",{id:"nrRunnerShirt",x1:"0",y1:"0",x2:"1",y2:"1"});
+  grad.append(el("stop",{offset:"0%","stop-color":"#35e7d0"}),el("stop",{offset:"100%","stop-color":"#0879b7"}));defs.appendChild(grad);
+ }
+ const g=el("g",{class:"nr-running-person","aria-hidden":"true"});
+ g.appendChild(el("ellipse",{cx:"0",cy:"31",rx:"17",ry:"4",class:"nr-runner-shadow"}));
+ const person=el("g",{class:"nr-runner-body"});
+ // Tête et cou
+ person.appendChild(el("circle",{cx:"0",cy:"-29",r:"7.2",class:"nr-runner-skin"}));
+ person.appendChild(el("path",{d:"M-5 -36 Q-1 -42 6 -36 L7 -32 Q1 -35 -5 -32Z",class:"nr-runner-hair"}));
+ // Torse sportif et short
+ person.appendChild(el("path",{d:"M-7 -20 Q0 -24 7 -20 L9 -2 Q0 3 -9 -2Z",class:"nr-runner-shirt"}));
+ person.appendChild(el("path",{d:"M-8 -3 Q0 1 9 -3 L7 7 L1 9 L-7 6Z",class:"nr-runner-shorts"}));
+ // Bras articulés
+ const arm1=el("g",{class:"nr-runner-arm nr-runner-arm-a"});
+ arm1.appendChild(el("path",{d:"M-6 -18 Q-14 -12 -13 -3 Q-12 1 -9 0 L-6 -9 L-1 -13Z",class:"nr-runner-limb"}));
+ arm1.appendChild(el("circle",{cx:"-9",cy:"0",r:"2.5",class:"nr-runner-skin"}));
+ const arm2=el("g",{class:"nr-runner-arm nr-runner-arm-b"});
+ arm2.appendChild(el("path",{d:"M6 -18 Q14 -14 13 -7 Q12 -3 9 -4 L6 -10 L1 -13Z",class:"nr-runner-limb"}));
+ arm2.appendChild(el("circle",{cx:"9",cy:"-4",r:"2.5",class:"nr-runner-skin"}));
+ person.append(arm1,arm2);
+ // Jambes articulées avec chaussures
+ const leg1=el("g",{class:"nr-runner-leg nr-runner-leg-a"});
+ leg1.appendChild(el("path",{d:"M-5 6 Q-10 15 -13 22",class:"nr-runner-legline"}));
+ leg1.appendChild(el("path",{d:"M-13 22 l-8 2 q-3 2 0 4 l10 -1 q4 -2 1 -5Z",class:"nr-runner-shoe"}));
+ const leg2=el("g",{class:"nr-runner-leg nr-runner-leg-b"});
+ leg2.appendChild(el("path",{d:"M5 6 Q11 14 13 20",class:"nr-runner-legline"}));
+ leg2.appendChild(el("path",{d:"M13 20 l7 4 q3 3 -1 4 l-10 -4 q-3 -2 0 -4Z",class:"nr-runner-shoe"}));
+ person.append(leg1,leg2);g.appendChild(person);svg.appendChild(g);
+ return g;
 }
 function nrMoveX(svg,x1,y1,x2,y2,duration){
  return new Promise(resolve=>{
-  const person=nrCreateRunner(svg),start=performance.now();
+  const runner=nrCreateRunner(svg),start=performance.now();
+  const dx=x2-x1,dy=y2-y1;
   function frame(now){
-   const t=Math.min(1,(now-start)/duration),ease=1-Math.pow(1-t,3);
-   const x=x1+(x2-x1)*ease;
-   // مسار قفزة مقوّس: يركض أولاً، يرتفع في الوسط، ثم يهبط داخل الدائرة التالية.
-   const jump=Math.sin(Math.PI*t)*34;
-   const y=y1+(y2-y1)*ease-jump;
-   const run=Math.sin(t*Math.PI*10);
-   person.runner.setAttribute("transform",`translate(${x.toFixed(2)} ${(y+5).toFixed(2)}) rotate(${(Math.sin(Math.PI*t)*-7).toFixed(2)}) scale(${(1+jump/260).toFixed(3)})`);
-   person.backArm.setAttribute("transform",`rotate(${run*27} -3 -9)`);
-   person.frontArm.setAttribute("transform",`rotate(${-run*27} 3 -9)`);
-   person.backLeg.setAttribute("transform",`rotate(${-run*34} -2 2)`);
-   person.frontLeg.setAttribute("transform",`rotate(${run*34} 2 2)`);
-   person.shadow.setAttribute("rx",(12-jump*.12).toFixed(2));
-   person.shadow.style.opacity=String(.5-jump/100);
-   person.runner.style.opacity=String(t<.9?1:Math.max(0,(1-t)/.1));
-   if(t<1)requestAnimationFrame(frame);else{person.runner.remove();resolve();}
+   const t=Math.min(1,(now-start)/duration);
+   const ease=t*t*(3-2*t);
+   // Trajectoire de saut en arc, avec accélération douce.
+   const x=x1+dx*ease;
+   const y=y1+dy*ease- Math.sin(Math.PI*t)*Math.min(48,Math.hypot(dx,dy)*.24);
+   const scale=.88+Math.sin(Math.PI*t)*.18;
+   runner.setAttribute("transform",`translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${scale.toFixed(3)})`);
+   runner.style.opacity=String(t<.88?1:Math.max(0,(1-t)/.12));
+   runner.querySelector(".nr-runner-body").style.transform=`rotate(${Math.sin(t*Math.PI*4)*5}deg)`;
+   runner.querySelector(".nr-runner-arm-a").style.transform=`rotate(${Math.sin(t*Math.PI*6)*34}deg)`;
+   runner.querySelector(".nr-runner-arm-b").style.transform=`rotate(${-Math.sin(t*Math.PI*6)*34}deg)`;
+   runner.querySelector(".nr-runner-leg-a").style.transform=`rotate(${Math.sin(t*Math.PI*6)*38}deg)`;
+   runner.querySelector(".nr-runner-leg-b").style.transform=`rotate(${-Math.sin(t*Math.PI*6)*38}deg)`;
+   if(t<1)requestAnimationFrame(frame);else{runner.remove();resolve();}
   }
   requestAnimationFrame(frame);
  });
@@ -1835,7 +1855,7 @@ async function startNRAnimation(){
   }
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
-  svg.querySelectorAll(".nr-flying-x").forEach(node=>node.remove());
+  svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
   nrRestoreWheelPosition(nrFocusState);
   nrAnimationRunning=false;if(button){button.disabled=false;button.classList.remove("is-running");button.querySelector("span").textContent="•";}
  }
@@ -1975,10 +1995,19 @@ window.startNRAnimation=startNRAnimation;
 .nr-action-row small{color:#718078;font-size:11px;font-weight:700}
 .nr-animation-button{min-width:178px;color:#fff!important;background:linear-gradient(125deg,#451124,#76213f 55%,#07549a)!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 7px 18px rgba(76,22,47,.22),inset 0 1px 0 rgba(255,255,255,.25)!important;letter-spacing:1.1px!important}
 .nr-animation-button span{color:#72e5d3;padding:0 4px}.nr-animation-button:disabled{opacity:.75;cursor:wait;transform:none!important}
-.nr-running-person{pointer-events:none;filter:drop-shadow(0 3px 3px #0008) drop-shadow(0 0 7px #48e8d4)}
-.nr-runner-limb{stroke:#f3c9a8;stroke-width:3.1}.nr-runner-legline{stroke:#d8f2f0;stroke-width:3.8}
-.nr-runner-arm,.nr-runner-leg{transform-box:view-box}.nr-runner-shoe{fill:none;stroke:#ffd36d;stroke-width:3.2;stroke-linecap:round}
-.nr-runner-shadow{fill:#000;opacity:.4;filter:blur(1.4px)}
+
+.nr-running-person{pointer-events:none;overflow:visible;filter:drop-shadow(0 4px 5px #0009)}
+.nr-runner-shadow{fill:#0008;filter:blur(2px)}
+.nr-runner-skin{fill:#d99b70;stroke:#713e2e;stroke-width:1}
+.nr-runner-hair{fill:#25232a}
+.nr-runner-shirt{fill:url(#nrRunnerShirt);stroke:#b7fff0;stroke-width:1.1}
+.nr-runner-shorts{fill:#172c48;stroke:#8bb9df;stroke-width:.9}
+.nr-runner-limb{fill:none;stroke:#d99b70;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round}
+.nr-runner-legline{fill:none;stroke:#d99b70;stroke-width:5;stroke-linecap:round}
+.nr-runner-shoe{fill:#f4f7fa;stroke:#07549a;stroke-width:1.2}
+.nr-runner-arm,.nr-runner-leg{transform-box:fill-box;transform-origin:50% 15%}
+.nr-runner-body{transform-box:fill-box;transform-origin:center}
+.nr-flying-x{display:none}
 .wheel-node.nr-source-pulse .node-halo{animation:nrSourcePulse .72s ease-in-out infinite!important;stroke:#fff!important;stroke-width:6!important;opacity:1!important}
 .wheel-node.nr-source-pulse>circle:nth-of-type(2){animation:nrSourceCore .72s ease-in-out infinite!important}
 .wheel-node.nr-node-open>circle:nth-of-type(2){animation:nrCircleOpen .72s cubic-bezier(.2,.8,.2,1) both!important;transform-box:fill-box;transform-origin:center}
@@ -1991,7 +2020,7 @@ window.startNRAnimation=startNRAnimation;
 @keyframes nrFinalGlow{0%,100%{opacity:.72;filter:drop-shadow(0 0 7px #ff75bd)}50%{opacity:1;filter:drop-shadow(0 0 17px #ff75bd) drop-shadow(0 0 27px #ffd1e7)}}
 @keyframes nrHeartFloat{0%{opacity:0;transform:translate(0,0) scale(.35) rotate(-15deg)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.35) rotate(18deg)}}
 @media(max-width:600px){.nr-action-row{align-items:stretch;gap:8px}.nr-animation-button{width:100%}.nr-action-row small{text-align:center;width:100%}}
-@media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.nr-source-pulse .node-halo,.nr-node-final .node-halo,.nr-heart-particle{animation:none!important}.nr-running-person{display:none}}
 
 
 /* NR — Vue circulaire centrée au milieu de l’écran pendant l’animation */
