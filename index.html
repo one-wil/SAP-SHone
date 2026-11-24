@@ -1787,7 +1787,7 @@ function nrHeartBurst(svg,center){
   heart.style.setProperty("--dy",`${-35-Math.sin(i*Math.PI/6)*38}px`);
   heart.style.animationDelay=`${(i%4)*.12}s`;svg.appendChild(heart);hearts.push(heart);
  }
- setTimeout(()=>hearts.forEach(h=>h.remove()),3400);
+ setTimeout(()=>hearts.forEach(h=>h.remove()),3000);
 }
 function nrCenterWheelOnScreen(){
  const dashboard=document.querySelector("#groupsResult .rotation-dashboard");
@@ -1848,7 +1848,7 @@ async function startNRAnimation(triggerButton){
    if(i===sequence.length-1){
     nrSetNodePhase(next,"nr-node-final");
     nrHeartBurst(svg,b);
-    await nrSleep(5000);
+    await nrSleep(3000);
    }else{
     await nrSleep(220);
     nrSetNodePhase(next,"");
@@ -1859,7 +1859,7 @@ async function startNRAnimation(triggerButton){
    const point=nrGroupCenter(sequence[0]);
    nrSetNodePhase(first,"nr-node-final");
    nrHeartBurst(svg,point);
-   await nrSleep(5000);
+   await nrSleep(3000);
   }
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
