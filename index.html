@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f58220">
+<meta name="theme-color" content="#641d39">
 <title>SH-ONE | ERP-SAP | Plan de Roulement</title>
 <style>
 :root{
@@ -767,6 +767,233 @@ textarea:focus{
 .nr-auto-label strong.is-disabled{color:#a52e2e}
 @media(max-width:600px){.calculate-actions{align-items:stretch}.nr-auto-toggle{justify-content:center;width:100%}.calculate-actions #calculatePlanButton{width:100%}}
 </style>
+
+<style id="sh-one-premium-refresh">
+/* SH-ONE / ÉDITION SIGNATURE — refonte visuelle uniquement */
+@media screen {
+  :root {
+    --sig-ink:#172b3a;
+    --sig-burgundy:#641d39;
+    --sig-burgundy-dark:#421326;
+    --sig-blue:#174f78;
+    --sig-teal:#16806d;
+    --sig-gold:#c69a4b;
+    --sig-paper:#f4f6f7;
+    --sig-line:#dfe6e9;
+    --sig-muted:#71808a;
+    --sig-shadow:0 12px 34px rgba(24,43,56,.075);
+  }
+  html { background:var(--sig-paper); scroll-padding-top:24px; }
+  body {
+    color:var(--sig-ink);
+    background:
+      radial-gradient(ellipse at 0% 0%,rgba(100,29,57,.075),transparent 32rem),
+      radial-gradient(ellipse at 100% 12%,rgba(23,79,120,.07),transparent 34rem),
+      linear-gradient(180deg,#f8fafb 0%,#f1f4f5 100%);
+    font-family:Inter,"Segoe UI",Arial,Tahoma,sans-serif;
+    line-height:1.6;
+  }
+  .brand-header {
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    padding:34px 18px 31px;
+    background:linear-gradient(128deg,#30101f 0%,#641d39 48%,#174f78 100%);
+    border:0;
+    box-shadow:0 18px 45px rgba(45,18,34,.18);
+  }
+  .brand-header:before {
+    content:"SONATRACH  /  DIGITAL HR OPERATIONS";
+    display:block;
+    position:relative;
+    z-index:2;
+    margin:0 auto 13px;
+    color:rgba(255,255,255,.72);
+    font-size:10px;
+    font-weight:850;
+    letter-spacing:2.6px;
+    text-align:center;
+  }
+  .brand-header:after {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    width:430px;height:430px;
+    right:-145px;top:-285px;
+    border:1px solid rgba(255,255,255,.13);
+    border-radius:50%;
+    box-shadow:0 0 0 35px rgba(255,255,255,.035),0 0 0 75px rgba(255,255,255,.025);
+    background:none;
+  }
+  .product-box {
+    position:relative;
+    max-width:850px;
+    padding:0;
+    margin:0 auto;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+  }
+  .mission-statement {
+    max-width:690px;
+    margin:0 auto 19px;
+    color:rgba(255,255,255,.84);
+    font-size:12px;
+    line-height:1.8;
+    font-weight:500;
+    letter-spacing:.2px;
+  }
+  .product-info {
+    max-width:510px;
+    margin:0 auto;
+    padding:20px 18px 18px;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:17px;
+    background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.055));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 30px rgba(0,0,0,.13);
+    backdrop-filter:blur(8px);
+  }
+  .product-name {font-size:clamp(27px,4vw,35px);letter-spacing:5px;font-weight:950}
+  .product-erp {font-size:11px;letter-spacing:5px;color:#dcebf5}
+  .product-caption {font-size:13px;letter-spacing:1.6px;color:#fff;font-weight:750}
+  .container {max-width:1210px;margin:30px auto 38px;padding:0 22px}
+  .card {
+    overflow:hidden;
+    padding:clamp(19px,2.3vw,28px);
+    margin-bottom:22px;
+    border:1px solid rgba(213,224,229,.92);
+    border-radius:17px;
+    background:rgba(255,255,255,.96);
+    box-shadow:var(--sig-shadow);
+    transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  }
+  .card:hover {transform:translateY(-1px);border-color:#cbd9df;box-shadow:0 17px 40px rgba(24,43,56,.095)}
+  .card h2 {
+    display:flex;align-items:center;gap:12px;
+    margin:0 0 20px;padding:0 0 15px;
+    border-bottom:1px solid #e9eef0;
+    color:var(--sig-burgundy);
+    font-size:15px;font-weight:900;letter-spacing:.15px;
+  }
+  .card h2:before {
+    content:"";
+    width:5px;height:25px;flex:0 0 5px;
+    border-radius:8px;
+    background:linear-gradient(180deg,var(--sig-burgundy),var(--sig-gold));
+  }
+  .notice {border-radius:12px;padding:14px 16px;font-size:12px;line-height:1.85}
+  .notice.info {background:#f0f5f8;border-color:#dce8ef;color:#34576d}
+  .notice.success {background:#edf7f2;border-color:#d7eade;color:#246247}
+  .notice.error {background:#fff3f2;border-color:#f1d9d7;color:#963b38}
+  .field label {color:#3b4f5b;font-size:11px;font-weight:850;letter-spacing:.15px}
+  input,select {
+    min-height:46px;
+    border:1px solid #d6e0e5;
+    border-radius:10px;
+    background:#fff;
+    color:#203746;
+    font-size:13px;
+    font-weight:600;
+    box-shadow:0 1px 2px rgba(20,43,58,.025);
+  }
+  input:hover,select:hover {border-color:#aebfc9}
+  input:focus,select:focus {border-color:var(--sig-teal);box-shadow:0 0 0 4px rgba(22,128,109,.11)}
+  input[readonly] {background:#edf4f1;color:#28624e}
+  .automatic-field {
+    padding:12px;
+    border:1px solid #dce9e3;
+    border-radius:12px;
+    background:linear-gradient(145deg,#f5faf7,#edf5f0);
+  }
+  .automatic-field input {background:#fff;border-color:#dce8e1}
+  .hint,.field-hint {color:#788892;font-size:10px;line-height:1.7}
+  .cycle-option {
+    padding:16px;
+    border:1px solid #e0e7eb;
+    border-radius:13px;
+    background:linear-gradient(145deg,#fbfcfd,#f4f7f8);
+  }
+  .cycle-option.is-selected {
+    border-color:#9dbbd0;
+    background:linear-gradient(145deg,#eef5fa,#f7fafc);
+    box-shadow:inset 4px 0 0 var(--sig-blue),0 8px 20px rgba(23,79,120,.07);
+  }
+  .cycle-option-title {color:var(--sig-burgundy);font-size:12px;font-weight:900}
+  .cycle-choice {color:#314b5a;font-size:12px;font-weight:800}
+  .cycle-description {background:#edf4f7;color:#315b73}
+  .actions {gap:10px}
+  button {
+    min-height:43px;
+    padding:11px 17px;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:850;
+    letter-spacing:.2px;
+    box-shadow:0 3px 8px rgba(22,43,56,.08);
+  }
+  button:hover {transform:translateY(-1px);filter:brightness(1.04)}
+  .primary {background:linear-gradient(135deg,#155f4d,#16806d);color:#fff}
+  .secondary {background:#edf3f5;color:#31566b;border:1px solid #dce6eb}
+  .gold {background:linear-gradient(135deg,#f6eedf,#eee0bd);color:#765a26;border:1px solid #e7d7ae}
+  .danger {background:#fff1f0;color:#a43b3b;border:1px solid #f0d9d8}
+  .blue-btn {background:linear-gradient(135deg,#123f63,#1b6797);color:#fff}
+  .table-wrap {border:1px solid #dfe7eb;border-radius:12px;background:#fff}
+  table {font-size:11px}
+  th,td {padding:11px 10px;border-bottom:1px solid #e9eef0;border-right:0}
+  th {background:#edf3f5;color:#294e63;font-size:10px;font-weight:900;letter-spacing:.25px}
+  tbody tr:nth-child(even) td {background:#fafcfd}
+  tbody tr:hover td {background:#f0f6f8}
+  .status {padding:5px 10px;font-size:10px;font-weight:900}
+  .status.work {background:#e2f3eb;color:#167052}
+  .status.rest {background:#fbf0dc;color:#946a22}
+  .summary {gap:12px}
+  .stat {padding:16px 12px;border:1px solid #e3eaed;border-radius:13px;background:linear-gradient(145deg,#fff,#f5f8f9)}
+  .stat small {color:#788892;font-size:10px;font-weight:750}
+  .stat strong {color:var(--sig-burgundy);font-size:18px;font-weight:950}
+  .segment {border-left-color:var(--sig-teal);background:linear-gradient(100deg,#eff7f4,#fbfdfc);border-radius:10px}
+  .segment.rest-segment {border-left-color:var(--sig-gold);background:linear-gradient(100deg,#fff8e9,#fffdf8)}
+  .mini-title {color:var(--sig-burgundy)}
+  .empty {padding:25px 16px;border:1px dashed #d8e2e6;border-radius:12px;background:#fafcfd;color:#7d8c94}
+  .rotation-compare,.rotation-dashboard,.code-summary {border-radius:15px}
+  .rotation-dashboard {border-color:#263e50!important}
+  .nr-action-row {
+    padding:13px 15px;
+    border:1px solid #dfe8ec;
+    border-radius:12px;
+    background:linear-gradient(110deg,#f8fafb,#edf4f6);
+  }
+  .nr-animation-button {
+    border-radius:11px!important;
+    background:linear-gradient(120deg,#451326,#762542 55%,#174f78)!important;
+    box-shadow:0 8px 19px rgba(75,24,48,.2)!important;
+  }
+  .preview-overlay {background:rgba(13,25,34,.78);backdrop-filter:blur(7px)}
+  .preview-window {border-radius:17px;border:1px solid rgba(255,255,255,.25)}
+  .preview-toolbar {background:linear-gradient(100deg,#421326,#641d39 60%,#174f78)}
+  .developer-footer,.executive-developer-footer {border-color:#e3e9ec}
+  footer {color:#829099}
+  footer strong {color:var(--sig-burgundy)}
+  .developer-message-panel {border-radius:14px}
+  ::selection {background:rgba(22,128,109,.18);color:#173c34}
+  @media(max-width:760px) {
+    .brand-header {padding:26px 13px 23px}
+    .brand-header:before {font-size:8px;letter-spacing:1.8px}
+    .mission-statement {font-size:11px}
+    .product-info {padding:17px 12px}
+    .container {margin:17px auto 25px;padding:0 11px}
+    .card {padding:16px 13px;margin-bottom:14px;border-radius:14px}
+    .card h2 {font-size:14px;margin-bottom:16px}
+    .grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+    .actions button {min-height:42px}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    .card,button {transition:none!important}
+    .card:hover,button:hover {transform:none!important}
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="brand-header">
