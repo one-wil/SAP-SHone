@@ -1765,39 +1765,6 @@ updateReferenceDisplay();
    Purement visuelle : aucune donnée de rotation ni aucun calcul n'est modifié. */
 let nrAnimationRunning=false;
 const nrSleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-// Les groupes supprimés visuellement sont conservés pour pouvoir restaurer
-// la roue au prochain lancement, sans toucher aux données ni aux calculs.
-const nrRemovedNodes=new WeakMap();
-function nrRestoreRemovedNodes(svg){
- const saved=nrRemovedNodes.get(svg);
- if(!saved||!saved.length)return;
- saved.forEach(({clone,nextSibling})=>{
-  if(!svg.querySelector(`.wheel-node[aria-label^="R${Number((clone.getAttribute("aria-label")||"").match(/R(\d+)/)?.[1])}"]`)){
-   svg.insertBefore(clone,nextSibling&&nextSibling.parentNode===svg?nextSibling:null);
-  }
- });
- nrRemovedNodes.delete(svg);
-}
-async function nrRemoveUnvisitedNodes(svg,sequence,nodes){
- const visited=new Set(sequence);
- const removed=[];
- for(let group=1;group<=8;group++){
-  if(visited.has(group))continue;
-  const node=nodes.get(group);
-  if(!node||!node.parentNode)continue;
-  const clone=node.cloneNode(true),nextSibling=node.nextSibling;
-  removed.push({clone,nextSibling});
-  node.style.transition="opacity .48s ease, transform .58s cubic-bezier(.2,.75,.25,1), filter .48s ease";
-  node.style.transformBox="fill-box";
-  node.style.transformOrigin="center";
-  node.style.opacity="0";
-  node.style.transform="scale(.08) translateY(12px)";
-  node.style.filter="blur(5px)";
-  await nrSleep(560);
-  node.remove();
- }
- if(removed.length)nrRemovedNodes.set(svg,removed);
-}
 function nrGroupCenter(group){
  const angle=(-90+(group-1)*45)*Math.PI/180;
  return{x:210+143*Math.cos(angle),y:210+143*Math.sin(angle)};
@@ -1875,6 +1842,37 @@ function nrHeartBurst(svg,center){
  }
  setTimeout(()=>hearts.forEach(h=>h.remove()),3000);
 }
+
+// Restauration des groupes masqués pour permettre de relancer l'animation.
+const nrRemovedNodes=new WeakMap();
+function nrRestoreRemovedNodes(svg){
+ const saved=nrRemovedNodes.get(svg)||[];
+ saved.forEach(item=>{if(!item.node.isConnected)item.parent.insertBefore(item.node,item.next&&item.next.parentNode===item.parent?item.next:null);});
+ nrRemovedNodes.delete(svg);
+}
+function nrAcrobaticFade(node){
+ return new Promise(resolve=>{
+  const start=performance.now(),duration=760;
+  node.style.transformBox="fill-box";node.style.transformOrigin="center";
+  function frame(now){
+   const t=Math.min(1,(now-start)/duration),e=1-Math.pow(1-t,3);
+   node.style.transform=`rotate(${720*e}deg) scale(${Math.max(.015,1-.985*e)})`;
+   node.style.opacity=String(1-e);node.style.filter=`blur(${e*8}px)`;
+   if(t<1)requestAnimationFrame(frame);
+   else{const parent=node.parentNode,next=node.nextSibling,clone=node.cloneNode(true);node.remove();resolve({node:clone,parent,next});}
+  }
+  requestAnimationFrame(frame);
+ });
+}
+async function nrFadeUnvisitedGroups(svg,sequence,nodes){
+ const visited=new Set(sequence),saved=[];
+ for(let group=1;group<=8;group++){
+  if(visited.has(group))continue;
+  const node=nodes.get(group);if(!node||!node.isConnected)continue;
+  saved.push(await nrAcrobaticFade(node));await nrSleep(170);
+ }
+ nrRemovedNodes.set(svg,saved);
+}
 function nrCenterWheelOnScreen(){
  const dashboard=document.querySelector("#groupsResult .rotation-dashboard");
  if(!dashboard||dashboard.dataset.nrCentered==="1")return null;
@@ -1899,9 +1897,8 @@ async function startNRAnimation(triggerButton){
   if(msg)msg.scrollIntoView({behavior:"smooth",block:"center"});
   return;
  }
- // Réafficher les groupes de la précédente animation avant de recommencer.
- nrRestoreRemovedNodes(svg);
  const button=triggerButton||document.getElementById("nrAnimationButton");
+ nrRestoreRemovedNodes(svg);
  // Construire le parcours uniquement avec les groupes réellement calculés
  // pour l’agent, en suivant l’ordre chronologique travail/repos.
  const source=Number(lastEmployeePlan?.startGroup||document.getElementById("referenceGroup").value||1);
@@ -1949,9 +1946,8 @@ async function startNRAnimation(triggerButton){
    nrHeartBurst(svg,point);
    await nrSleep(3000);
   }
-  // Après l'arrivée à la dernière station, les groupes non visités
-  // disparaissent successivement dans le sens R1 → R8.
-  await nrRemoveUnvisitedNodes(svg,sequence,nodes);
+  // Après la célébration de trois secondes à la dernière station.
+  await nrFadeUnvisitedGroups(svg,sequence,nodes);
  }finally{
   svg.querySelectorAll(".wheel-node").forEach(node=>nrSetNodePhase(node,""));
   svg.querySelectorAll(".nr-running-person,.nr-flying-x").forEach(node=>node.remove());
