@@ -1905,6 +1905,12 @@ async function nrShowVisitedLine(svg,sequence,nodes){
  await nrSleep(500);
  const farewell=document.createElement('div');farewell.className='nr-farewell-person nr-farewell-enter';
  farewell.setAttribute('aria-hidden','true');
+ // تحديد موضع المجموعة الأخيرة بعد اصطفافها، ليخرج الرجل منها مباشرة.
+ const lastNode=nodes.get(sequence[sequence.length-1]);
+ const wrapRect=wrap.getBoundingClientRect(),lastRect=lastNode.getBoundingClientRect();
+ farewell.style.left=`${lastRect.left+lastRect.width/2-wrapRect.left}px`;
+ farewell.style.top=`${lastRect.top+lastRect.height/2-wrapRect.top}px`;
+ farewell.style.bottom='auto';
  farewell.innerHTML=`<svg viewBox="0 0 120 150" role="presentation">
   <ellipse cx="60" cy="143" rx="25" ry="5" fill="rgba(0,0,0,.35)"/>
   <g class="farewell-left-arm"><path d="M43 59 Q28 48 22 25" fill="none" stroke="#d99b70" stroke-width="8" stroke-linecap="round"/><circle cx="21" cy="20" r="7" fill="#d99b70"/></g>
@@ -2196,13 +2202,13 @@ window.startNRAnimation=startNRAnimation;
 .nr-thank-you{position:relative;z-index:5;margin:18px auto 4px;text-align:center;color:#f2d38b;font-size:clamp(15px,3vw,21px);font-weight:900;letter-spacing:1.1px;text-shadow:0 2px 12px rgba(0,0,0,.45);animation:nrThanksIn .65s cubic-bezier(.2,.8,.2,1) both}
 @keyframes nrThanksIn{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-.nr-farewell-person{position:absolute;z-index:8;left:50%;bottom:12px;width:clamp(72px,15vw,112px);height:auto;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 5px 9px rgba(0,0,0,.38))}
+.nr-farewell-person{position:absolute;z-index:8;left:50%;top:50%;bottom:auto;width:clamp(72px,15vw,112px);height:auto;transform:translate(-50%,-82%);pointer-events:none;filter:drop-shadow(0 5px 9px rgba(0,0,0,.38))}
 .nr-farewell-person svg{display:block;width:100%;height:auto;overflow:visible}
 .nr-farewell-person.nr-farewell-enter{animation:nrFarewellEnter .65s cubic-bezier(.2,.85,.25,1) both}
 .nr-farewell-person.nr-farewell-enter .farewell-left-arm{transform-box:fill-box;transform-origin:90% 90%;animation:nrBothHandsWave .38s ease-in-out .55s 5 alternate}
 .nr-farewell-person.nr-farewell-enter .farewell-right-arm{transform-box:fill-box;transform-origin:10% 90%;animation:nrBothHandsWave .38s ease-in-out .55s 5 alternate-reverse}
 .nr-farewell-person.nr-farewell-exit{animation:nrFarewellExit .68s cubic-bezier(.6,0,.8,.25) both}
-@keyframes nrFarewellEnter{from{opacity:0;transform:translate(-50%,65px) scale(.72)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
-@keyframes nrFarewellExit{from{opacity:1;transform:translate(-50%,0) scale(1)}to{opacity:0;transform:translate(-50%,65px) scale(.72)}}
+@keyframes nrFarewellEnter{from{opacity:0;transform:translate(-50%,-12%) scale(.48)}to{opacity:1;transform:translate(-50%,-82%) scale(1)}}
+@keyframes nrFarewellExit{from{opacity:1;transform:translate(-50%,-82%) scale(1)}to{opacity:0;transform:translate(-50%,-12%) scale(.48)}}
 @keyframes nrBothHandsWave{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
 </style>
