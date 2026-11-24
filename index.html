@@ -1880,15 +1880,19 @@ async function nrShowVisitedLine(svg,sequence,nodes){
  const visited=sequence.map(group=>nodes.get(group)).filter(Boolean);
  const otherArtwork=[...svg.children].filter(el=>el.tagName.toLowerCase()!=='defs'&&!el.classList.contains('wheel-node'));
  otherArtwork.forEach(el=>{el.style.transition='opacity .55s ease';el.style.opacity='0';});
- const count=visited.length, startX=count===1?210:Math.max(42,210-(count-1)*24), endX=count===1?210:Math.min(378,210+(count-1)*24);
+ const count=visited.length;
+ // Les centres sont répartis sur une seule coordonnée Y : aucune orbite ni décalage vertical.
+ const left=count<=1?210:34, right=count<=1?210:386;
  visited.forEach((node,index)=>{
   const circle=node.querySelector('circle:not(.node-halo)');
   const cx=Number(circle?.getAttribute('cx')||210),cy=Number(circle?.getAttribute('cy')||210);
-  const x=count===1?210:startX+(endX-startX)*index/(count-1);
+  const x=count===1?210:left+(right-left)*index/(count-1);
   const scale=count===1?1:(.48+.52*index/Math.max(1,count-1));
+  const tx=x-scale*cx, ty=210-scale*cy;
   node.classList.remove('nr-source-pulse','nr-node-open','nr-node-final');
-  node.style.transition='transform 1s cubic-bezier(.2,.85,.25,1),filter .6s ease';
-  node.setAttribute('transform',`translate(${(x-cx).toFixed(2)} ${(210-cy).toFixed(2)}) translate(${cx} ${cy}) scale(${scale.toFixed(3)}) translate(${-cx} ${-cy})`);
+  node.style.transform='none';
+  node.style.transition='filter .6s ease';
+  node.setAttribute('transform',`matrix(${scale.toFixed(4)} 0 0 ${scale.toFixed(4)} ${tx.toFixed(2)} ${ty.toFixed(2)})`);
  });
  await nrSleep(1050);
  const message=document.createElement('div');message.className='nr-thank-you';message.textContent='Thank you for your attention.';
