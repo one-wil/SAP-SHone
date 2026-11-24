@@ -1884,15 +1884,18 @@ async function nrShowVisitedLine(svg,sequence,nodes){
  // Les centres sont répartis sur une seule coordonnée Y : aucune orbite ni décalage vertical.
  const left=count<=1?210:34, right=count<=1?210:386;
  visited.forEach((node,index)=>{
-  const circle=node.querySelector('circle:not(.node-halo)');
+  // نأخذ مركز الدائرة الرئيسية نفسها، وليس دائرة الظل أو الهالة.
+  const circle=node.querySelector('circle[filter="url(#nodeShadow)"]')||node.querySelector('circle:not(.node-halo)');
   const cx=Number(circle?.getAttribute('cx')||210),cy=Number(circle?.getAttribute('cy')||210);
   const x=count===1?210:left+(right-left)*index/(count-1);
   const scale=count===1?1:(.48+.52*index/Math.max(1,count-1));
-  const tx=x-scale*cx, ty=210-scale*cy;
   node.classList.remove('nr-source-pulse','nr-node-open','nr-node-final');
-  node.style.transform='none';
+  // إزالة أي transform من CSS حتى لا يلغي خاصية transform الخاصة بعنصر SVG.
+  node.style.removeProperty('transform');
+  node.style.transformOrigin='0 0';
   node.style.transition='filter .6s ease';
-  node.setAttribute('transform',`matrix(${scale.toFixed(4)} 0 0 ${scale.toFixed(4)} ${tx.toFixed(2)} ${ty.toFixed(2)})`);
+  // التحويل يضع مركز كل دائرة عند y=210 بالضبط مهما كان حجمها.
+  node.setAttribute('transform',`translate(${x.toFixed(2)} 210) scale(${scale.toFixed(4)}) translate(${-cx.toFixed(2)} ${-cy.toFixed(2)})`);
  });
  await nrSleep(1050);
  const message=document.createElement('div');message.className='nr-thank-you';message.textContent='Thank you for your attention.';
