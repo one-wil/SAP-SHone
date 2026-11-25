@@ -1676,7 +1676,14 @@ function exportCSV(){
 /* Restauration des paramètres */
 function restoreSettings(){
  const saved=localStorage.getItem("rotation_reference");
- if(saved){try{const d=JSON.parse(saved);document.getElementById("referenceDate").value=d.referenceDate;document.getElementById("checkDate").value=d.checkDate;}catch(e){}}
+ if(saved){try{
+  const d=JSON.parse(saved);
+  document.getElementById("referenceDate").value=d.referenceDate||"";
+  // Par défaut, la date de consultation reprend la date de début de la
+  // première semaine de travail. Une date de consultation déjà choisie
+  // par l'utilisateur reste toutefois mémorisée.
+  document.getElementById("checkDate").value=d.checkDate||d.referenceDate||"";
+ }catch(e){}}
  const savedCycle=localStorage.getItem("rotation_cycle2927");document.getElementById("cycle2927").checked=savedCycle==="1";applyCycleSelection();renderRecords();
 }
 
@@ -1757,7 +1764,16 @@ document.getElementById("checkDate").addEventListener("change",refreshGroupsForC
 
 document.getElementById("workWeeks").addEventListener("change",updateDurationHints);
 document.getElementById("restWeeks").addEventListener("change",updateDurationHints);
-document.getElementById("referenceDate").addEventListener("change",updateReferenceDisplay);
+document.getElementById("referenceDate").addEventListener("change",()=>{
+ updateReferenceDisplay();
+ const referenceDate=document.getElementById("referenceDate").value;
+ if(referenceDate){
+  // À chaque modification de la date de début de la première semaine,
+  // la date de consultation revient par défaut à cette même date.
+  document.getElementById("checkDate").value=referenceDate;
+  if(currentGroups)refreshGroupsForCheckDate();
+ }
+});
 window.calculateAll=calculateAll;
 const calculateButton=document.querySelector('.actions button.primary[onclick="calculateAll()"]');
 if(calculateButton)calculateButton.addEventListener("click",event=>{event.preventDefault();calculateAll();});
@@ -1765,8 +1781,12 @@ restoreSettings();
 document.querySelectorAll(".cycle-option input[type=checkbox]").forEach(input=>input.addEventListener("change",syncOptionVisuals));
 syncOptionVisuals();
 updateDurationHints();
-if(!document.getElementById("checkDate").value){const now=new Date();document.getElementById("checkDate").value=inputDate(new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())));}
 updateReferenceDisplay();
+// Si aucune date de consultation n'a encore été enregistrée, initialiser
+// le champ avec la date de début de la première semaine de travail.
+if(!document.getElementById("checkDate").value&&document.getElementById("referenceDate").value){
+ document.getElementById("checkDate").value=document.getElementById("referenceDate").value;
+}
 
 
 /* NR — animation scénarisée du passage circulaire entre les huit groupes.
